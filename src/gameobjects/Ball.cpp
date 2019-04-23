@@ -2,6 +2,7 @@
 
 #include "../Shape.h"
 #include "../WindowManager.h"
+#include "../engine/ColliderSphere.h"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -14,6 +15,7 @@ Ball::Ball(float radius, vec3 position) :
     radius(radius)
 {
     this->position = position;
+    collider = ColliderSphere(radius);
     speed = 0;
     material = 0;
     orientation = quat(1, 0, 0, 0);

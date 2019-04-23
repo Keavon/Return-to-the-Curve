@@ -21,6 +21,9 @@ CSC 476 Lab 1
 #include "Player.h"
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
+#include "gameobjects/Box.h"
+#include "engine/ColliderSphere.h"
+#include "engine/Collider.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -53,9 +56,11 @@ public:
 
 	// Shapes
 	shared_ptr<Shape> cube;
+	shared_ptr<Shape> boxModel;
 	shared_ptr<Shape> plane;
 	shared_ptr<Shape> bunny;
 	vector<shared_ptr<Object3D>> bunnies;
+	vector<shared_ptr<PhysicsObject>> boxes;
 	
 	// Game objects
 	shared_ptr<Ball> ball;
@@ -64,6 +69,7 @@ public:
 	shared_ptr<Skybox> skyboxTexture;
 	shared_ptr<Texture> grassTexture;
 	shared_ptr<Texture> brickTexture;
+	shared_ptr<Texture> crateTexture;
 
 	// Contains vertex information for OpenGL
 	GLuint VertexArrayID;
@@ -230,6 +236,12 @@ public:
 		brickTexture->setUnit(1);
 		brickTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		crateTexture = make_shared<Texture>();
+		crateTexture->setFilename(resourceDirectory + "/textures/crate.png");
+		crateTexture->init();
+		crateTexture->setUnit(1);
+		crateTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
 		// Load skybox
 		string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
 		for (int i = 0; i < 6; i++)
@@ -250,6 +262,11 @@ public:
 		cube->resize();
 		cube->init();
 
+		boxModel = make_shared<Shape>();
+		boxModel->loadMesh(resourceDirectory + "/models/box.obj");
+		boxModel->measure();
+		boxModel->init();
+
 		plane = make_shared<Shape>();
 		plane->loadMesh(resourceDirectory + "/models/plane.obj");
 		plane->measure();
@@ -268,6 +285,13 @@ public:
 
 		ball = make_shared<Ball>(1, vec3(0, 1, -3));
 		ball->init(sphere, windowManager);
+
+		for (int i = 0; i < 5; i++)
+		{
+			auto box = make_shared<Box>(vec3(6, 3 + 3 * i, -3 - 5 * i));
+			box->init(boxModel);
+			boxes.push_back(box);
+		}
 	}
 
 	void render(double dt)
@@ -355,6 +379,12 @@ public:
 			// Draw ball
 			setTextureMaterial(1);
 			ball->draw(texProg, M);
+
+			setTextureMaterial(2);
+			for (auto box : boxes)
+			{
+				box->draw(texProg, M);
+			}
 			
 			texProg->unbind();
 			
@@ -377,9 +407,15 @@ public:
 	void update(float dt)
 	{
 		ball->update(dt);
+		player->update(dt, ball->position);
+
+		for (auto box : boxes)
+		{
+			box->collide(ball);
+		}
 
 		// Lab 1 stuff
-
+		/*
 		printTimer += dt;
 
 		if (printTimer >= 1)
@@ -414,7 +450,6 @@ public:
 			bunnies.push_back(newBunny);
 		}
 
-		player->update(dt, ball->position);
 
 		for (auto bunny : bunnies)
 		{
@@ -475,6 +510,7 @@ public:
 
 			}
 		}
+		*/
 
 	}
 
@@ -496,6 +532,12 @@ public:
 				break;
 			case 1:
 				brickTexture->bind(texProg->getUniform("Texture0"));
+				glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
+				glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
+				glUniform1f(texProg->getUniform("Shine"), 32);
+				break;
+			case 2:
+				crateTexture->bind(texProg->getUniform("Texture0"));
 				glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
 				glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
 				glUniform1f(texProg->getUniform("Shine"), 32);

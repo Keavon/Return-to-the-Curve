@@ -5,5 +5,7 @@
 class ColliderSphere : public Collider
 {
 public:
+    ColliderSphere();
+    ColliderSphere(float radius);
     float radius;
 };

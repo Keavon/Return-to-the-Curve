@@ -2,11 +2,12 @@
 
 #include "GameObject.h"
 #include <glm/glm.hpp>
+#include <memory>
 
 class PhysicsObject : public GameObject
 {
 public:
-    bool testCollision(PhysicsObject other);
+    bool collide(std::shared_ptr<PhysicsObject> other);
     float friction;
     glm::vec3 velocity;
     glm::vec3 acceleration;

@@ -1,8 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 class BoundingBox
 {
 public:
-    float min[3];
-    float max[3];
+    BoundingBox();
+    BoundingBox(glm::vec3 min, glm::vec3 max);
+    glm::vec3 min;
+    glm::vec3 max;
 };
