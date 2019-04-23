@@ -83,6 +83,7 @@ public:
 
 	float cTheta;
 	bool mouseDown = false;
+	bool showCursor = false;
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -103,6 +104,15 @@ public:
 		}
 		else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
 			player->flying = !player->flying;
+		}
+		else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+			showCursor = !showCursor;
+			if (showCursor) {
+				glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			}
+			else {
+				glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);				
+			}
 		}
 	}
 
