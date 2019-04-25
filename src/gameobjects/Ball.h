@@ -16,4 +16,5 @@ public:
 	WindowManager *windowManager;
     float radius;
     float moveSpeed;
+    glm::vec3 direction;
 };

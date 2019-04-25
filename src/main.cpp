@@ -417,7 +417,7 @@ public:
 	void update(float dt)
 	{
 		ball->update(dt);
-		player->update(dt, ball->position);
+		player->update(dt, ball);
 
 		for (auto box : boxes)
 		{

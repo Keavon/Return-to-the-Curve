@@ -14,7 +14,7 @@ Player::~Player()
 {
 }
 
-void Player::update(float dt, vec3 ballPos)
+void Player::update(float dt, shared_ptr<Ball> ball)
 {
     int width, height;
     glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -24,17 +24,28 @@ void Player::update(float dt, vec3 ballPos)
     vec3 velocity = vec3(0, 0, 0);
     vec3 strafe = normalize(cross(lookAtPoint - eye, upVec));
     vec3 dolly = normalize(lookAtPoint - eye);
+    //Mouse calculations
+    double xpos, ypos;
+    glfwGetCursorPos(windowManager->getHandle(), &xpos, &ypos);
+    double dx = xpos - prevXpos;
+    double dy = -(ypos - prevYpos);
+    prevXpos = xpos;
+    prevYpos = ypos;
+    double radPerPx = M_PI / height;
+    yaw += dx * radPerPx;
+
     if (flying)
     {
         dolly = normalize(lookAtPoint - eye);
+        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
     }
     else
     {
-        eye = ballPos + vec3(0,10,20);
-        lookAtPoint = ballPos;
-        dolly = lookAtPoint - eye;
-        dolly.y = 0;
-        dolly = normalize(dolly); 
+        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), radians(10.0));
+        lookAtPoint = ball->position;
+        eye.x = lookAtPoint.x + 10 * cos(pitch) * cos(yaw);
+        eye.y = lookAtPoint.y + 10 * sin(pitch);
+        eye.z = lookAtPoint.z + 10 * cos(pitch) * sin(yaw); 
     }
 
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ||
@@ -71,21 +82,14 @@ void Player::update(float dt, vec3 ballPos)
         eye += normalize(velocity) * speed_ * (float) dt;
         eye.y = std::max(0.025f, eye.y);
     }
-    if (flying) {
-        // Mouse
-        double xpos, ypos;
-        glfwGetCursorPos(windowManager->getHandle(), &xpos, &ypos);
-        double dx = xpos - prevXpos;
-        double dy = -(ypos - prevYpos);
-        prevXpos = xpos;
-        prevYpos = ypos;
-        double radPerPx = M_PI / height;
-        yaw += dx * radPerPx;
-        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
+    
+    // Mouse
+    
+    if (flying){
         lookAtPoint.x = eye.x + cos(pitch) * sin(yaw);
         lookAtPoint.y = eye.y + sin(pitch);
         lookAtPoint.z = eye.z + cos(pitch) * cos(M_PI - yaw);
-    }
+    } 
 }
 
 void Player::init()

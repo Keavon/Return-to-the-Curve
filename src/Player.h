@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WindowManager.h"
+#include "gameobjects/Ball.h"
 #include <glm/glm.hpp>
 
 class Player
@@ -8,7 +9,7 @@ class Player
 public:
     Player(WindowManager *windowManager);
     ~Player();
-    void update(float dt, glm::vec3 ballPos);
+    void update(float dt, std::shared_ptr<Ball> ball);
 	void init();
 
     float speed = 5;

@@ -22,6 +22,7 @@ Ball::Ball(float radius, vec3 position) :
 
     moveSpeed = 5;
     acceleration = vec3(0, -20, 0);
+    direction = vec3(0);
 }
 
 void Ball::init(shared_ptr<Shape> model, WindowManager *windowManager)
@@ -32,7 +33,7 @@ void Ball::init(shared_ptr<Shape> model, WindowManager *windowManager)
 
 void Ball::update(float dt)
 {
-    vec3 direction = vec3(0);
+    direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
         direction += vec3(0, 0, -1);
@@ -61,7 +62,6 @@ void Ball::update(float dt)
         vec3 axis = normalize(cross(vec3(0, 1, 0), direction));
         quat q = rotate(quat(1, 0, 0, 0), moveSpeed / radius * dt, axis);
         orientation = q * orientation;
-
         velocity += direction * moveSpeed;
     }
 
