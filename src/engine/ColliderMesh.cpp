@@ -1,4 +1,6 @@
 #include "ColliderMesh.h"
+#include "ColliderSphere.h"
+#include "Collider.h"
 
 #include "BoundingBox.h"
 #include <memory>
@@ -8,12 +10,22 @@
 using namespace glm;
 using namespace std;
 
-ColliderMesh::ColliderMesh() : mesh(NULL)
+ColliderMesh::ColliderMesh(vec3 *position, quat *orientation, shared_ptr<Shape> mesh) :
+    Collider(position, orientation, mesh->min, mesh->max), mesh(mesh)
 {
-    bbox = BoundingBox(vec3(0), vec3(0));
 }
 
-ColliderMesh::ColliderMesh(shared_ptr<Shape> mesh) : mesh(mesh)
+bool ColliderMesh::checkCollision(Collider *col)
 {
-    bbox = BoundingBox(mesh->min, mesh->max);
+    return col->checkCollision(this);
+}
+
+bool ColliderMesh::checkCollision(ColliderMesh *col)
+{
+
+}
+
+bool ColliderMesh::checkCollision(ColliderSphere *col)
+{
+
 }

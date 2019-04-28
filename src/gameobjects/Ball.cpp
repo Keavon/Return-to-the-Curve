@@ -11,22 +11,19 @@
 using namespace glm;
 using namespace std;
 
-Ball::Ball(float radius, vec3 position) :
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
+    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(&position, &orientation, radius)),
     radius(radius)
 {
-    this->position = position;
-    collider = ColliderSphere(radius);
     speed = 0;
     material = 0;
-    orientation = quat(1, 0, 0, 0);
 
     moveSpeed = 5;
     acceleration = vec3(0, -20, 0);
 }
 
-void Ball::init(shared_ptr<Shape> model, WindowManager *windowManager)
+void Ball::init(WindowManager *windowManager)
 {
-    this->model = model;
     this->windowManager = windowManager;
 }
 
@@ -59,6 +56,7 @@ void Ball::update(float dt)
     {
         direction = normalize(direction);
         vec3 axis = normalize(cross(vec3(0, 1, 0), direction));
+
         quat q = rotate(quat(1, 0, 0, 0), moveSpeed / radius * dt, axis);
         orientation = q * orientation;
 

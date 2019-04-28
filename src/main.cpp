@@ -293,13 +293,12 @@ public:
 		sphere->resize();
 		sphere->init();
 
-		ball = make_shared<Ball>(1, vec3(0, 1, -3));
-		ball->init(sphere, windowManager);
+		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
+		ball->init(windowManager);
 
 		for (int i = 0; i < 5; i++)
 		{
-			auto box = make_shared<Box>(vec3(6, 3 + 3 * i, -3 - 5 * i));
-			box->init(boxModel);
+			auto box = make_shared<Box>(vec3(6, 3 + 3 * i, -3 - 5 * i), quat(1, 0, 0, 0), boxModel);
 			boxes.push_back(box);
 		}
 	}
@@ -421,7 +420,7 @@ public:
 
 		for (auto box : boxes)
 		{
-			box->collide(ball);
+			box->collider->checkCollision(ball->collider.get());
 		}
 
 		// Lab 1 stuff

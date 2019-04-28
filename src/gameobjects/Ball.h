@@ -9,8 +9,8 @@
 class Ball : public PhysicsObject
 {
 public:
-    Ball(float radius, glm::vec3 position);
-    void init(std::shared_ptr<Shape> model, WindowManager *windowManager);
+    Ball(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
+    void init(WindowManager *windowManager);
     void update(float dt);
 
 	WindowManager *windowManager;

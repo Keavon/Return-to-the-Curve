@@ -10,10 +10,9 @@
 class GameObject
 {
 public:
-    GameObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, int material);
+    GameObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model);
     GameObject();
-    ~GameObject();
-    void update(float dt);
+    virtual void update(float dt) {};
     void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M);
 
     glm::vec3 position;

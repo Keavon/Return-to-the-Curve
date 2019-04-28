@@ -1,16 +1,28 @@
 #include "ColliderSphere.h"
+#include "ColliderMesh.h"
+#include "Collider.h"
 
 #include "BoundingBox.h"
 #include <glm/glm.hpp>
 
 using namespace glm;
 
-ColliderSphere::ColliderSphere() : radius(0)
+ColliderSphere::ColliderSphere(vec3 *position, quat *orientation, float radius) :
+    Collider(position, orientation, vec3(-radius), vec3(radius)), radius(radius)
 {
-    bbox = BoundingBox(vec3(0), vec3(0));
 }
 
-ColliderSphere::ColliderSphere(float radius) : radius(radius)
+bool ColliderSphere::checkCollision(Collider *col)
 {
-    bbox = BoundingBox(vec3(-radius), vec3(radius));
+    return col->checkCollision(this);
+}
+
+bool ColliderSphere::checkCollision(ColliderMesh *col)
+{
+
+}
+
+bool ColliderSphere::checkCollision(ColliderSphere *col)
+{
+
 }
