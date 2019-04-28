@@ -18,7 +18,7 @@ CSC 476 Lab 1
 #include "WindowManager.h"
 #include "GLTextureWriter.h"
 #include "Object3D.h"
-#include "Player.h"
+#include "Camera.h"
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Box.h"
@@ -47,7 +47,7 @@ public:
 	float timer = 0;
 	float printTimer = 0;
 
-	shared_ptr<Player> player;
+	shared_ptr<Camera> camera;
 
 	// Shader programs
 	shared_ptr<Program> texProg;
@@ -103,7 +103,7 @@ public:
 			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		}
 		else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
-			player->flying = !player->flying;
+			camera->flying = !camera->flying;
 		}
 		else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 			showCursor = !showCursor;
@@ -158,9 +158,9 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 
-		// Initialize player
-		player = make_shared<Player>(windowManager);
-		player->init();
+		// Initialize camera
+		camera = make_shared<Camera>(windowManager);
+		camera->init();
 	}
 
 	void initShaders(const string& resourceDirectory)
@@ -328,7 +328,7 @@ public:
 		P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
 		V->loadIdentity();
-		V->lookAt(player->eye, player->lookAtPoint, player->upVec);
+		V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
 
 
 		M->pushMatrix();
@@ -353,7 +353,7 @@ public:
 			setLight(matProg);
 			glUniformMatrix4fv(matProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 			glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-			glUniform3fv(matProg->getUniform("viewPos"), 1, value_ptr(player->eye));
+			glUniform3fv(matProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
 
 
 			// Draw bunnies
@@ -377,7 +377,7 @@ public:
 			setLight(texProg);
 			glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 			glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-			glUniform3fv(texProg->getUniform("viewPos"), 1, value_ptr(player->eye));
+			glUniform3fv(texProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
 
 			// Draw plane
 			setTextureMaterial(0);
@@ -416,8 +416,8 @@ public:
 
 	void update(float dt)
 	{
-		ball->update(dt);
-		player->update(dt, ball);
+		camera->update(dt, ball);
+		ball->update(dt, camera->getDolly(), camera->getStrafe());
 
 		for (auto box : boxes)
 		{
@@ -506,11 +506,11 @@ public:
 					}
 				}
 
-				// Check player
-				float playerDist = sqrt(pow(bunnies[i]->position.x - player->eye.x, 2) +
-										pow(bunnies[i]->position.y - player->eye.y, 2) +
-										pow(bunnies[i]->position.z - player->eye.z, 2));
-				if (playerDist < player->radius + bunnies[i]->radius)
+				// Check camera
+				float cameraDist = sqrt(pow(bunnies[i]->position.x - camera->eye.x, 2) +
+										pow(bunnies[i]->position.y - camera->eye.y, 2) +
+										pow(bunnies[i]->position.z - camera->eye.z, 2));
+				if (cameraDist < camera->radius + bunnies[i]->radius)
 				{
 					bunnies[i]->material = 4;
 					bunnies[i]->speed = 0;

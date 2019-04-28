@@ -31,24 +31,24 @@ void Ball::init(shared_ptr<Shape> model, WindowManager *windowManager)
     this->windowManager = windowManager;
 }
 
-void Ball::update(float dt)
+void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
     direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
-        direction += vec3(0, 0, -1);
+        direction += vec3(dolly.x, 0, dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_K) == GLFW_PRESS)
     {
-        direction += vec3(0, 0, 1);
+        direction -= vec3(dolly.x, 0, dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_J) == GLFW_PRESS)
     {
-        direction += vec3(-1, 0, 0);
+        direction -= vec3(strafe.x, 0, strafe.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_L) == GLFW_PRESS)
     {
-        direction += vec3(1, 0, 0);
+        direction += vec3(strafe.x, 0, strafe.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
