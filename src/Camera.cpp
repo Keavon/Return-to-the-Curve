@@ -43,9 +43,9 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     {
         pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), radians(10.0));
         lookAtPoint = ball->position;
-        eye.x = lookAtPoint.x + 10 * cos(pitch) * cos(yaw);
-        eye.y = lookAtPoint.y + 10 * sin(pitch);
-        eye.z = lookAtPoint.z + 10 * cos(pitch) * sin(yaw); 
+        eye.x = lookAtPoint.x + distToBall * cos(pitch) * sin(yaw);
+        eye.y = lookAtPoint.y + distToBall * sin(pitch);
+        eye.z = lookAtPoint.z + distToBall * cos(pitch) * cos(M_PI - yaw); 
     }
 
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ||
@@ -106,5 +106,5 @@ void Camera::init()
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
     pitch = 0;
-    yaw = 0;
+    yaw = 10;
 }

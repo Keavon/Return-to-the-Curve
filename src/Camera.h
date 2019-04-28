@@ -13,11 +13,11 @@ public:
 	void init();
 	glm::vec3 getDolly();
 	glm::vec3 getStrafe();
-	
+
     float speed = 5;
 	float sprintFactor = 3;
 	float radius = 1.5;
-	float height = 2;
+	float height = 5;
 	bool flying = false;
 	WindowManager *windowManager;
 
@@ -26,6 +26,7 @@ public:
 	double prevYpos;
 	double pitch;
 	double yaw;
+	float distToBall = 15;
 	glm::vec3 eye;
 	glm::vec3 lookAtPoint;
 	glm::vec3 upVec;

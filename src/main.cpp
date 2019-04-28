@@ -22,6 +22,7 @@ CSC 476 Lab 1
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Box.h"
+#include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
 
@@ -64,6 +65,7 @@ public:
 	
 	// Game objects
 	shared_ptr<Ball> ball;
+	shared_ptr<Enemy> enemy;
 
 	// Textures
 	shared_ptr<Skybox> skyboxTexture;
@@ -293,8 +295,11 @@ public:
 		sphere->resize();
 		sphere->init();
 
-		ball = make_shared<Ball>(1, vec3(0, 1, -3));
+		ball = make_shared<Ball>(1, vec3(-1, 1, 10));
 		ball->init(sphere, windowManager);
+
+		enemy = make_shared<Enemy>(1, vec3(-10, 1, 20));
+		enemy->init(cube, windowManager);
 
 		for (int i = 0; i < 5; i++)
 		{
@@ -387,6 +392,9 @@ public:
 			M->popMatrix();
 
 			// Draw ball
+			setTextureMaterial(0);
+			enemy->draw(texProg, M);
+
 			setTextureMaterial(1);
 			ball->draw(texProg, M);
 
@@ -611,7 +619,7 @@ int main(int argc, char **argv)
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	windowManager->init(512, 512);
+	windowManager->init(1280, 720);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
 
