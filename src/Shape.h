@@ -17,6 +17,8 @@ class Shape
 {
 
 public:
+	std::vector<glm::vec3> getFace(int i);
+	int getNumFaces();
 
 	void loadMesh(const std::string &meshName);
 	void calcNormals();

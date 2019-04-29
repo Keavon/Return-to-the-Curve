@@ -2,13 +2,14 @@
 
 #include "Collider.h"
 #include "ColliderMesh.h"
+#include "PhysicsObject.h"
 
 #include <glm/glm.hpp>
 
 class ColliderSphere : public Collider
 {
 public:
-    ColliderSphere(glm::vec3 *position, glm::quat *orientation, float radius);
+    ColliderSphere(PhysicsObject *parent, float radius);
 
     virtual bool checkCollision(Collider *col);
     virtual bool checkCollision(ColliderMesh *col);

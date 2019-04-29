@@ -298,7 +298,7 @@ public:
 
 		for (int i = 0; i < 5; i++)
 		{
-			auto box = make_shared<Box>(vec3(6, 3 + 3 * i, -3 - 5 * i), quat(1, 0, 0, 0), boxModel);
+			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, 0, 1, 0)), boxModel);
 			boxes.push_back(box);
 		}
 	}
@@ -417,6 +417,9 @@ public:
 	{
 		ball->update(dt);
 		player->update(dt, ball->position);
+
+		// reset collisions
+		ball->collider->pendingCollision = {};
 
 		for (auto box : boxes)
 		{

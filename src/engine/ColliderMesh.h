@@ -2,6 +2,7 @@
 
 #include "Collider.h"
 #include "ColliderSphere.h"
+#include "PhysicsObject.h"
 
 #include "../Shape.h"
 #include <glm/glm.hpp>
@@ -10,7 +11,7 @@
 class ColliderMesh : public Collider
 {
 public:
-    ColliderMesh(glm::vec3 *position, glm::quat *orientation, std::shared_ptr<Shape> mesh);
+    ColliderMesh(PhysicsObject *parent, std::shared_ptr<Shape> mesh);
 
     virtual bool checkCollision(Collider *col);
     virtual bool checkCollision(ColliderMesh *col);

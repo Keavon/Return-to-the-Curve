@@ -19,6 +19,22 @@
 using namespace std;
 using namespace glm;
 
+vector<vec3> Shape::getFace(int i)
+{
+	vector<vec3> face;
+	for (int j = 0; j < 3; j++)
+	{
+		int v = eleBuf[i*3+j];
+		face.push_back(vec3(posBuf[v*3], posBuf[v*3+1], posBuf[v*3+2]));
+	}
+	return face;
+}
+
+int Shape::getNumFaces()
+{
+	return eleBuf.size() / 3;
+}
+
 void Shape::calcNormals()
 {
 	norBuf.clear();
