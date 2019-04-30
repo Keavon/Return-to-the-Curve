@@ -269,6 +269,7 @@ public:
 
 	void initGeom(const string& resourceDirectory)
 	{
+		//TODO:: update cube to use texture Coords
 		cube = make_shared<Shape>();
 		cube->loadMesh(resourceDirectory + "/models/cube.obj");
 		cube->resize();
@@ -298,7 +299,7 @@ public:
 		ball = make_shared<Ball>(1, vec3(-1, 1, 10));
 		ball->init(sphere, windowManager);
 
-		enemy = make_shared<Enemy>(1, vec3(-10, 1, 20));
+		enemy = make_shared<Enemy>(1);
 		enemy->init(cube, windowManager);
 
 		for (int i = 0; i < 5; i++)
@@ -426,7 +427,9 @@ public:
 	{
 		camera->update(dt, ball);
 		ball->update(dt, camera->getDolly(), camera->getStrafe());
-
+		//TODO:: fix enemy's updating
+		enemy->update(dt);
+		
 		for (auto box : boxes)
 		{
 			box->collide(ball);

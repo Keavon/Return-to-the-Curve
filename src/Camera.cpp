@@ -92,10 +92,16 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     } 
 }
 glm::vec3 Camera::getDolly() {
+    if (flying){
+        return vec3(0,0,-1);
+    }
     return this->dolly;
 }
 
 glm::vec3 Camera::getStrafe() {
+    if (flying){
+        return vec3(1,0,0);
+    }
     return this->strafe;
 }
 

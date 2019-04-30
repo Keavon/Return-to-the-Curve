@@ -68,6 +68,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     velocity += acceleration * dt;
     position += velocity * dt;
 
+    // Keeps Ball on the plane
     if (position.y < radius)
     {
         velocity.y = 0;

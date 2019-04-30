@@ -9,12 +9,18 @@
 class Enemy : public PhysicsObject
 {
 public:
-    Enemy(float radius, glm::vec3 position);
+    Enemy(float radius);
     void init(std::shared_ptr<Shape> model, WindowManager *windowManager);
-    void update(float dt, glm::vec3 dolly, glm::vec3 strafe);
+    void update(float dt);
 
 	WindowManager *windowManager;
-    float radius;
     float moveSpeed;
+    float radius;
+    float t = 0;
+    float targetX;
+    float targetZ;
+    bool forward;
+    bool pointReached;
     glm::vec3 direction;
+    std::vector<glm::vec3> pathCtrlPts;
 };
