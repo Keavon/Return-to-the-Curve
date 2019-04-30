@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <unordered_set>
+#include <iostream>
 
 #include "GLSL.h"
 #include "Program.h"
@@ -19,13 +21,13 @@
 using namespace std;
 using namespace glm;
 
-vector<vec3> Shape::getFace(int i)
+vector<vec3> Shape::getFace(int i, const mat4 &M)
 {
 	vector<vec3> face;
 	for (int j = 0; j < 3; j++)
 	{
-		int v = eleBuf[i*3+j];
-		face.push_back(vec3(posBuf[v*3], posBuf[v*3+1], posBuf[v*3+2]));
+		unsigned int v = eleBuf[i*3+j];
+		face.push_back(vec3(M * vec4(posBuf[v*3], posBuf[v*3+1], posBuf[v*3+2], 1.0f)));
 	}
 	return face;
 }
@@ -33,6 +35,65 @@ vector<vec3> Shape::getFace(int i)
 int Shape::getNumFaces()
 {
 	return eleBuf.size() / 3;
+}
+
+vec3 Shape::getVertex(int i, const mat4 &M)
+{
+	return vec3(M * vec4(posBuf[i*3], posBuf[i*3+1], posBuf[i*3+2], 1.0f));
+}
+
+int Shape::getNumVertices()
+{
+	return posBuf.size() / 3;
+}
+
+vector<vec3> Shape::getEdge(int i, const mat4 &M)
+{
+	vector<vec3> edge;
+	for (int j = 0; j < 2; j++)
+	{
+		unsigned int e = edgeBuf[i*2+j];
+		edge.push_back(vec3(M * vec4(posBuf[e*3], posBuf[e*3+1], posBuf[e*3+2], 1.0f)));
+	}
+	return edge;
+}
+
+int Shape::getNumEdges()
+{
+	return edgeBuf.size() / 2;
+}
+
+typedef pair<unsigned int, unsigned int> vert_pair;
+struct pair_hash
+{
+	template <class T1, class T2>
+	size_t operator() (const pair<T1, T2> &pair) const
+	{
+		return hash<T1>()(pair.first) ^ hash<T2>()(pair.second);
+	}
+};
+
+void Shape::findEdges()
+{
+	unordered_set<vert_pair, pair_hash> edgeSet;
+	for (int i = 0; i < eleBuf.size()/3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			unsigned int v1 = eleBuf[i*3+j];
+			unsigned int v2 = eleBuf[i*3+((j+1)%3)];
+			vert_pair pair = make_pair(std::min(v1, v2), std::max(v1, v2));
+			edgeSet.insert(pair);
+		}
+	}
+
+	for (vert_pair pair : edgeSet)
+	{
+		edgeBuf.push_back(pair.first);
+		edgeBuf.push_back(pair.second);
+	}
+
+	cout << getNumEdges() << endl;
 }
 
 void Shape::calcNormals()

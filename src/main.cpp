@@ -273,8 +273,9 @@ public:
 		cube->init();
 
 		boxModel = make_shared<Shape>();
-		boxModel->loadMesh(resourceDirectory + "/models/box.obj");
+		boxModel->loadMesh(resourceDirectory + "/models/bentbox.obj");
 		boxModel->measure();
+		boxModel->findEdges();
 		boxModel->init();
 
 		plane = make_shared<Shape>();
@@ -296,7 +297,7 @@ public:
 		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, 0, 1, 0)), boxModel);
 			boxes.push_back(box);
