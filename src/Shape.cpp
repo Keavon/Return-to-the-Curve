@@ -93,7 +93,6 @@ void Shape::findEdges()
 		edgeBuf.push_back(pair.second);
 	}
 
-	cout << getNumEdges() << endl;
 }
 
 void Shape::calcNormals()

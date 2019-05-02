@@ -273,7 +273,7 @@ public:
 		cube->init();
 
 		boxModel = make_shared<Shape>();
-		boxModel->loadMesh(resourceDirectory + "/models/bentbox.obj");
+		boxModel->loadMesh(resourceDirectory + "/models/box.obj");
 		boxModel->measure();
 		boxModel->findEdges();
 		boxModel->init();
@@ -299,9 +299,13 @@ public:
 
 		for (int i = 0; i < 10; i++)
 		{
-			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, 0, 1, 0)), boxModel);
+			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, i%2, i%3, i%4)), boxModel);
 			boxes.push_back(box);
 		}
+		// auto box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, 0.5)), boxModel);
+		// boxes.push_back(box);
+		// box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);
+		// boxes.push_back(box);
 	}
 
 	void render(double dt)
@@ -633,7 +637,7 @@ int main(int argc, char **argv)
 	{
 			// Render scene.
 			double t = glfwGetTime();
-			double dt = t - prevTime;
+			double dt = std::min(t - prevTime, 0.1);
 			prevTime = t;
 			application->render(dt);
 			application->update(dt);

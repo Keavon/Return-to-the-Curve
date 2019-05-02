@@ -21,7 +21,7 @@ bool inRange(float n, float low, float high)
 PhysicsObject::PhysicsObject(vec3 position, quat orientation,
     shared_ptr<Shape> model, shared_ptr<Collider> collider) :
     GameObject(position, orientation, model), collider(collider),
-    netForce(0)
+    netForce(0), impulse(0)
 {
 }
 
@@ -39,6 +39,9 @@ void PhysicsObject::update(float dt)
         netForce -= collider->pendingCollision.normal * netForce;
     }
     collider->pendingCollision = {};
+
+    velocity += impulse;
+    impulse = vec3(0);
 
     // apply force
     acceleration = netForce / mass;

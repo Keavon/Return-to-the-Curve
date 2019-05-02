@@ -25,7 +25,7 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     velocity = vec3(0);
 
     mass = 10;
-    elasticity = 0.5;
+    elasticity = 0.2;
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -54,8 +54,15 @@ void Ball::update(float dt)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        // velocity.y = 10;
-        netForce.y += 1000;
+        if (!holdingJump)
+        {
+            impulse.y += 20;
+            holdingJump = true;
+        }
+    }
+    else
+    {
+        holdingJump = false;
     }
 
     // calculate forces

@@ -16,4 +16,5 @@ public:
 	WindowManager *windowManager;
     float radius;
     float moveForce;
+    bool holdingJump;
 };
