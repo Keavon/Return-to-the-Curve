@@ -57,9 +57,11 @@ void Enemy::update(float dt)
                 pow(t,3)*pathCtrlPts[3][2];
         if (forward) {
             t += 0.05;
+            printf("Incremented t to : %f", t);
         }
         else {
             t -= 0.05;
+            printf("Decremented t to : %f", t);
         }
         if (t < 0){
             forward = true;
