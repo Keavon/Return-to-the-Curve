@@ -1,40 +1,51 @@
-#include "Player.h"
+#include "Camera.h"
 
 #include <cmath>
 #include <algorithm>
-
+#include <cstdlib>
 using namespace std;
 using namespace glm;
 
-Player::Player(WindowManager *windowManager) : windowManager(windowManager)
+Camera::Camera(WindowManager *windowManager) : windowManager(windowManager)
 {
 }
 
-Player::~Player()
+Camera::~Camera()
 {
 }
 
-void Player::update(float dt, vec3 ballPos)
+void Camera::update(float dt, shared_ptr<Ball> ball)
 {
-    int width, height;
-    glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+    int windowWidth, windowHeight;
+    glfwGetFramebufferSize(windowManager->getHandle(), &windowWidth, &windowHeight);
 
     // Handle movement input
     float speed_ = speed;
     vec3 velocity = vec3(0, 0, 0);
-    vec3 strafe = normalize(cross(lookAtPoint - eye, upVec));
-    vec3 dolly = normalize(lookAtPoint - eye);
+    strafe = normalize(cross(lookAtPoint - eye, upVec));
+    dolly = normalize(lookAtPoint - eye);
+    //Mouse calculations
+    double xpos, ypos;
+    glfwGetCursorPos(windowManager->getHandle(), &xpos, &ypos);
+    double dx = xpos - prevXpos;
+    double dy = -(ypos - prevYpos);
+    prevXpos = xpos;
+    prevYpos = ypos;
+    double radPerPx = M_PI / windowHeight;
+    yaw += dx * radPerPx;
+
     if (flying)
     {
         dolly = normalize(lookAtPoint - eye);
+        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
     }
     else
     {
-        eye = ballPos + vec3(0,10,20);
-        lookAtPoint = ballPos;
-        dolly = lookAtPoint - eye;
-        dolly.y = 0;
-        dolly = normalize(dolly); 
+        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), radians(10.0));
+        lookAtPoint = ball->position;
+        eye.x = lookAtPoint.x + distToBall * cos(pitch) * sin(yaw);
+        eye.y = lookAtPoint.y + distToBall * sin(pitch);
+        eye.z = lookAtPoint.z + distToBall * cos(pitch) * cos(M_PI - yaw); 
     }
 
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ||
@@ -71,29 +82,35 @@ void Player::update(float dt, vec3 ballPos)
         eye += normalize(velocity) * speed_ * (float) dt;
         eye.y = std::max(0.025f, eye.y);
     }
-    if (flying) {
-        // Mouse
-        double xpos, ypos;
-        glfwGetCursorPos(windowManager->getHandle(), &xpos, &ypos);
-        double dx = xpos - prevXpos;
-        double dy = -(ypos - prevYpos);
-        prevXpos = xpos;
-        prevYpos = ypos;
-        double radPerPx = M_PI / height;
-        yaw += dx * radPerPx;
-        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
+    
+    // Mouse
+    
+    if (flying){
         lookAtPoint.x = eye.x + cos(pitch) * sin(yaw);
         lookAtPoint.y = eye.y + sin(pitch);
         lookAtPoint.z = eye.z + cos(pitch) * cos(M_PI - yaw);
+    } 
+}
+glm::vec3 Camera::getDolly() {
+    if (flying){
+        return vec3(0,0,-1);
     }
+    return this->dolly;
 }
 
-void Player::init()
+glm::vec3 Camera::getStrafe() {
+    if (flying){
+        return vec3(1,0,0);
+    }
+    return this->strafe;
+}
+
+void Camera::init()
 {
     glfwGetCursorPos(windowManager->getHandle(), &prevXpos, &prevYpos);
     eye = vec3(0, this->height, 0);
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
     pitch = 0;
-    yaw = 0;
+    yaw = 10;
 }

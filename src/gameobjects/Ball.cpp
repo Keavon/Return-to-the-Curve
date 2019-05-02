@@ -33,24 +33,24 @@ void Ball::init(WindowManager *windowManager)
     this->windowManager = windowManager;
 }
 
-void Ball::update(float dt)
+void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
     vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
-        direction += vec3(0, 0, -1);
+        direction += vec3(dolly.x, 0.0f, dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_K) == GLFW_PRESS)
     {
-        direction += vec3(0, 0, 1);
+        direction -= vec3(dolly.x, 0.0f, dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_J) == GLFW_PRESS)
     {
-        direction += vec3(-1, 0, 0);
+        direction -= vec3(strafe.x, 0.0f, strafe.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_L) == GLFW_PRESS)
     {
-        direction += vec3(1, 0, 0);
+        direction += vec3(strafe.x, 0.0f, strafe.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
@@ -82,6 +82,7 @@ void Ball::update(float dt)
     PhysicsObject::update(dt);
 
 
+    // Keeps Ball on the plane
     if (position.y < radius)
     {
         velocity.y = 0;

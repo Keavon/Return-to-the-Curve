@@ -11,7 +11,7 @@ class Ball : public PhysicsObject
 public:
     Ball(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
     void init(WindowManager *windowManager);
-    void update(float dt);
+    void update(float dt, glm::vec3 dolly, glm::vec3 strafe);
 
 	WindowManager *windowManager;
     float radius;
