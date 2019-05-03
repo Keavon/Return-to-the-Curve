@@ -35,7 +35,15 @@ void PhysicsObject::update(float dt)
         position = collider->pendingCollision.position;
         velocity -= (1.0f + elasticity) * proj(velocity, collider->pendingCollision.normal);
         position += velocity * collider->pendingCollision.t;
-        netForce -= collider->pendingCollision.normal * netForce;
+        vec3 normalForce = proj(netForce, collider->pendingCollision.normal);
+        netForce += normalForce;
+
+        vec3 frictionDir = -(velocity - proj(velocity, collider->pendingCollision.normal));
+        if (frictionDir != vec3(0))
+        {
+            frictionDir = normalize(frictionDir);
+            netForce += length(normalForce) * friction * frictionDir;
+        }
     }
     collider->pendingCollision = {};
 

@@ -5,6 +5,8 @@
 #include "../engine/ColliderSphere.h"
 #include "../engine/PhysicsObject.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/projection.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <cmath>
@@ -26,6 +28,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
 
     mass = 10;
     elasticity = 0.2;
+
+    friction = 0.25;
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -54,15 +58,14 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (!holdingJump)
+        if (collider->pendingCollision.hit)
         {
-            impulse.y += 20;
-            holdingJump = true;
+            float magnitude = dot(vec3(0, 20, 0), collider->pendingCollision.normal);
+            if (magnitude > 0)
+            {
+                impulse += collider->pendingCollision.normal * magnitude;
+            }
         }
-    }
-    else
-    {
-        holdingJump = false;
     }
 
     // calculate forces
