@@ -9,11 +9,11 @@
 class ColliderSphere : public Collider
 {
 public:
-    ColliderSphere(PhysicsObject *parent, float radius);
+    ColliderSphere(float radius);
 
-    virtual bool checkCollision(Collider *col);
-    virtual bool checkCollision(ColliderMesh *col);
-    virtual bool checkCollision(ColliderSphere *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
 
     float radius;
 };

@@ -11,11 +11,11 @@
 class ColliderMesh : public Collider
 {
 public:
-    ColliderMesh(PhysicsObject *parent, std::shared_ptr<Shape> mesh);
+    ColliderMesh(std::shared_ptr<Shape> mesh);
 
-    virtual bool checkCollision(Collider *col);
-    virtual bool checkCollision(ColliderMesh *col);
-    virtual bool checkCollision(ColliderSphere *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
 
     std::shared_ptr<Shape> mesh;
 };

@@ -6,7 +6,9 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-#define GRAVITY -20.0f
+
+
+#define GRAVITY -30.0f
 
 // https://gafferongames.com/post/physics_in_3d/
 
@@ -15,6 +17,7 @@ class PhysicsObject : public GameObject
 public:
     PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider);
     void resolveCollision(float dt);
+    void checkCollision(PhysicsObject *other);
     void update(float dt);
 
     float friction;

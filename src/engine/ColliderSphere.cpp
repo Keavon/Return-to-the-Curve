@@ -8,22 +8,22 @@
 
 using namespace glm;
 
-ColliderSphere::ColliderSphere(PhysicsObject *parent, float radius) :
-    Collider(parent, vec3(-radius), vec3(radius)), radius(radius)
+ColliderSphere::ColliderSphere(float radius) :
+    Collider(vec3(-radius), vec3(radius)), radius(radius)
 {
 }
 
-bool ColliderSphere::checkCollision(Collider *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col)
 {
-    return col->checkCollision(this);
+    col->checkCollision(obj, owner, this);
 }
 
-bool ColliderSphere::checkCollision(ColliderMesh *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col)
 {
-    return checkSphereMesh(this, col);
+    checkSphereMesh(owner, this, obj, col);
 }
 
-bool ColliderSphere::checkCollision(ColliderSphere *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col)
 {
-    // not handled
+    checkSphereSphere(owner, this, obj, col);
 }

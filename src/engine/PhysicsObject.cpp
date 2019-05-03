@@ -25,7 +25,6 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation,
 {
 }
 
-
 void PhysicsObject::update(float dt)
 {
     netForce.y += GRAVITY * mass;
@@ -49,4 +48,9 @@ void PhysicsObject::update(float dt)
     position += velocity * dt;
 
     netForce = vec3(0);
+}
+
+void PhysicsObject::checkCollision(PhysicsObject *other)
+{
+    collider->checkCollision(this, other, other->collider.get());
 }

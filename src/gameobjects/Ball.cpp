@@ -14,13 +14,13 @@ using namespace glm;
 using namespace std;
 
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
-    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(this, radius)),
+    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
     radius(radius)
 {
     speed = 0;
     material = 0;
 
-    moveForce = 100;
+    moveForce = 200;
     acceleration = vec3(0);
     velocity = vec3(0);
 
@@ -80,13 +80,5 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
 
     PhysicsObject::update(dt);
-
-
-    // Keeps Ball on the plane
-    if (position.y < radius)
-    {
-        velocity.y = 0;
-        position.y = radius;
-    }
 
 }

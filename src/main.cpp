@@ -303,8 +303,12 @@ public:
 		for (int i = 0; i < 10; i++)
 		{
 			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, i%2, i%3, i%4)), boxModel);
+			// box->scale = vec3(2);
 			boxes.push_back(box);
 		}
+		auto planeObject = make_shared<Box>(vec3(0), quat(1, 0, 0, 0), plane);
+		// planeObject->scale = vec3(10);
+		boxes.push_back(planeObject);
 		// auto box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, 0.5)), boxModel);
 		// boxes.push_back(box);
 		// box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);
@@ -386,12 +390,12 @@ public:
 			glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
 			glUniform3fv(texProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
 
-			// Draw plane
-			setTextureMaterial(0);
-			M->pushMatrix();
-				glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-				plane->draw(texProg);
-			M->popMatrix();
+			// // Draw plane
+			// setTextureMaterial(0);
+			// M->pushMatrix();
+			// 	glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+			// 	plane->draw(texProg);
+			// M->popMatrix();
 
 			// Draw ball
 			setTextureMaterial(0);
@@ -426,13 +430,13 @@ public:
 
 	void update(float dt)
 	{
-		camera->update(dt, ball);
 		ball->update(dt, camera->getDolly(), camera->getStrafe());
+		camera->update(dt, ball);
 		//TODO:: fix enemy's updating
 		
 		for (auto box : boxes)
 		{
-			box->collider->checkCollision(ball->collider.get());
+			box->checkCollision(ball.get());
 		}
 
 		// Lab 1 stuff
