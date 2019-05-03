@@ -27,6 +27,7 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     velocity = vec3(0);
 
     mass = 10;
+    invMass = 1 / mass;
     elasticity = 0.2;
 
     friction = 0.25;
@@ -60,10 +61,10 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         if (collider->pendingCollision.hit)
         {
-            float magnitude = dot(vec3(0, 20, 0), collider->pendingCollision.normal);
+            float magnitude = dot(vec3(0, 20, 0), -collider->pendingCollision.normal);
             if (magnitude > 0)
             {
-                impulse += collider->pendingCollision.normal * magnitude;
+                impulse -= collider->pendingCollision.normal * magnitude;
             }
         }
     }

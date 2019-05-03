@@ -6,9 +6,8 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-
-
 #define GRAVITY -30.0f
+#define DRAG_COEFFICIENT 0.25f
 
 // https://gafferongames.com/post/physics_in_3d/
 
@@ -26,6 +25,7 @@ public:
     glm::vec3 acceleration;
     float speed;
     float mass;
+    float invMass;
     std::shared_ptr<Collider> collider;
     glm::vec3 netForce; // net forces acting on ball, calculated each frame
     glm::vec3 normForce;

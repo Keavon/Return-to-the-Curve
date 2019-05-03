@@ -15,6 +15,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <unistd.h>
+
 using namespace glm;
 using namespace std;
 
@@ -65,7 +67,7 @@ void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, Physi
 
 void checkDynamicSphereKinematicMesh(PhysicsObject *dSphere, ColliderSphere *dSphereCol, PhysicsObject *kMesh, ColliderMesh *kMeshCol)
 {
-    mat4 M = glm::translate(glm::mat4(1.f), kMesh->position) * glm::mat4_cast(kMesh->orientation);
+    mat4 M = glm::translate(glm::mat4(1.f), kMesh->position) * glm::mat4_cast(kMesh->orientation) * glm::scale(glm::mat4(1.f), kMesh->scale);
 
     // Check bounding spheres
     if (distance2(dSphere->position, kMesh->position) <= pow(dSphereCol->bbox.radius + kMeshCol->bbox.radius, 2))
@@ -82,31 +84,15 @@ void checkDynamicSphereKinematicMesh(PhysicsObject *dSphere, ColliderSphere *dSp
             float d;
             bool rayDidIntersect = intersectRayTriangle(dSphere->position, dir, v[0], v[1], v[2], bary, d);
 
-            if (rayDidIntersect && fabs(d) <= dSphereCol->radius &&
-                bary.x > 0 && bary.y > 0 && (1 - bary.x - bary.y) > 0)
+            if (rayDidIntersect && fabs(d) < dSphereCol->radius)
             {
-
-                // Find precise collision point
-                vec3 faceOffset = normal * dSphereCol->radius;
-                dir = -normalize(dSphere->velocity);
-                rayDidIntersect = intersectRayTriangle(dSphere->position, dir,
-                    v[0]+faceOffset, v[1]+faceOffset, v[2]+faceOffset, bary, d);
-
-                if (rayDidIntersect)
-                {
-                    // Check if this is the soonest collision
-                    float t = d / length(dSphere->velocity);
-                    if (fabs(t) > fabs(dSphereCol->pendingCollision.t))
-                    {
-                        dSphereCol->pendingCollision.hit = true;
-                        dSphereCol->pendingCollision.normal = normal;
-                        dSphereCol->pendingCollision.point = v[0] * (1 - bary.x - bary.y) + v[1] * bary.x + v[2] * bary.y;
-                        dSphereCol->pendingCollision.position = dSphereCol->pendingCollision.point + faceOffset;
-                        dSphereCol->pendingCollision.t = t;
-                    }
-                }
+                dSphereCol->pendingCollision.hit = true;
+                dSphereCol->pendingCollision.other = kMesh;
+                dSphereCol->pendingCollision.normal = dir;
+                dSphereCol->pendingCollision.penetration = dSphereCol->radius - d;
             }
 
+            /*
             // Check edges
             for (int i = 0; i < kMeshCol->mesh->getNumEdges(); i++)
             {
@@ -168,6 +154,7 @@ void checkDynamicSphereKinematicMesh(PhysicsObject *dSphere, ColliderSphere *dSp
                     }
                 }
             }
+            */
         }
     }
 }

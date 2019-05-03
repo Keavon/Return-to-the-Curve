@@ -294,10 +294,10 @@ public:
 
 		auto sphere = make_shared<Shape>();
 		sphere->loadMesh(resourceDirectory + "/models/ball.obj");
-		sphere->resize();
+		// sphere->resize();
 		sphere->init();
 
-		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
+		ball = make_shared<Ball>(vec3(0, 3, -3), quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
 		for (int i = 0; i < 10; i++)
@@ -430,14 +430,13 @@ public:
 
 	void update(float dt)
 	{
-		ball->update(dt, camera->getDolly(), camera->getStrafe());
-		camera->update(dt, ball);
-		//TODO:: fix enemy's updating
-		
 		for (auto box : boxes)
 		{
 			box->checkCollision(ball.get());
 		}
+		ball->update(dt, camera->getDolly(), camera->getStrafe());
+		camera->update(dt, ball);
+		//TODO:: fix enemy's updating
 
 		// Lab 1 stuff
 		/*

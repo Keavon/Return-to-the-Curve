@@ -5,20 +5,18 @@
 #include <glm/glm.hpp>
 
 // https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/
-
-struct Collision {
-    bool hit;
-    float t;
-    glm::vec3 point;
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec3 relativeVelocity;
-};
-
+// https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
 
 class ColliderMesh;
 class ColliderSphere;
 class PhysicsObject;
+
+struct Collision {
+    bool hit;
+    PhysicsObject *other;
+    float penetration;
+    glm::vec3 normal;
+};
 
 class Collider
 {
