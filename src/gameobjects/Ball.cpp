@@ -28,7 +28,7 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
 
     mass = 10;
     invMass = 1 / mass;
-    elasticity = 0.2;
+    elasticity = 0.3;
 
     friction = 0.25;
 }
@@ -59,13 +59,9 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (collider->pendingCollision.hit)
+        if (collider->pendingCollisions.size() > 0)
         {
-            float magnitude = dot(vec3(0, 20, 0), -collider->pendingCollision.normal);
-            if (magnitude > 0)
-            {
-                impulse -= collider->pendingCollision.normal * magnitude;
-            }
+            impulse += vec3(0, 20, 0);
         }
     }
 

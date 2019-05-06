@@ -3,6 +3,7 @@
 #include "BoundingBox.h"
 
 #include <glm/glm.hpp>
+#include <vector>
 
 // https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/
 // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
@@ -12,7 +13,6 @@ class ColliderSphere;
 class PhysicsObject;
 
 struct Collision {
-    bool hit;
     PhysicsObject *other;
     float penetration;
     glm::vec3 normal;
@@ -29,7 +29,7 @@ public:
 
     BoundingBox bbox;
 
-    Collision pendingCollision;
+    std::vector<Collision> pendingCollisions;
 };
 
 void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *mesh, ColliderMesh *meshCol);

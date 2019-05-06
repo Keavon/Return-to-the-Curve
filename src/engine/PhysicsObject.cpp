@@ -28,17 +28,17 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation,
 void PhysicsObject::update(float dt)
 {
 
-    if (collider->pendingCollision.hit)
+    for (Collision collision : collider->pendingCollisions)
     {
         // resolve collision
-        PhysicsObject *other = collider->pendingCollision.other;
+        PhysicsObject *other = collision.other;
         vec3 relVel = other->velocity - velocity;
-        float velAlongNormal = dot(relVel, collider->pendingCollision.normal);
+        float velAlongNormal = dot(relVel, collision.normal);
         if (velAlongNormal < 0)
         {
             float e = std::min(other->elasticity, elasticity);
             float j = (-(1 + e) * velAlongNormal) / (invMass + other->invMass);
-            vec3 colImpulse = j * collider->pendingCollision.normal;
+            vec3 colImpulse = j * collision.normal;
             velocity -= invMass * colImpulse;
 
             // correct position to prevent sinking/jitter
@@ -46,16 +46,12 @@ void PhysicsObject::update(float dt)
             {
                 float percent = 0.2;
                 float slop = 0.01;
-                vec3 correction = std::max(collider->pendingCollision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collider->pendingCollision.normal;
-                cout << collider->pendingCollision.penetration << endl;
+                vec3 correction = std::max(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
         }
-
-
-
-        collider->pendingCollision = {};
     }
+    collider->pendingCollisions.clear();
 
 
 

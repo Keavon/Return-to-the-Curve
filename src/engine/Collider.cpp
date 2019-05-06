@@ -21,7 +21,7 @@ using namespace glm;
 using namespace std;
 
 Collider::Collider(vec3 min, vec3 max) :
-    bbox(min, max), pendingCollision({})
+    bbox(min, max)
 {
 }
 
@@ -82,79 +82,63 @@ void checkDynamicSphereKinematicMesh(PhysicsObject *dSphere, ColliderSphere *dSp
             vec3 dir = -normal;
             vec2 bary;
             float d;
-            bool rayDidIntersect = intersectRayTriangle(dSphere->position, dir, v[0], v[1], v[2], bary, d);
+            bool rayDidIntersect = intersectRayPlane(dSphere->position, dir, v[0], normal, d);
 
             if (rayDidIntersect && fabs(d) < dSphereCol->radius)
             {
-                dSphereCol->pendingCollision.hit = true;
-                dSphereCol->pendingCollision.other = kMesh;
-                dSphereCol->pendingCollision.normal = dir;
-                dSphereCol->pendingCollision.penetration = dSphereCol->radius - d;
-            }
+                rayDidIntersect = intersectRayTriangle(dSphere->position, dir, v[0], v[1], v[2], bary, d);
 
-            /*
-            // Check edges
-            for (int i = 0; i < kMeshCol->mesh->getNumEdges(); i++)
-            {
-                vector<vec3> v = kMeshCol->mesh->getEdge(i, M);
-
-                // Check if sphere is touching edge
-                vec3 closestPoint = v[0] + proj(dSphere->position - v[0], normalize(v[1] - v[0]));
-                if (distance2(closestPoint, dSphere->position) < pow(dSphereCol->radius, 2) &&
-                    dot(v[1] - v[0], closestPoint - v[0]) > 0 && dot(v[0] - v[1], closestPoint - v[1]) > 0)
+                if (rayDidIntersect)
                 {
-                    // Find precise collision point
-                    vec3 dir = -normalize(dSphere->velocity);
-                    vec3 intersect;
-                    vec3 normal;
-                    bool rayDidIntersect = intersectRayCylinder(dSphere->position, dir, v[0], v[1],
-                        dSphereCol->radius, intersect, normal);
-                    if (rayDidIntersect)
+                    Collision collision;
+                    collision.other = kMesh;
+                    collision.normal = dir;
+                    collision.penetration = dSphereCol->radius - d;
+                    dSphereCol->pendingCollisions.push_back(collision);
+                }
+                else
+                {
+                    bool hitEdge = false;
+                    for (int i = 0; i < 3; i++)
                     {
-                        // Check if this is the soonest collision
-                        float t = distance(dSphere->position, intersect) / length(dSphere->velocity);
-                        if (fabs(t) > fabs(dSphereCol->pendingCollision.t))
+                        // check edges
+                        int e0 = i;
+                        int e1 = (i + 1) % 3;
+                        vec3 closestPoint = v[e0] + proj(dSphere->position - v[e0], normalize(v[e1] - v[e0]));
+                        d = distance(dSphere->position, closestPoint);
+
+                        if (d < dSphereCol->radius &&
+                            dot(v[e1] - v[e0], closestPoint - v[e0]) > 0 && dot(v[e0] - v[e1], closestPoint - v[e1]) > 0)
                         {
-                            dSphereCol->pendingCollision.hit = true;
-                            dSphereCol->pendingCollision.normal = normal;
-                            dSphereCol->pendingCollision.point = closestPoint;
-                            dSphereCol->pendingCollision.position = intersect;
-                            dSphereCol->pendingCollision.t = t;
+                            Collision collision;
+                            collision.other = kMesh;
+                            collision.normal = normalize(closestPoint - dSphere->position);
+                            collision.penetration = dSphereCol->radius - d;
+                            dSphereCol->pendingCollisions.push_back(collision);
+                            hitEdge = true;
+                            break;
                         }
                     }
 
-                }
-            }
-
-            // Check vertices
-            for (int i = 0; i < kMeshCol->mesh->getNumVertices(); i++)
-            {
-                vec3 v = kMeshCol->mesh->getVertex(i, M);
-
-                // Check if sphere is touching vertex
-                if (distance2(dSphere->position, v) < pow(dSphereCol->radius, 2))
-                {
-                    // Find precise collision point
-                    vec3 dir = -normalize(dSphere->velocity);
-                    vec3 intersect;
-                    vec3 normal;
-                    bool rayDidIntersect = intersectRaySphere(dSphere->position, dir, v, dSphereCol->radius, intersect, normal);
-                    if (rayDidIntersect)
+                    if (!hitEdge)
                     {
-                        // Check if this is the soonest collision
-                        float t = distance(dSphere->position, intersect) / length(dSphere->velocity);
-                        if (fabs(t) > fabs(dSphereCol->pendingCollision.t))
+                        //check vertices
+                        for (int i = 0; i < 3; i++)
                         {
-                            dSphereCol->pendingCollision.hit = true;
-                            dSphereCol->pendingCollision.normal = normal;
-                            dSphereCol->pendingCollision.point = v;
-                            dSphereCol->pendingCollision.position = intersect;
-                            dSphereCol->pendingCollision.t = t;
+                            d = distance(dSphere->position, v[i]);
+                            if (d < dSphereCol->radius)
+                            {
+                                Collision collision;
+                                collision.other = kMesh;
+                                collision.normal = normalize(v[0] - dSphere->position);
+                                collision.penetration = dSphereCol->radius - d;
+                                dSphereCol->pendingCollisions.push_back(collision);
+                                break;
+                            }
                         }
                     }
                 }
             }
-            */
         }
     }
 }

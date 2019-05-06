@@ -430,6 +430,7 @@ public:
 
 	void update(float dt)
 	{
+		vector<Collision> collisions;
 		for (auto box : boxes)
 		{
 			box->checkCollision(ball.get());
