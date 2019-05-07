@@ -2,3 +2,4 @@ build/
 x64/
 Texture_output.png
 .vscode/
+slnStuff/.vs/

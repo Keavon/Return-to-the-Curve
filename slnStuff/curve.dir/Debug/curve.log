@@ -1,0 +1,4 @@
+﻿  PhysicsObject.cpp
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\PhysicsObject.cpp(62): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\PhysicsObject.cpp(63): warning C4305: 'initializing': truncation from 'double' to 'float'
+  curve.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\Debug\curve.exe
