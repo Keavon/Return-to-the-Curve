@@ -32,7 +32,7 @@ CSC 476 Lab 1
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 5
+#define NUMBER_OF_MARBLE_SKINS 55
 
 using namespace std;
 using namespace glm;
