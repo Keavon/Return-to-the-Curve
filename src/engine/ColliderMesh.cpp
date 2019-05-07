@@ -11,22 +11,17 @@
 using namespace glm;
 using namespace std;
 
-ColliderMesh::ColliderMesh(PhysicsObject *parent, shared_ptr<Shape> mesh) :
-    Collider(parent, mesh->min, mesh->max), mesh(mesh)
+ColliderMesh::ColliderMesh(shared_ptr<Shape> mesh) :
+    Collider(mesh->min, mesh->max), mesh(mesh)
 {
 }
 
-bool ColliderMesh::checkCollision(Collider *col)
+void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col)
 {
-    return col->checkCollision(this);
+    col->checkCollision(obj, owner, this);
 }
 
-bool ColliderMesh::checkCollision(ColliderMesh *col)
+void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col)
 {
-    // not handled
-}
-
-bool ColliderMesh::checkCollision(ColliderSphere *col)
-{
-    return checkSphereMesh(col, this);
+    checkSphereMesh(obj, col, owner, this);
 }

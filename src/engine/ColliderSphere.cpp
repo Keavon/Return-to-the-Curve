@@ -1,5 +1,7 @@
 #include "ColliderSphere.h"
 #include "ColliderMesh.h"
+#include "TriggerSphere.h"
+#include "TriggerCylinder.h"
 #include "Collider.h"
 #include "PhysicsObject.h"
 
@@ -8,22 +10,32 @@
 
 using namespace glm;
 
-ColliderSphere::ColliderSphere(PhysicsObject *parent, float radius) :
-    Collider(parent, vec3(-radius), vec3(radius)), radius(radius)
+ColliderSphere::ColliderSphere(float radius) :
+    Collider(vec3(-radius), vec3(radius)), radius(radius)
 {
 }
 
-bool ColliderSphere::checkCollision(Collider *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col)
 {
-    return col->checkCollision(this);
+    col->checkCollision(obj, owner, this);
 }
 
-bool ColliderSphere::checkCollision(ColliderMesh *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col)
 {
-    return checkSphereMesh(this, col);
+    checkSphereMesh(owner, this, obj, col);
 }
 
-bool ColliderSphere::checkCollision(ColliderSphere *col)
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col)
 {
-    // not handled
+    checkSphereSphere(owner, this, obj, col);
+}
+
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col)
+{
+    checkColSphereTriggerSphere(owner, this, obj, col);
+}
+
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col)
+{
+    checkColSphereTriggerCylinder(owner, this, obj, col);
 }

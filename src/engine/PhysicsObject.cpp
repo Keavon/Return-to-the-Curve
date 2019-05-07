@@ -21,32 +21,75 @@ bool inRange(float n, float low, float high)
 PhysicsObject::PhysicsObject(vec3 position, quat orientation,
     shared_ptr<Shape> model, shared_ptr<Collider> collider) :
     GameObject(position, orientation, model), collider(collider),
-    netForce(0), impulse(0)
+    netForce(0), impulse(0), acceleration(0)
 {
 }
 
-
 void PhysicsObject::update(float dt)
 {
+    normForce = vec3(0);
     netForce.y += GRAVITY * mass;
 
-    // Resolve collision
-    if (collider->pendingCollision.hit)
+    for (Collision collision : collider->pendingCollisions)
     {
-        position = collider->pendingCollision.position;
-        velocity -= (1.0f + elasticity) * proj(velocity, collider->pendingCollision.normal);
-        position += velocity * collider->pendingCollision.t;
-        netForce -= collider->pendingCollision.normal * netForce;
-    }
-    collider->pendingCollision = {};
+        // resolve collision
+        PhysicsObject *other = collision.other;
+        vec3 relVel = other->velocity - velocity;
+        float velAlongNormal = dot(relVel, collision.normal);
+        if (velAlongNormal < 0)
+        {
+            float e = std::min(other->elasticity, elasticity);
+            float j = (-(1 + e) * velAlongNormal) / (invMass + other->invMass);
+            vec3 colImpulse = j * collision.normal;
+            velocity -= invMass * colImpulse;
 
-    velocity += impulse;
-    impulse = vec3(0);
+            // normal force
+            vec3 localNormForce = collision.normal * dot(netForce, -collision.normal);
+            normForce += localNormForce;
+
+            // friction
+            vec3 frictionDir = (relVel - proj(relVel, collision.normal));
+            if (frictionDir != vec3(0))
+            {
+                frictionDir = normalize(frictionDir);
+                netForce += length(localNormForce) * friction * frictionDir;
+            }
+
+            // correct position to prevent sinking/jitter
+            if (other->invMass == 0)
+            {
+                float percent = 0.2;
+                float slop = 0.01;
+                vec3 correction = std::max(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
+                position += invMass * correction;
+            }
+        }
+    }
+    collider->pendingCollisions.clear();
+
+    netForce += normForce;
+
+    velocity += impulse * invMass;
+
+    // drag
+    if (velocity != vec3(0))
+    {
+        netForce += dot(velocity, velocity) * -normalize(velocity) * DRAG_COEFFICIENT;
+    }
 
     // apply force
-    acceleration = netForce / mass;
+    acceleration = netForce * invMass;
     velocity += acceleration * dt;
     position += velocity * dt;
 
+    impulse = vec3(0);
     netForce = vec3(0);
+}
+
+void PhysicsObject::checkCollision(PhysicsObject *other)
+{
+    if (other->collider != NULL)
+    {
+        collider->checkCollision(this, other, other->collider.get());
+    }
 }
