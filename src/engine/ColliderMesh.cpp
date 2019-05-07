@@ -23,6 +23,7 @@ bool ColliderMesh::checkCollision(Collider *col)
 
 bool ColliderMesh::checkCollision(ColliderMesh *col)
 {
+	return false;
     // not handled
 }
 

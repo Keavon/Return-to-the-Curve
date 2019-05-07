@@ -26,4 +26,5 @@ bool ColliderSphere::checkCollision(ColliderMesh *col)
 bool ColliderSphere::checkCollision(ColliderSphere *col)
 {
     // not handled
+	return false;
 }

@@ -1,6 +1,8 @@
 #include "Camera.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>;
+#include <cmath>;
 #include <algorithm>
 #include <cstdlib>
 using namespace std;

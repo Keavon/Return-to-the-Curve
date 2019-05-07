@@ -2,7 +2,11 @@
 CSC 476 Lab 1
 */
 
+#define _USE_MATH_DEFINES
+#include<math.h>;
+
 #include <iostream>
+#include <fstream>
 #include <glad/glad.h>
 #include <cmath>
 #include <algorithm>
@@ -300,11 +304,17 @@ public:
 		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
-		for (int i = 0; i < 10; i++)
+		ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
+		float xval, yval, zval;
+		//for (int i = 0; i < 2; i++)
+		while(inLevel >> xval)
 		{
-			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, i%2, i%3, i%4)), boxModel);
+			//auto box = make_shared<Box>(vec3(6 + 8 * i, 1 + 2.5, -3 - 6), normalize(quat(0, 0, 0, 0)), boxModel);
+			inLevel >> yval >> zval;
+			auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), boxModel);
 			boxes.push_back(box);
 		}
+		//6 makes for even Z spread, 8 for X
 		// auto box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, 0.5)), boxModel);
 		// boxes.push_back(box);
 		// box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);

@@ -25,8 +25,8 @@ public:
     Collider(PhysicsObject *parent, glm::vec3 min, glm::vec3 max);
 
     virtual bool checkCollision(Collider *col) = 0;
-    virtual bool checkCollision(ColliderMesh *col) {};
-    virtual bool checkCollision(ColliderSphere *col) {};
+	virtual bool checkCollision(ColliderMesh *col) { return false;  };
+	virtual bool checkCollision(ColliderSphere *col) { return false;  };
 
     BoundingBox bbox;
     PhysicsObject *parent;
