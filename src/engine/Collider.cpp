@@ -119,5 +119,5 @@ void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphere
 
 void checkColSphereTriggerCylinder(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *cylinder, TriggerCylinder *cylinderTrig)
 {
-
+    
 }
