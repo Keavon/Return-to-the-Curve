@@ -60,6 +60,7 @@ public:
 	shared_ptr<Shape> boxModel;
 	shared_ptr<Shape> plane;
 	shared_ptr<Shape> bunny;
+	shared_ptr<Shape> spherePlaceholder;
 	vector<shared_ptr<Object3D>> bunnies;
 	vector<shared_ptr<PhysicsObject>> boxes;
 	
@@ -296,6 +297,7 @@ public:
 		sphere->resize();
 		sphere->init();
 
+<<<<<<< Updated upstream
 		ball = make_shared<Ball>(1, vec3(-1, 1, 10));
 		ball->init(sphere, windowManager);
 
@@ -303,6 +305,19 @@ public:
 		enemy->init(cube, windowManager);
 
 		for (int i = 0; i < 5; i++)
+=======
+		spherePlaceholder = make_shared<Shape>();
+		spherePlaceholder->loadMesh(resourceDirectory + "/models/ball.obj");
+		spherePlaceholder->resize();
+		spherePlaceholder->init();
+
+		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
+		ball->init(windowManager);
+
+		enemy = make_shared<Enemy>(vec3(-10, 0, 2), quat(1,0,0,0), sphere, 1);
+		enemy->init(windowManager);
+		for (int i = 0; i < 10; i++)
+>>>>>>> Stashed changes
 		{
 			auto box = make_shared<Box>(vec3(6, 3 + 3 * i, -3 - 5 * i));
 			box->init(boxModel);
@@ -361,7 +376,7 @@ public:
 			glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
 			glUniform3fv(matProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
 
-
+			/*
 			// Draw bunnies
 			for (auto bunny : bunnies)
 			{
@@ -373,7 +388,7 @@ public:
 					bunny->draw(matProg);
 				M->popMatrix();
 			}
-
+			*/
 			matProg->unbind();
 
 
@@ -393,7 +408,45 @@ public:
 			M->popMatrix();
 
 			// Draw ball
+<<<<<<< Updated upstream
 			setTextureMaterial(0);
+=======
+			M->pushMatrix();
+				M->loadIdentity();
+				/*
+				M->pushMatrix();
+					M->translate(vec3(10,0,15));
+					setTextureMaterial(1);
+					glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+					spherePlaceholder->draw(texProg);
+				M->popMatrix();
+				M->pushMatrix();
+					M->translate(vec3(10,0,2));
+					setTextureMaterial(0);
+					glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+					spherePlaceholder->draw(texProg);
+				M->popMatrix();
+				M->pushMatrix();
+					M->translate(vec3(-10,0,15));
+					setTextureMaterial(2);
+					glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+					spherePlaceholder->draw(texProg);
+				M->popMatrix();
+				M->pushMatrix();
+					M->translate(vec3(-10,0,2));
+					setTextureMaterial(0);
+					glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+					spherePlaceholder->draw(texProg);
+				M->popMatrix();
+				*/
+				/*
+				setTextureMaterial(2);
+				glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+				spherePlaceholder->draw(texProg);*/
+			M->popMatrix();
+
+			setTextureMaterial(2);
+>>>>>>> Stashed changes
 			enemy->draw(texProg, M);
 
 			setTextureMaterial(1);
@@ -425,11 +478,14 @@ public:
 
 	void update(float dt)
 	{
-		camera->update(dt, ball);
 		ball->update(dt, camera->getDolly(), camera->getStrafe());
+		camera->update(dt, ball);
 		//TODO:: fix enemy's updating
 		enemy->update(dt);
+<<<<<<< Updated upstream
 		
+=======
+>>>>>>> Stashed changes
 		for (auto box : boxes)
 		{
 			box->collide(ball);
