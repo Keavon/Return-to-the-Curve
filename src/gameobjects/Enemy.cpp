@@ -12,7 +12,8 @@
 using namespace glm;
 using namespace std;
 
-Enemy::Enemy(float radius) :
+Enemy::Enemy(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
+    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(this, radius)),
     radius(radius)
 {
     pathCtrlPts = {
@@ -23,7 +24,6 @@ Enemy::Enemy(float radius) :
     };
     position = pathCtrlPts[0];
     position.y = 1;
-    collider = ColliderSphere(radius);
     speed = 0;
     material = 0;
 

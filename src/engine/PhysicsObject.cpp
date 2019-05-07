@@ -3,6 +3,8 @@
 #include "ColliderSphere.h"
 #include "Collider.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/projection.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <iostream>
@@ -16,13 +18,35 @@ bool inRange(float n, float low, float high)
     return low <= n && n <= high;
 }
 
-bool PhysicsObject::collide(shared_ptr<PhysicsObject> other)
+PhysicsObject::PhysicsObject(vec3 position, quat orientation,
+    shared_ptr<Shape> model, shared_ptr<Collider> collider) :
+    GameObject(position, orientation, model), collider(collider),
+    netForce(0), impulse(0)
 {
-    if ((other->position.x > position.x + collider.bbox.min.x && other->position.x < position.x + collider.bbox.max.x) &&
-        (other->position.z > position.z + collider.bbox.min.z && other->position.z < position.z + collider.bbox.max.z) &&
-        (inRange(other->position.y - (position.y + collider.bbox.max.y), 0, fabs(other->collider.bbox.min.y))))
+}
+
+
+void PhysicsObject::update(float dt)
+{
+    netForce.y += GRAVITY * mass;
+
+    // Resolve collision
+    if (collider->pendingCollision.hit)
     {
-        other->velocity.y = 0;
-        other->position.y = position.y + collider.bbox.max.y - other->collider.bbox.min.y;
+        position = collider->pendingCollision.position;
+        velocity -= (1.0f + elasticity) * proj(velocity, collider->pendingCollision.normal);
+        position += velocity * collider->pendingCollision.t;
+        netForce -= collider->pendingCollision.normal * netForce;
     }
+    collider->pendingCollision = {};
+
+    velocity += impulse;
+    impulse = vec3(0);
+
+    // apply force
+    acceleration = netForce / mass;
+    velocity += acceleration * dt;
+    position += velocity * dt;
+
+    netForce = vec3(0);
 }

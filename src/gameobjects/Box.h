@@ -8,6 +8,5 @@
 class Box : public PhysicsObject
 {
 public:
-    Box(glm::vec3 position);
-    void init(std::shared_ptr<Shape> model);
+    Box(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model);
 };

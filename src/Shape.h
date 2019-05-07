@@ -17,8 +17,15 @@ class Shape
 {
 
 public:
+	std::vector<glm::vec3> getFace(int i, const glm::mat4 &M);
+	int getNumFaces();
+	glm::vec3 getVertex(int i, const glm::mat4 &M);
+	int getNumVertices();
+	std::vector<glm::vec3> getEdge(int i, const glm::mat4 &M);
+	int getNumEdges();
 
 	void loadMesh(const std::string &meshName);
+	void findEdges();
 	void calcNormals();
 	void init();
 	void resize();
@@ -33,6 +40,7 @@ public:
 private:
 
 	std::vector<unsigned int> eleBuf;
+	std::vector<unsigned int> edgeBuf;
 	std::vector<float> posBuf;
 	std::vector<float> norBuf;
 	std::vector<float> texBuf;
