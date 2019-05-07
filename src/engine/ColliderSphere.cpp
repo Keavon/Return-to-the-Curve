@@ -1,5 +1,7 @@
 #include "ColliderSphere.h"
 #include "ColliderMesh.h"
+#include "TriggerSphere.h"
+#include "TriggerCylinder.h"
 #include "Collider.h"
 #include "PhysicsObject.h"
 
@@ -26,4 +28,14 @@ void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Co
 void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col)
 {
     checkSphereSphere(owner, this, obj, col);
+}
+
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col)
+{
+    checkColSphereTriggerSphere(owner, this, obj, col);
+}
+
+void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col)
+{
+    checkColSphereTriggerCylinder(owner, this, obj, col);
 }

@@ -2,6 +2,8 @@
 
 #include "Collider.h"
 #include "ColliderMesh.h"
+#include "TriggerSphere.h"
+#include "TriggerCylinder.h"
 #include "PhysicsObject.h"
 
 #include <glm/glm.hpp>
@@ -14,6 +16,9 @@ public:
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col);
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col);
+
 
     float radius;
 };

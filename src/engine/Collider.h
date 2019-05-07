@@ -10,6 +10,8 @@
 
 class ColliderMesh;
 class ColliderSphere;
+class TriggerSphere;
+class TriggerCylinder;
 class PhysicsObject;
 
 struct Collision {
@@ -26,6 +28,8 @@ public:
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col) = 0;
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col) {};
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col) {};
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col) {};
+    virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col) {};
 
     BoundingBox bbox;
 
@@ -34,6 +38,5 @@ public:
 
 void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *mesh, ColliderMesh *meshCol);
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2);
-
-void checkDynamicSphereKinematicMesh(PhysicsObject *dSphere, ColliderSphere *dSphereCol, PhysicsObject *kMesh, ColliderMesh *kMeshCol);
-void checkDynamicSphereKinematicSphere(PhysicsObject *dSphere, ColliderSphere *dSphereCol, PhysicsObject *kSphere, ColliderSphere *kSphereCol);
+void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphereCol, PhysicsObject *tSphere, TriggerSphere *tSphereTrig);
+void checkColSphereTriggerCylinder(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *cylinder, TriggerCylinder *cylinderTrig);

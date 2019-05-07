@@ -22,6 +22,7 @@ CSC 476 Lab 1
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Box.h"
+#include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
@@ -32,6 +33,8 @@ CSC 476 Lab 1
 
 using namespace std;
 using namespace glm;
+
+extern bool ballInGoal;
 
 class Application : public EventCallbacks
 {
@@ -163,6 +166,8 @@ public:
 		// Initialize camera
 		camera = make_shared<Camera>(windowManager);
 		camera->init();
+
+		ballInGoal = false;
 	}
 
 	void initShaders(const string& resourceDirectory)
@@ -306,6 +311,8 @@ public:
 			// box->scale = vec3(2);
 			boxes.push_back(box);
 		}
+		auto goal = make_shared<Goal>(vec3(-5, 5, 0), quat(1, 0, 0, 0), nullptr, 1);
+		boxes.push_back(goal);
 		auto planeObject = make_shared<Box>(vec3(0), quat(1, 0, 0, 0), plane);
 		// planeObject->scale = vec3(10);
 		boxes.push_back(planeObject);
@@ -430,7 +437,10 @@ public:
 
 	void update(float dt)
 	{
-		vector<Collision> collisions;
+		if (ballInGoal)
+		{
+			cout << "You win!" << endl;
+		}
 		for (auto box : boxes)
 		{
 			box->checkCollision(ball.get());

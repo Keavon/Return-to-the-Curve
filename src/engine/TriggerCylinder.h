@@ -4,17 +4,16 @@
 #include "ColliderSphere.h"
 #include "PhysicsObject.h"
 
-#include "../Shape.h"
 #include <glm/glm.hpp>
-#include <memory>
 
-class ColliderMesh : public Collider
+class TriggerCylinder : public Collider
 {
 public:
-    ColliderMesh(std::shared_ptr<Shape> mesh);
+    TriggerCylinder(float radius, float length);
 
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
 
-    std::shared_ptr<Shape> mesh;
+    float radius;
+    float length;
 };

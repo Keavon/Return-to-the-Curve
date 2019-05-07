@@ -88,5 +88,8 @@ void PhysicsObject::update(float dt)
 
 void PhysicsObject::checkCollision(PhysicsObject *other)
 {
-    collider->checkCollision(this, other, other->collider.get());
+    if (other->collider != NULL)
+    {
+        collider->checkCollision(this, other, other->collider.get());
+    }
 }

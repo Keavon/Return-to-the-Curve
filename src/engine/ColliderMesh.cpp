@@ -21,11 +21,6 @@ void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Coll
     col->checkCollision(obj, owner, this);
 }
 
-void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderMesh *col)
-{
-    // not implemented
-}
-
 void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col)
 {
     checkSphereMesh(obj, col, owner, this);

@@ -20,11 +20,14 @@ GameObject::GameObject()
 
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-    M->pushMatrix();
-        M->translate(position);
-        M->rotate(orientation);
-        M->scale(scale);
-        glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        model->draw(prog);
-    M->popMatrix();
+    if (model != NULL)
+    {
+        M->pushMatrix();
+            M->translate(position);
+            M->rotate(orientation);
+            M->scale(scale);
+            glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+            model->draw(prog);
+        M->popMatrix();
+    }
 }
