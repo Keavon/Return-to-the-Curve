@@ -40,7 +40,7 @@ using namespace glm;
 class Application : public EventCallbacks
 {
 
-  public:
+public:
     WindowManager *windowManager = nullptr;
 
     int score = 0;
@@ -122,6 +122,10 @@ class Application : public EventCallbacks
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
+        }
+        else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+        {
+            SHADOWS = !SHADOWS;
         }
 
         // other call backs
@@ -651,6 +655,7 @@ class Application : public EventCallbacks
             glDepthMask(GL_TRUE);
 
             skyProg->unbind();
+
             // =================================================================================================
 
             // now render the scene like normal
@@ -674,135 +679,6 @@ class Application : public EventCallbacks
             texProg->unbind();
         }
     }
-
-    // void render()
-    // {
-    // 	//
-    // =================================================================================================
-
-    // 	// Get current frame buffer size and bind framebuffer.
-    // 	int width, height;
-    // 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-    // 	glViewport(0, 0, width, height);
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // 	// Clear framebuffer.
-    // 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // 	//
-    // =================================================================================================
-
-    // 	/* Leave this code to just draw the meshes alone */
-    // 	// Calculates Aspect Ratio
-    // 	float aspect = (width / (float)height);
-    // 	//
-    // =================================================================================================
-
-    // 	// Create the matrix stacks
-    // 	auto P = make_shared<MatrixStack>();
-    // 	auto M = make_shared<MatrixStack>();
-    // 	auto V = make_shared<MatrixStack>();
-
-    // 	// Calculate perspective projection.
-    // 	P->pushMatrix();
-    // 	P->perspective(45.0f, aspect, 0.01f, 100.0f);
-
-    // 	// Calculate View Matrix
-    // 	V->loadIdentity();
-    // 	V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
-
-    // 	//Model Identity
-    // 	M->pushMatrix();
-    // 	M->loadIdentity();
-    // 	//
-    // =================================================================================================
-
-    // 	// Draw skybox
-    // 	skyProg->bind();
-    // 	glUniformMatrix4fv(skyProg->getUniform("P"), 1, GL_FALSE,
-    // value_ptr(P->topMatrix()));
-    // glUniformMatrix4fv(skyProg->getUniform("V"), 1, GL_FALSE,
-    // value_ptr(mat4(mat3(V->topMatrix()))));
-
-    // 	skyboxTexture->bind(skyProg->getUniform("Texture0"));
-    // 	glDepthMask(GL_FALSE);
-    // 	glDisable(GL_CULL_FACE);
-    // 	cube->draw(skyProg);
-    // 	glEnable(GL_CULL_FACE);
-    // 	glDepthMask(GL_TRUE);
-
-    // 	skyProg->unbind();
-    // 	//
-    // =================================================================================================
-
-    // 	// Draw bunnies
-    // 	//***UNUSED***
-    // 	// matProg->bind();
-    // 	// setLight(matProg);
-    // 	// glUniformMatrix4fv(matProg->getUniform("P"), 1, GL_FALSE,
-    // value_ptr(P->topMatrix()));
-    // 	// glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE,
-    // value_ptr(V->topMatrix()));
-    // 	// glUniform3fv(matProg->getUniform("viewPos"), 1,
-    // value_ptr(camera->eye));
-
-    // 	// for (auto bunny : bunnies)
-    // 	// {
-    // 	// 	setMaterial(bunny->material);
-    // 	// 	M->pushMatrix();
-    // 	// 	M->translate(bunny->position - vec3(0, bunny->model->min.y, 0));
-    // 	// 	M->rotate(atan2(bunny->direction.x, bunny->direction.z) +
-    // M_PI_2, vec3(0, 1, 0));
-    // 	// 	glUniformMatrix4fv(matProg->getUniform("M"), 1, GL_FALSE,
-    // value_ptr(M->topMatrix()));
-    // 	// 	bunny->draw(matProg);
-    // 	// 	M->popMatrix();
-    // 	// }
-    // 	// matProg->unbind();
-    // 	//
-    // =================================================================================================
-
-    // 	// Draw textured models
-    // 	texProg->bind();
-    // 	setLight(texProg);
-    // 	glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE,
-    // value_ptr(P->topMatrix()));
-    // glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE,
-    // value_ptr(V->topMatrix())); 	glUniform3fv(texProg->getUniform("viewPos"), 1,
-    // value_ptr(camera->eye));
-    // 	//
-    // =================================================================================================
-
-    // 	// Draw plane
-    // 	setTextureMaterial(0);
-    // 	M->pushMatrix();
-    // 	glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
-    // value_ptr(M->topMatrix())); 	plane->draw(texProg); 	M->popMatrix();
-    // 	//
-    // =================================================================================================
-
-    // 	// Draw ball
-    // 	setTextureMaterial(1);
-    // 	ball->draw(texProg, M);
-    // 	//
-    // =================================================================================================
-
-    // 	//Draw Boxes
-    // 	setTextureMaterial(2);
-    // 	for (auto box : boxes)
-    // 	{
-    // 		box->draw(texProg, M);
-    // 	}
-    // 	//
-    // =================================================================================================
-
-    // 	//cleanup
-    // 	texProg->unbind();
-    // 	M->popMatrix();
-    // 	P->popMatrix();
-    // 	//
-    // =================================================================================================
-
-    // }
 
     void printInfo(float dt)
     {
@@ -976,3 +852,135 @@ int main(int argc, char **argv)
     windowManager->shutdown();
     return 0;
 }
+
+
+// Legacy Render Loop
+
+// void render()
+// {
+// 	//
+// =================================================================================================
+
+// 	// Get current frame buffer size and bind framebuffer.
+// 	int width, height;
+// 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+// 	glViewport(0, 0, width, height);
+// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+// 	// Clear framebuffer.
+// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// 	//
+// =================================================================================================
+
+// 	/* Leave this code to just draw the meshes alone */
+// 	// Calculates Aspect Ratio
+// 	float aspect = (width / (float)height);
+// 	//
+// =================================================================================================
+
+// 	// Create the matrix stacks
+// 	auto P = make_shared<MatrixStack>();
+// 	auto M = make_shared<MatrixStack>();
+// 	auto V = make_shared<MatrixStack>();
+
+// 	// Calculate perspective projection.
+// 	P->pushMatrix();
+// 	P->perspective(45.0f, aspect, 0.01f, 100.0f);
+
+// 	// Calculate View Matrix
+// 	V->loadIdentity();
+// 	V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
+
+// 	//Model Identity
+// 	M->pushMatrix();
+// 	M->loadIdentity();
+// 	//
+// =================================================================================================
+
+// 	// Draw skybox
+// 	skyProg->bind();
+// 	glUniformMatrix4fv(skyProg->getUniform("P"), 1, GL_FALSE,
+// value_ptr(P->topMatrix()));
+// glUniformMatrix4fv(skyProg->getUniform("V"), 1, GL_FALSE,
+// value_ptr(mat4(mat3(V->topMatrix()))));
+
+// 	skyboxTexture->bind(skyProg->getUniform("Texture0"));
+// 	glDepthMask(GL_FALSE);
+// 	glDisable(GL_CULL_FACE);
+// 	cube->draw(skyProg);
+// 	glEnable(GL_CULL_FACE);
+// 	glDepthMask(GL_TRUE);
+
+// 	skyProg->unbind();
+// 	//
+// =================================================================================================
+
+// 	// Draw bunnies
+// 	//***UNUSED***
+// 	// matProg->bind();
+// 	// setLight(matProg);
+// 	// glUniformMatrix4fv(matProg->getUniform("P"), 1, GL_FALSE,
+// value_ptr(P->topMatrix()));
+// 	// glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE,
+// value_ptr(V->topMatrix()));
+// 	// glUniform3fv(matProg->getUniform("viewPos"), 1,
+// value_ptr(camera->eye));
+
+// 	// for (auto bunny : bunnies)
+// 	// {
+// 	// 	setMaterial(bunny->material);
+// 	// 	M->pushMatrix();
+// 	// 	M->translate(bunny->position - vec3(0, bunny->model->min.y, 0));
+// 	// 	M->rotate(atan2(bunny->direction.x, bunny->direction.z) +
+// M_PI_2, vec3(0, 1, 0));
+// 	// 	glUniformMatrix4fv(matProg->getUniform("M"), 1, GL_FALSE,
+// value_ptr(M->topMatrix()));
+// 	// 	bunny->draw(matProg);
+// 	// 	M->popMatrix();
+// 	// }
+// 	// matProg->unbind();
+// 	//
+// =================================================================================================
+
+// 	// Draw textured models
+// 	texProg->bind();
+// 	setLight(texProg);
+// 	glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE,
+// value_ptr(P->topMatrix()));
+// glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE,
+// value_ptr(V->topMatrix())); 	glUniform3fv(texProg->getUniform("viewPos"), 1,
+// value_ptr(camera->eye));
+// 	//
+// =================================================================================================
+
+// 	// Draw plane
+// 	setTextureMaterial(0);
+// 	M->pushMatrix();
+// 	glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
+// value_ptr(M->topMatrix())); 	plane->draw(texProg); 	M->popMatrix();
+// 	//
+// =================================================================================================
+
+// 	// Draw ball
+// 	setTextureMaterial(1);
+// 	ball->draw(texProg, M);
+// 	//
+// =================================================================================================
+
+// 	//Draw Boxes
+// 	setTextureMaterial(2);
+// 	for (auto box : boxes)
+// 	{
+// 		box->draw(texProg, M);
+// 	}
+// 	//
+// =================================================================================================
+
+// 	//cleanup
+// 	texProg->unbind();
+// 	M->popMatrix();
+// 	P->popMatrix();
+// 	//
+// =================================================================================================
+
+// }
