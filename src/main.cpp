@@ -435,6 +435,10 @@ public:
 		{
 			box->checkCollision(ball.get());
 		}
+		for (auto box : boxes)
+		{
+			box->update(dt);
+		}
 		ball->update(dt, camera->getDolly(), camera->getStrafe());
 		camera->update(dt, ball);
 		//TODO:: fix enemy's updating

@@ -31,6 +31,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     elasticity = 0.3;
 
     friction = 0.25;
+
+    jumpForce = 200;
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -40,6 +42,8 @@ void Ball::init(WindowManager *windowManager)
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
+    PhysicsObject::update(dt);
+
     vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
@@ -59,26 +63,26 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (collider->pendingCollisions.size() > 0)
+        if (normForce != vec3(0))
         {
-            impulse += vec3(0, 20, 0);
+            vec3 normForceDir = normalize(normForce);
+            impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
         }
     }
 
     // calculate forces
-    if (length(direction) > 0)
+    if (direction != vec3(0))
     {
         direction = normalize(direction);
         netForce += direction * moveForce;
     }
 
-    if (length(vec2(velocity.x, velocity.z)) > 0)
+    if (velocity.x != 0 && velocity.y != 0)
     {
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
         orientation = q * orientation;
     }
 
-    PhysicsObject::update(dt);
 
 }

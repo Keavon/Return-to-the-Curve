@@ -3,7 +3,6 @@
 #include "ColliderSphere.h"
 #include "ColliderMesh.h"
 #include "PhysicsObject.h"
-#include "Raytrace.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/intersect.hpp>
