@@ -5,6 +5,8 @@
 #include "../engine/ColliderSphere.h"
 #include "../engine/PhysicsObject.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/projection.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <cmath>
@@ -14,18 +16,23 @@ using namespace glm;
 using namespace std;
 
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
-    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(this, radius)),
+    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
     radius(radius)
 {
     speed = 0;
     material = 0;
 
-    moveForce = 100;
+    moveForce = 200;
     acceleration = vec3(0);
     velocity = vec3(0);
 
     mass = 10;
-    elasticity = 0.2;
+    invMass = 1 / mass;
+    elasticity = 0.3;
+
+    friction = 0.25;
+
+    jumpForce = 200;
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -35,6 +42,8 @@ void Ball::init(WindowManager *windowManager)
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
+    PhysicsObject::update(dt);
+
     vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
@@ -54,39 +63,26 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (!holdingJump)
+        if (normForce != vec3(0))
         {
-            impulse.y += 20;
-            holdingJump = true;
+            vec3 normForceDir = normalize(normForce);
+            impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
         }
-    }
-    else
-    {
-        holdingJump = false;
     }
 
     // calculate forces
-    if (length(direction) > 0)
+    if (direction != vec3(0))
     {
         direction = normalize(direction);
         netForce += direction * moveForce;
     }
 
-    if (length(vec2(velocity.x, velocity.z)) > 0)
+    if (velocity.x != 0 && velocity.y != 0)
     {
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
         orientation = q * orientation;
     }
 
-    PhysicsObject::update(dt);
-
-
-    // Keeps Ball on the plane
-    if (position.y < radius)
-    {
-        velocity.y = 0;
-        position.y = radius;
-    }
 
 }

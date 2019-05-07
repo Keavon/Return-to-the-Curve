@@ -23,6 +23,7 @@ CSC 476 Lab 1
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Box.h"
+#include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
@@ -36,6 +37,8 @@ CSC 476 Lab 1
 
 using namespace std;
 using namespace glm;
+
+extern bool ballInGoal;
 
 class Application : public EventCallbacks
 {
@@ -184,6 +187,8 @@ class Application : public EventCallbacks
 		// Initialize camera
 		camera = make_shared<Camera>(windowManager);
 		camera->init();
+
+		ballInGoal = false;
 	}
 
 	void initShaders(const string &resourceDirectory)
@@ -341,7 +346,7 @@ class Application : public EventCallbacks
 		sphere->resize();
 		sphere->init();
 
-		ball = make_shared<Ball>(vec3(0, 1, -3), quat(1, 0, 0, 0), sphere, 1);
+		ball = make_shared<Ball>(vec3(0, 3, -3), quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
 		for (int i = 0; i < 10; i++)
@@ -349,6 +354,11 @@ class Application : public EventCallbacks
 			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, i % 2, i % 3, i % 4)), boxModel);
 			boxes.push_back(box);
 		}
+		auto goal = make_shared<Goal>(vec3(-5, 5, 0), quat(1, 0, 0, 0), nullptr, 1);
+		boxes.push_back(goal);
+		auto planeObject = make_shared<Box>(vec3(0), quat(1, 0, 0, 0), plane);
+		// planeObject->scale = vec3(10);
+		boxes.push_back(planeObject);
 		// auto box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, 0.5)), boxModel);
 		// boxes.push_back(box);
 		// box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);
@@ -464,14 +474,21 @@ class Application : public EventCallbacks
 
 	void update(float dt)
 	{
-		camera->update(dt, ball);
-		ball->update(dt, camera->getDolly(), camera->getStrafe());
-		//TODO:: fix enemy's updating
-
+		if (ballInGoal)
+		{
+			cout << "You win!" << endl;
+		}
 		for (auto box : boxes)
 		{
-			box->collider->checkCollision(ball->collider.get());
+			box->checkCollision(ball.get());
 		}
+		for (auto box : boxes)
+		{
+			box->update(dt);
+		}
+		ball->update(dt, camera->getDolly(), camera->getStrafe());
+		camera->update(dt, ball);
+		//TODO:: fix enemy's updating
 
 		// Lab 1 stuff
 		/*
