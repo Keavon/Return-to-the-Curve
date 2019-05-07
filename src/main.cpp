@@ -298,14 +298,7 @@ public:
 		sphere->resize();
 		sphere->init();
 
-		ball = make_shared<Ball>(1, vec3(-1, 1, 10));
-		ball->init(sphere, windowManager);
-
-		enemy = make_shared<Enemy>(1);
-		enemy->init(cube, windowManager);
-
 		for (int i = 0; i < 5; i++)
-=======
 		spherePlaceholder = make_shared<Shape>();
 		spherePlaceholder->loadMesh(resourceDirectory + "/models/ball.obj");
 		spherePlaceholder->resize();
@@ -317,7 +310,6 @@ public:
 		enemy = make_shared<Enemy>(vec3(-10, 0, 2), quat(1,0,0,0), sphere, 1);
 		enemy->init(windowManager);
 		for (int i = 0; i < 10; i++)
->>>>>>> Stashed changes
 		{
 			auto box = make_shared<Box>(vec3(6, 1 + 2.5 * i, -3 - 5 * i), normalize(quat(1, i%2, i%3, i%4)), boxModel);
 			boxes.push_back(box);
@@ -485,10 +477,6 @@ public:
 		camera->update(dt, ball);
 		//TODO:: fix enemy's updating
 		enemy->update(dt);
-<<<<<<< Updated upstream
-		
-=======
->>>>>>> Stashed changes
 		for (auto box : boxes)
 		{
 			box->collider->checkCollision(ball->collider.get());
