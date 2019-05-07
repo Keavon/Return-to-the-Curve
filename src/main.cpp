@@ -403,9 +403,6 @@ public:
 			M->popMatrix();
 
 			// Draw ball
-<<<<<<< Updated upstream
-			setTextureMaterial(0);
-=======
 			M->pushMatrix();
 				M->loadIdentity();
 				/*
@@ -441,7 +438,6 @@ public:
 			M->popMatrix();
 
 			setTextureMaterial(2);
->>>>>>> Stashed changes
 			enemy->draw(texProg, M);
 
 			setTextureMaterial(1);

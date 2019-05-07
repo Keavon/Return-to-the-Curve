@@ -67,10 +67,10 @@ void Enemy::update(float dt)
             t -= 0.05;
             printf("Decremented t to : %f", t);
         }
-        if (forward = false && t < 0){
+        if (t < 0){
             forward = true;
         }
-        if (forward = true && t > 1) {
+        if (t > 1) {
             forward = false;
         }
         pointReached = false;
