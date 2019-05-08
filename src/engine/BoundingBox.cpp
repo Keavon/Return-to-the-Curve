@@ -10,7 +10,7 @@ BoundingBox::BoundingBox(vec3 min, vec3 max) :
 {
 }
 
-float BoundingBox::getRadius(vec3 scale)
+BoundingBox::BoundingBox(float radius) :
+    min(-radius), max(radius), radius(radius)
 {
-    return std::max({scale.x, scale.y, scale.z}) * radius;
 }

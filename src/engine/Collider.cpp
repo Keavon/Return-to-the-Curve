@@ -13,6 +13,7 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <unordered_set>
 
 #include <unistd.h>
 
@@ -24,17 +25,27 @@ Collider::Collider(vec3 min, vec3 max) :
 {
 }
 
+Collider::Collider(float radius) :
+    bbox(radius)
+{
+}
+
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2)
 {
 
 }
 
+
+
 void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *mesh, ColliderMesh *meshCol)
 {
     mat4 M = glm::translate(glm::mat4(1.f), mesh->position) * glm::mat4_cast(mesh->orientation) * glm::scale(glm::mat4(1.f), mesh->scale);
 
+    unordered_set<Edge, EdgeHash> edgeSet;
+    unordered_set<vec3> vertSet;
+
     // Check bounding spheres
-    if (distance2(sphere->position, mesh->position) <= pow(sphereCol->bbox.getRadius(sphere->scale) + meshCol->bbox.getRadius(mesh->scale), 2))
+    if (distance2(sphere->position, mesh->position) <= pow(sphere->getRadius() + mesh->getRadius(), 2))
     {
         // Check faces
         for (int i = 0; i < meshCol->mesh->getNumFaces(); i++)
@@ -46,62 +57,71 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
             vec3 dir = -normal;
             vec2 bary;
             float d;
-            bool rayDidIntersect = intersectRayPlane(sphere->position, dir, v[0], normal, d);
+            bool rayDidIntersect = intersectRayTriangle(sphere->position, dir, v[0], v[1], v[2], bary, d);
 
             if (rayDidIntersect && fabs(d) < sphereCol->radius)
             {
-                rayDidIntersect = intersectRayTriangle(sphere->position, dir, v[0], v[1], v[2], bary, d);
+                Collision collision;
+                collision.other = mesh;
+                collision.normal = dir;
+                collision.penetration = sphereCol->radius - d;
+                sphereCol->pendingCollisions.push_back(collision);
 
-                if (rayDidIntersect)
-                {
-                    Collision collision;
-                    collision.other = mesh;
-                    collision.normal = dir;
-                    collision.penetration = sphereCol->radius - d;
-                    sphereCol->pendingCollisions.push_back(collision);
-                }
-                else
-                {
-                    bool hitEdge = false;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        // check edges
-                        int e0 = i;
-                        int e1 = (i + 1) % 3;
-                        vec3 closestPoint = v[e0] + proj(sphere->position - v[e0], normalize(v[e1] - v[e0]));
-                        d = distance(sphere->position, closestPoint);
+                // add edges of triangle to set of edges we shouldn't check
+                edgeSet.insert(Edge(v[0], v[1]));
+                edgeSet.insert(Edge(v[1], v[2]));
+                edgeSet.insert(Edge(v[2], v[0]));
+            }
+        }
 
-                        if (d < sphereCol->radius &&
-                            dot(v[e1] - v[e0], closestPoint - v[e0]) > 0 && dot(v[e0] - v[e1], closestPoint - v[e1]) > 0)
-                        {
-                            Collision collision;
-                            collision.other = mesh;
-                            collision.normal = normalize(closestPoint - sphere->position);
-                            collision.penetration = sphereCol->radius - d;
-                            sphereCol->pendingCollisions.push_back(collision);
-                            hitEdge = true;
-                            break;
-                        }
-                    }
+        // Check edges
+        for (int i = 0; i < meshCol->mesh->getNumEdges(); i++)
+        {
+            vector<vec3> v = meshCol->mesh->getEdge(i, M);
 
-                    if (!hitEdge)
-                    {
-                        //check vertices
-                        for (int i = 0; i < 3; i++)
-                        {
-                            d = distance(sphere->position, v[i]);
-                            if (d < sphereCol->radius)
-                            {
-                                Collision collision;
-                                collision.other = mesh;
-                                collision.normal = normalize(v[0] - sphere->position);
-                                collision.penetration = sphereCol->radius - d;
-                                sphereCol->pendingCollisions.push_back(collision);
-                                break;
-                            }
-                        }
-                    }
-                }
+            if (edgeSet.find(Edge(v[0], v[1])) != edgeSet.end())
+            {
+                // skip edge if it's in the set
+                continue;
+            }
+
+            vec3 closestPoint = v[0] + proj(sphere->position - v[0], normalize(v[1] - v[0]));
+            float d = distance(sphere->position, closestPoint);
+
+            if (d < sphereCol->radius &&
+                dot(v[1] - v[0], closestPoint - v[0]) > 0 && dot(v[0] - v[1], closestPoint - v[1]) > 0)
+            {
+                Collision collision;
+                collision.other = mesh;
+                collision.normal = normalize(closestPoint - sphere->position);
+                collision.penetration = sphereCol->radius - d;
+                sphereCol->pendingCollisions.push_back(collision);
+
+                // add vertices of edge to set of vertices we souldn't check 
+                vertSet.insert(v[0]);
+                vertSet.insert(v[1]);
+            }
+        }
+
+        // check vertices
+        for (int i = 0; i < meshCol->mesh->getNumVertices(); i++)
+        {
+            vec3 v = meshCol->mesh->getVertex(i, M);
+
+            if (vertSet.find(v) != vertSet.end())
+            {
+                // skip vertex if it's in the set
+                continue;
+            }
+
+            float d = distance(sphere->position, v);
+            if (d < sphereCol->radius)
+            {
+                Collision collision;
+                collision.other = mesh;
+                collision.normal = normalize(v - sphere->position);
+                collision.penetration = sphereCol->radius - d;
+                sphereCol->pendingCollisions.push_back(collision);
             }
         }
     }
