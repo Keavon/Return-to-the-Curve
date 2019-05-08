@@ -18,6 +18,7 @@ public:
     void resolveCollision(float dt);
     void checkCollision(PhysicsObject *other);
     void update(float dt);
+    float getRadius(); // get radius of bounding sphere
 
     float friction;
     float elasticity;

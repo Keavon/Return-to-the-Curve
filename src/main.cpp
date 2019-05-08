@@ -37,7 +37,7 @@ CSC 476 Lab 1
 #include <glm/gtc/matrix_transform.hpp>
 
 //number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 55
+#define NUMBER_OF_MARBLE_SKINS 5
 
 using namespace std;
 using namespace glm;
@@ -348,6 +348,7 @@ class Application : public EventCallbacks
 		auto sphere = make_shared<Shape>();
 		sphere->loadMesh(resourceDirectory + "/models/quadSphere.obj");
 		sphere->resize();
+		sphere->measure();
 		sphere->init();
 
 		ball = make_shared<Ball>(vec3(0, 3, -3), quat(1, 0, 0, 0), sphere, 1);

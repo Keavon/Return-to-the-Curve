@@ -6,7 +6,7 @@ class BoundingBox
 {
 public:
     BoundingBox(glm::vec3 min, glm::vec3 max);
-    float getRadius(glm::vec3 scale);
+    BoundingBox(float radius);
 
     glm::vec3 min;
     glm::vec3 max;

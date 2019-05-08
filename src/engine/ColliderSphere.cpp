@@ -11,7 +11,7 @@
 using namespace glm;
 
 ColliderSphere::ColliderSphere(float radius) :
-    Collider(vec3(-radius), vec3(radius)), radius(radius)
+    Collider(radius), radius(radius)
 {
 }
 
