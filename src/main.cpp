@@ -80,7 +80,7 @@ public:
     GLuint depthMap;
 
     // light position for shadows
-    vec3 g_light = vec3(1, 30, 1);
+    vec3 g_light = vec3(2, 40, 2);
 
     shared_ptr<Camera> camera;
 
@@ -701,7 +701,7 @@ public:
             DepthProg->bind();
             // TODO you will need to fix these
             mat4 LP = SetOrthoMatrix(DepthProg);
-            mat4 LV = SetLightView(DepthProg, g_light, vec3(0,0,0), vec3(0, 1, 0));
+            mat4 LV = SetLightView(DepthProg, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
             LS = LP * LV;
             // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
             drawScene(DepthProg, 0, 0);
@@ -726,7 +726,7 @@ public:
                 DepthProgDebug->bind();
                 // render scene from light's point of view
                 SetOrthoMatrix(DepthProgDebug);
-                SetLightView(DepthProgDebug, g_light, vec3(0,0,0), vec3(0, 1, 0));
+                SetLightView(DepthProgDebug, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
                 drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
                 DepthProgDebug->unbind();
             }
@@ -910,7 +910,7 @@ public:
     // shadow mapping helper
     mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
     {
-        mat4 ortho = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.1f, 40.0f);
+        mat4 ortho = glm::ortho(-75.0f, 75.0f, -75.0f, 75.0f, 0.1f, 75.0f);
         // fill in the glUniform call to send to the right shader!
         glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
                            value_ptr(ortho));
