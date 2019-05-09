@@ -32,7 +32,7 @@ CSC 476 Lab 1
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 55
+#define NUMBER_OF_MARBLE_SKINS 3
 
 using namespace std;
 using namespace glm;
@@ -57,11 +57,11 @@ public:
 
     // for shadows
     GLuint depthMapFBO;
-    const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
+    const GLuint S_WIDTH = 2048, S_HEIGHT = 2048;
     GLuint depthMap;
 
     // light position for shadows
-    vec3 g_light = vec3(1, 4, 1);
+    vec3 g_light = vec3(1, 30, 1);
 
     shared_ptr<Camera> camera;
 
@@ -596,7 +596,7 @@ public:
             DepthProg->bind();
             // TODO you will need to fix these
             mat4 LP = SetOrthoMatrix(DepthProg);
-            mat4 LV = SetLightView(DepthProg, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
+            mat4 LV = SetLightView(DepthProg, g_light, vec3(0,0,0), vec3(0, 1, 0));
             LS = LP * LV;
             // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
             drawScene(DepthProg, 0, 0);
@@ -621,7 +621,7 @@ public:
                 DepthProgDebug->bind();
                 // render scene from light's point of view
                 SetOrthoMatrix(DepthProgDebug);
-                SetLightView(DepthProgDebug, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
+                SetLightView(DepthProgDebug, g_light, vec3(0,0,0), vec3(0, 1, 0));
                 drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
                 DepthProgDebug->unbind();
             }
@@ -663,9 +663,10 @@ public:
             texProg->bind();
             setLight(texProg);
             /* also set up light depth map */
-            glActiveTexture(GL_TEXTURE1);
+            glActiveTexture(GL_TEXTURE30);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            glUniform1i(texProg->getUniform("shadowDepth"), 1);
+            glUniform1i(texProg->getUniform("shadowDepth"), 30);
+
             // glUniform3f(texProg->getUniform("lightDir"), g_light.x, g_light.y,
             // g_light.z);
             // render scene
@@ -769,7 +770,7 @@ public:
     // shadow mapping helper
     mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
     {
-        mat4 ortho = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.1f, 30.0f);
+        mat4 ortho = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.1f, 40.0f);
         // fill in the glUniform call to send to the right shader!
         glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
                            value_ptr(ortho));
@@ -852,135 +853,3 @@ int main(int argc, char **argv)
     windowManager->shutdown();
     return 0;
 }
-
-
-// Legacy Render Loop
-
-// void render()
-// {
-// 	//
-// =================================================================================================
-
-// 	// Get current frame buffer size and bind framebuffer.
-// 	int width, height;
-// 	glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-// 	glViewport(0, 0, width, height);
-// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-// 	// Clear framebuffer.
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-// 	//
-// =================================================================================================
-
-// 	/* Leave this code to just draw the meshes alone */
-// 	// Calculates Aspect Ratio
-// 	float aspect = (width / (float)height);
-// 	//
-// =================================================================================================
-
-// 	// Create the matrix stacks
-// 	auto P = make_shared<MatrixStack>();
-// 	auto M = make_shared<MatrixStack>();
-// 	auto V = make_shared<MatrixStack>();
-
-// 	// Calculate perspective projection.
-// 	P->pushMatrix();
-// 	P->perspective(45.0f, aspect, 0.01f, 100.0f);
-
-// 	// Calculate View Matrix
-// 	V->loadIdentity();
-// 	V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
-
-// 	//Model Identity
-// 	M->pushMatrix();
-// 	M->loadIdentity();
-// 	//
-// =================================================================================================
-
-// 	// Draw skybox
-// 	skyProg->bind();
-// 	glUniformMatrix4fv(skyProg->getUniform("P"), 1, GL_FALSE,
-// value_ptr(P->topMatrix()));
-// glUniformMatrix4fv(skyProg->getUniform("V"), 1, GL_FALSE,
-// value_ptr(mat4(mat3(V->topMatrix()))));
-
-// 	skyboxTexture->bind(skyProg->getUniform("Texture0"));
-// 	glDepthMask(GL_FALSE);
-// 	glDisable(GL_CULL_FACE);
-// 	cube->draw(skyProg);
-// 	glEnable(GL_CULL_FACE);
-// 	glDepthMask(GL_TRUE);
-
-// 	skyProg->unbind();
-// 	//
-// =================================================================================================
-
-// 	// Draw bunnies
-// 	//***UNUSED***
-// 	// matProg->bind();
-// 	// setLight(matProg);
-// 	// glUniformMatrix4fv(matProg->getUniform("P"), 1, GL_FALSE,
-// value_ptr(P->topMatrix()));
-// 	// glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE,
-// value_ptr(V->topMatrix()));
-// 	// glUniform3fv(matProg->getUniform("viewPos"), 1,
-// value_ptr(camera->eye));
-
-// 	// for (auto bunny : bunnies)
-// 	// {
-// 	// 	setMaterial(bunny->material);
-// 	// 	M->pushMatrix();
-// 	// 	M->translate(bunny->position - vec3(0, bunny->model->min.y, 0));
-// 	// 	M->rotate(atan2(bunny->direction.x, bunny->direction.z) +
-// M_PI_2, vec3(0, 1, 0));
-// 	// 	glUniformMatrix4fv(matProg->getUniform("M"), 1, GL_FALSE,
-// value_ptr(M->topMatrix()));
-// 	// 	bunny->draw(matProg);
-// 	// 	M->popMatrix();
-// 	// }
-// 	// matProg->unbind();
-// 	//
-// =================================================================================================
-
-// 	// Draw textured models
-// 	texProg->bind();
-// 	setLight(texProg);
-// 	glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE,
-// value_ptr(P->topMatrix()));
-// glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE,
-// value_ptr(V->topMatrix())); 	glUniform3fv(texProg->getUniform("viewPos"), 1,
-// value_ptr(camera->eye));
-// 	//
-// =================================================================================================
-
-// 	// Draw plane
-// 	setTextureMaterial(0);
-// 	M->pushMatrix();
-// 	glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
-// value_ptr(M->topMatrix())); 	plane->draw(texProg); 	M->popMatrix();
-// 	//
-// =================================================================================================
-
-// 	// Draw ball
-// 	setTextureMaterial(1);
-// 	ball->draw(texProg, M);
-// 	//
-// =================================================================================================
-
-// 	//Draw Boxes
-// 	setTextureMaterial(2);
-// 	for (auto box : boxes)
-// 	{
-// 		box->draw(texProg, M);
-// 	}
-// 	//
-// =================================================================================================
-
-// 	//cleanup
-// 	texProg->unbind();
-// 	M->popMatrix();
-// 	P->popMatrix();
-// 	//
-// =================================================================================================
-
-// }

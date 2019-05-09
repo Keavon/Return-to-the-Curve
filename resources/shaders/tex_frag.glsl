@@ -32,7 +32,7 @@ float TestShadow(vec4 LSfPos)
 	float Ldepth = texture(shadowDepth, shifted.xy).r;
 		
 	// 3: compare to the current depth (.z) of the projected depth
-	if (Ldepth < shifted.z - 0.005)
+	if (Ldepth < shifted.z - 0.001)
 	{
 		//4: return 1 if the point is shadowed
 		return 1.0f;
