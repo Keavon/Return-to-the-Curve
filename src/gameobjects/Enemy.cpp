@@ -46,6 +46,7 @@ void Enemy::update(float dt)
     if (pointReached) {
         /*
         //Calculate new position over factor t
+        /*
         targetX = 
                 pow(1 - t, 3)*pathCtrlPts[0].x +
                 3*t*pow(1-t,2)*pathCtrlPts[1].x +
@@ -57,15 +58,16 @@ void Enemy::update(float dt)
                 3*pow(t,2)*(1-t)*pathCtrlPts[2].z +
                 pow(t,3)*pathCtrlPts[3][2];
         */
-       targetX = t*10.0;
-       targetZ = t*2.0;
-        if (forward){
+        targetX = t * pathCtrlPts[3].x;
+        targetZ = t * pathCtrlPts[3].z;
+
+        if (forward) {
             t += 0.05;
-            printf("Incremented t to : %f", t);
+            //printf("Incremented t to : %f\n", t);
         }
         else {
             t -= 0.05;
-            printf("Decremented t to : %f", t);
+            //printf("Decremented t to : %f\n", t);
         }
         if (t < 0){
             forward = true;
@@ -74,23 +76,23 @@ void Enemy::update(float dt)
             forward = false;
         }
         pointReached = false;
-        printf("New X: %f\nNew Z: %f\nt = %f", targetX, targetZ, t);
+        //printf("New X: %f\nNew Z: %f\nt = %f", targetX, targetZ, t);
         
     }
         float dX = targetX - position.x;
         float dZ = targetZ - position.z;
         direction = normalize(vec3(dX,0,dZ));
-        printf("Direction: (%f,%f,%f)\n", direction.x,direction.z);
+        //printf("Direction: (%f,%f,%f)\n", direction.x,direction.z);
         velocity.x = velocity.z = 0;
         velocity.y = 0;
         //vec3 axis = vec3{0,1,0};
         //quat q = rotate(, axis);
         //orientation = q * orientation;
         velocity = direction * moveSpeed*dt;
-        printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
+        //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
         position += velocity;
         //printf("Position of Enemy: (%d,%d,%d)\n", position.x,position.y,position.z);
-        printf("Dt: %f\n", dt);
+        //printf("Dt: %f\n", dt);
         // Keeps Enemy on the plane.
         if (position.y < radius)
         {
@@ -103,5 +105,5 @@ void Enemy::update(float dt)
             < 1 ) {
             pointReached = true;
         }
-        printf("Point Reached: %s", pointReached ? "true\n" : "false\n");
+        //printf("Point Reached: %s", pointReached ? "true\n" : "false\n");
 }

@@ -16,7 +16,7 @@ public:
 	WindowManager *windowManager;
     float moveSpeed;
     float radius;
-    float t;
+    float t = 0.1;
     float targetX;
     float targetZ;
     bool forward;
