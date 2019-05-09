@@ -10,19 +10,25 @@ CSC 476 Lab 1
 #include <glad/glad.h>
 #include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <glad/glad.h>
+#include <iomanip>
+#include <iostream>
 #include <string>
 
+#include "Camera.h"
 #include "GLSL.h"
-#include "Program.h"
+#include "GLTextureWriter.h"
 #include "MatrixStack.h"
+#include "Object3D.h"
+#include "Program.h"
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
-#include "GLTextureWriter.h"
-#include "Object3D.h"
-#include "Camera.h"
+#include "engine/Collider.h"
+#include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Box.h"
@@ -33,11 +39,11 @@ CSC 476 Lab 1
 #include "engine/Octree.h"
 
 // value_ptr for glm
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-//number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 5
+// number of skin textures to load and swap through
+#define NUMBER_OF_MARBLE_SKINS 22
 
 using namespace std;
 using namespace glm;
@@ -47,19 +53,34 @@ extern bool ballInGoal;
 class Application : public EventCallbacks
 {
 
-  public:
+public:
     WindowManager *windowManager = nullptr;
 
     int score = 0;
 
+    // Game info
+    float startTime;
+    vec3 startPos = vec3(120, 3, 7);
+    vec3 enemyPos = vec3(-10.0 ,0.0, 2.0);
+    bool didWin = false;
+		
     // Constants
     float SPAWN_RATE = 5;
 
-    // Game info
-    float startTime;
-    vec3 startPos = vec3(0, 3, -3);
-    vec3 enemyPos = vec3(-10.0 ,0.0, 2.0);
-    bool didWin = false;
+    int SHADOWS = 1;
+    int DEBUG_LIGHT = 0;
+    int GEOM_DEBUG = 1;
+
+    float timer = 0;
+    float printTimer = 0;
+
+    // for shadows
+    GLuint depthMapFBO;
+    const GLuint S_WIDTH = 2048, S_HEIGHT = 2048;
+    GLuint depthMap;
+
+    // light position for shadows
+    vec3 g_light = vec3(60, 40, 10);
 
     shared_ptr<Camera> camera;
 
@@ -69,6 +90,10 @@ class Application : public EventCallbacks
     shared_ptr<Program> skyProg;
     shared_ptr<Program> circleProg;
     shared_ptr<Program> cubeOutlineProg;
+
+    shared_ptr<Program> DepthProg;
+    shared_ptr<Program> DepthProgDebug;
+    shared_ptr<Program> DebugProg;
 
     // Shapes
     shared_ptr<Shape> cube;
@@ -88,6 +113,10 @@ class Application : public EventCallbacks
 
     shared_ptr<Octree> octree;
 
+    // geometry for texture render
+    GLuint quad_VertexArrayID;
+    GLuint quad_vertexbuffer;
+
     // Textures
     shared_ptr<Skybox> skyboxTexture;
     shared_ptr<Texture> grassTexture;
@@ -106,7 +135,7 @@ class Application : public EventCallbacks
     bool Moving = false;
     int gMat = 0;
 
-    //used to track current player skin
+    // used to track current player skin
     int CURRENT_SKIN = 0;
 
     float cTheta;
@@ -120,11 +149,16 @@ class Application : public EventCallbacks
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
         }
+        else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+        {
+            SHADOWS = !SHADOWS;
+        }
 
-        //other call backs
+        // other call backs
         else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
-            glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR,
+                             GLFW_CURSOR_NORMAL);
             glfwSetWindowShouldClose(window, GL_TRUE);
         }
         else if (key == GLFW_KEY_M && action == GLFW_PRESS)
@@ -142,6 +176,10 @@ class Application : public EventCallbacks
         else if (key == GLFW_KEY_V && action == GLFW_PRESS)
         {
             camera->flying = !camera->flying;
+        }
+        else if (key == GLFW_KEY_U && action == GLFW_PRESS)
+        {
+            DEBUG_LIGHT = !DEBUG_LIGHT;
         }
         else if (key == GLFW_KEY_P && action == GLFW_PRESS)
         {
@@ -183,6 +221,7 @@ class Application : public EventCallbacks
             mouseDown = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
+            cout << "" << ball->position.x << ", " << ball->position.y << ", " << ball->position.z << endl;
             Moving = true;
         }
 
@@ -216,19 +255,74 @@ class Application : public EventCallbacks
         camera->init();
 
         ballInGoal = false;
+        initShadow();
     }
 
     void initShaders(const string &resourceDirectory)
     {
+
+        DepthProg = make_shared<Program>();
+        DepthProg->setVerbose(true);
+        DepthProg->setShaderNames(resourceDirectory + "/shaders/depth_vert.glsl",
+                                  resourceDirectory + "/shaders/depth_frag.glsl");
+        if (!DepthProg->init())
+        {
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
+            exit(1);
+        }
+
+        DepthProgDebug = make_shared<Program>();
+        DepthProgDebug->setVerbose(true);
+        DepthProgDebug->setShaderNames(
+            resourceDirectory + "/shaders/depth_vertDebug.glsl",
+            resourceDirectory + "/shaders/depth_fragDebug.glsl");
+        if (!DepthProgDebug->init())
+        {
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
+            exit(1);
+        }
+
+        DebugProg = make_shared<Program>();
+        DebugProg->setVerbose(true);
+        DebugProg->setShaderNames(resourceDirectory + "/shaders/pass_vert.glsl",
+                                  resourceDirectory + "/shaders/pass_texfrag.glsl");
+        if (!DebugProg->init())
+        {
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
+            exit(1);
+        }
+
+        DepthProg->addUniform("LP");
+        DepthProg->addUniform("LV");
+        DepthProg->addUniform("M");
+        DepthProg->addAttribute("vertPos");
+        // un-needed, but easier then modifying shape
+        DepthProg->addAttribute("vertNor");
+        DepthProg->addAttribute("vertTex");
+
+        DepthProgDebug->addUniform("LP");
+        DepthProgDebug->addUniform("LV");
+        DepthProgDebug->addUniform("M");
+        DepthProgDebug->addAttribute("vertPos");
+        // un-needed, but easier then modifying shape
+        DepthProgDebug->addAttribute("vertNor");
+        DepthProgDebug->addAttribute("vertTex");
+
+        DebugProg->addUniform("texBuf");
+        DebugProg->addAttribute("vertPos");
+
         // Shader for textured models
         texProg = make_shared<Program>();
         texProg->setVerbose(true);
-        texProg->setShaderNames(
-            resourceDirectory + "/shaders/tex_vert.glsl",
-            resourceDirectory + "/shaders/tex_frag.glsl");
+        texProg->setShaderNames(resourceDirectory + "/shaders/tex_vert.glsl",
+                                resourceDirectory + "/shaders/tex_frag.glsl");
         if (!texProg->init())
         {
-            std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
             exit(1);
         }
         texProg->addUniform("P");
@@ -245,15 +339,38 @@ class Application : public EventCallbacks
         texProg->addAttribute("vertNor");
         texProg->addAttribute("vertTex");
 
+        texProg->addUniform("shadowDepth");
+        texProg->addUniform("LS");
+        // texProg->addUniform("lightDir");
+
+        DepthProg = make_shared<Program>();
+        DepthProg->setVerbose(true);
+        DepthProg->setShaderNames(resourceDirectory + "/shaders/depth_vert.glsl",
+                                  resourceDirectory + "/shaders/depth_frag.glsl");
+        if (!DepthProg->init())
+        {
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
+            exit(1);
+        }
+
+        DepthProg->addUniform("LP");
+        DepthProg->addUniform("LV");
+        DepthProg->addUniform("M");
+        DepthProg->addAttribute("vertPos");
+        // un-needed, but easier then modifying shape
+        DepthProg->addAttribute("vertNor");
+        DepthProg->addAttribute("vertTex");
+
         // Shader for untextured models
         matProg = make_shared<Program>();
         matProg->setVerbose(true);
-        matProg->setShaderNames(
-            resourceDirectory + "/shaders/mat_vert.glsl",
-            resourceDirectory + "/shaders/mat_frag.glsl");
+        matProg->setShaderNames(resourceDirectory + "/shaders/mat_vert.glsl",
+                                resourceDirectory + "/shaders/mat_frag.glsl");
         if (!matProg->init())
         {
-            std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+            std::cerr << "One or more shaders failed to compile... exiting!"
+                      << std::endl;
             exit(1);
         }
         matProg->addUniform("P");
@@ -365,7 +482,8 @@ class Application : public EventCallbacks
         cout << "Loading Textures: complete." << endl;
 
         // Load skybox
-        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
+        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG",
+                                    "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
         for (int i = 0; i < 6; i++)
         {
             skyboxFilenames[i] = resourceDirectory + "/skybox/" + skyboxFilenames[i];
@@ -437,9 +555,9 @@ class Application : public EventCallbacks
             auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), boxModel);
             boxes.push_back(box);
         }
-        auto box = make_shared<Box>(vec3(0, -1.01f, 0), quat(1, 0, 0, 0), boxModel);
-        box->scale = vec3(20, 1, 20);
-        boxes.push_back(box);
+        // auto box = make_shared<Box>(vec3(0, -1.01f, 0), quat(1, 0, 0, 0), boxModel);
+        // box->scale = vec3(20, 1, 20);
+        // boxes.push_back(box);
 
         goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), goalModel);
         goalObject->scale = vec3(4);
@@ -452,6 +570,8 @@ class Application : public EventCallbacks
         // box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);
         // boxes.push_back(box);
 
+        initQuad();
+
         // Need to add each physics object to the octree
         octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
         octree->init(billboard, cube);
@@ -462,120 +582,230 @@ class Application : public EventCallbacks
         octree->queue(enemy);
     }
 
-    void render(double dt)
+    /* set up a quad for rendering a framebuffer */
+    void initQuad()
     {
-        // Get current frame buffer size.
-        int width, height;
-        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-        glViewport(0, 0, width, height);
 
+        // now set up a simple quad for rendering FBO
+        glGenVertexArrays(1, &quad_VertexArrayID);
+        glBindVertexArray(quad_VertexArrayID);
+
+        static const GLfloat g_quad_vertex_buffer_data[] = {
+            -1.0f,
+            -1.0f,
+            0.0f,
+            1.0f,
+            -1.0f,
+            0.0f,
+            -1.0f,
+            1.0f,
+            0.0f,
+            -1.0f,
+            1.0f,
+            0.0f,
+            1.0f,
+            -1.0f,
+            0.0f,
+            1.0f,
+            1.0f,
+            0.0f,
+        };
+
+        glGenBuffers(1, &quad_vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data),
+                     g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+    }
+
+    /* set up the FBO for the light's depth */
+    void initShadow()
+    {
+
+        // generate the FBO for the shadow depth
+        glGenFramebuffers(1, &depthMapFBO);
+
+        // generate the texture
+        glGenTextures(1, &depthMap);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT, 0,
+                     GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        // bind with framebuffer's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                               depthMap, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
-        // Clear framebuffer.
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        /* Leave this code to just draw the meshes alone */
-        float aspect = width / (float)height;
+    void drawScene(shared_ptr<Program> shader, GLint texID, int TexOn)
+    {
+        // Draw textured models
 
         // Create the matrix stacks
-        auto P = make_shared<MatrixStack>();
         auto M = make_shared<MatrixStack>();
-        auto V = make_shared<MatrixStack>();
-        // Apply perspective projection.
-        P->pushMatrix();
-        P->perspective(45.0f, aspect, 0.01f, 200.0f);
 
-        V->loadIdentity();
-        V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
-
+        // Model Identity
         M->pushMatrix();
         M->loadIdentity();
 
-        // Draw skybox
-        skyProg->bind();
-        glUniformMatrix4fv(skyProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-        glUniformMatrix4fv(skyProg->getUniform("V"), 1, GL_FALSE, value_ptr(mat4(mat3(V->topMatrix()))));
-
-        skyboxTexture->bind(skyProg->getUniform("Texture0"));
-        glDepthMask(GL_FALSE);
-        glDisable(GL_CULL_FACE);
-        cube->draw(skyProg);
-        glEnable(GL_CULL_FACE);
-        glDepthMask(GL_TRUE);
-
-        skyProg->unbind();
-
-        matProg->bind();
-        setLight(matProg);
-        glUniformMatrix4fv(matProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-        glUniformMatrix4fv(matProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-        glUniform3fv(matProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
-
-        // Draw bunnies
-        for (auto bunny : bunnies)
-        {
-            setMaterial(bunny->material);
-            M->pushMatrix();
-            M->translate(bunny->position - vec3(0, bunny->model->min.y, 0));
-            M->rotate(atan2(bunny->direction.x, bunny->direction.z) + M_PI_2, vec3(0, 1, 0));
-            glUniformMatrix4fv(matProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-            bunny->draw(matProg);
-            M->popMatrix();
-        }
-
-        matProg->unbind();
-
-        // Draw textured models
-
-        texProg->bind();
-        setLight(texProg);
-        glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-        glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
         glUniform3fv(texProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
+        // =================================================================================================
 
         // Draw plane
         setTextureMaterial(0);
         M->pushMatrix();
-        glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        plane->draw(texProg);
+        glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
+                           value_ptr(M->topMatrix()));
+        // plane->draw(texProg);
         M->popMatrix();
+        // =================================================================================================
 
         // Draw ball
-        setTextureMaterial(2);
-        enemy->draw(texProg, M);
-
         setTextureMaterial(1);
         ball->draw(texProg, M);
         goalObject->draw(texProg, M);
+        enemy->draw(texProg, M);
+        // =================================================================================================
 
+        // Draw Boxes
         setTextureMaterial(2);
         for (auto box : boxes)
         {
             box->draw(texProg, M);
         }
+        // =================================================================================================
 
-        texProg->unbind();
+        // cleanup
+        M->popMatrix();
+        // =================================================================================================
+    }
 
+    void render()
+    {
+        // Get current frame buffer size.
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
-        if (octree->debug)
+        mat4 LS;
+
+        if (SHADOWS)
         {
-            circleProg->bind();
-            glUniformMatrix4fv(circleProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-            glUniformMatrix4fv(circleProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-            mat4 V2 = mat4(inverse(mat3(V->topMatrix()))); // undo rotation for billboarding
-            octree->drawDebugBoundingSpheres(circleProg, M, V2);
-            circleProg->unbind();
+            // set up light's depth map
+            glViewport(0, 0, S_WIDTH, S_HEIGHT); // shadow map width and height
+            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glCullFace(GL_FRONT);
 
-            cubeOutlineProg->bind();
-            glUniformMatrix4fv(cubeOutlineProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
-            glUniformMatrix4fv(cubeOutlineProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
-            octree->drawDebugOctants(cubeOutlineProg, M);
-            cubeOutlineProg->unbind();
+            // set up shadow shader
+            // render scene
+            DepthProg->bind();
+            // TODO you will need to fix these
+            mat4 LP = SetOrthoMatrix(DepthProg);
+            mat4 LV = SetLightView(DepthProg, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
+            LS = LP * LV;
+            // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
+            drawScene(DepthProg, 0, 0);
+            DepthProg->unbind();
+            glCullFace(GL_BACK);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
-        M->popMatrix();
+        glViewport(0, 0, width, height); // frame width and height
+        // Clear framebuffer.
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // =================================================================================================
 
-        P->popMatrix();
+        if (DEBUG_LIGHT)
+        {
+            /* code to draw the light depth buffer */
+            // geometry style debug on light - test transforms, draw geometry from
+            // light perspective
+            if (GEOM_DEBUG)
+            {
+                DepthProgDebug->bind();
+                // render scene from light's point of view
+                SetOrthoMatrix(DepthProgDebug);
+                SetLightView(DepthProgDebug, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
+                drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
+                DepthProgDebug->unbind();
+            }
+            else
+            {
+                // actually draw the light depth map
+                DebugProg->bind();
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthMap);
+                glUniform1i(DebugProg->getUniform("texBuf"), 0);
+                glEnableVertexAttribArray(0);
+                glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+                glDisableVertexAttribArray(0);
+                DebugProg->unbind();
+            }
+        }
+        else
+        {
+            // Draw skybox
+            skyProg->bind();
+            SetProjectionMatrix(skyProg);
+            SetView(skyProg);
+
+            skyboxTexture->bind(skyProg->getUniform("Texture0"));
+            glDepthMask(GL_FALSE);
+            glDisable(GL_CULL_FACE);
+            cube->draw(skyProg);
+            glEnable(GL_CULL_FACE);
+            glDepthMask(GL_TRUE);
+
+            skyProg->unbind();
+
+            // =================================================================================================
+
+            // now render the scene like normal
+            // set up shadow shader
+            texProg->bind();
+            setLight(texProg);
+            /* also set up light depth map */
+            glActiveTexture(GL_TEXTURE30);
+            glBindTexture(GL_TEXTURE_2D, depthMap);
+            glUniform1i(texProg->getUniform("shadowDepth"), 30);
+
+            // glUniform3f(texProg->getUniform("lightDir"), g_light.x, g_light.y,
+            // g_light.z);
+            // render scene
+            SetProjectionMatrix(texProg);
+            SetView(texProg);
+
+            // TODO: is there other uniform data that must be sent?
+            glUniformMatrix4fv(texProg->getUniform("LS"), 1, GL_FALSE, value_ptr(LS));
+
+            drawScene(texProg, texProg->getUniform("Texture0"), 1);
+            texProg->unbind();
+
+            if (octree->debug)
+            {
+                circleProg->bind();
+                SetProjectionMatrix(circleProg);
+                SetView(circleProg);
+                octree->drawDebugBoundingSpheres(circleProg);
+                circleProg->unbind();
+
+                cubeOutlineProg->bind();
+                SetProjectionMatrix(cubeOutlineProg);
+                SetView(cubeOutlineProg);
+                octree->drawDebugOctants(cubeOutlineProg);
+                cubeOutlineProg->unbind();
+            }
+        }
     }
 
     void printInfo(float dt)
@@ -614,112 +844,7 @@ class Application : public EventCallbacks
         ball->update(dt, camera->getDolly(), camera->getStrafe());
         camera->update(dt, ball);
         goal->update(dt);
-        //TODO:: fix enemy's updating
         enemy->update(dt);
-        auto colliWEnemy = octree->query(enemy);
-        /*for (auto thing : colliWEnemy){
-            if (dynamic_pointer_cast<Ball>(thing) != NULL)
-            {
-                cout << "hit" << endl;
-            }
-        } */
-        // Lab 1 stuff
-        /*
-        printTimer += dt;
-
-        if (printTimer >= 1)
-        {
-            printTimer = 0;
-            printInfo(dt);
-        }
-
-        timer += dt;
-
-        if (timer >= SPAWN_RATE)
-        {
-            timer = 0;
-
-            auto newBunny = make_shared<Object3D>();
-
-            newBunny->position.x = fmod(rand(), plane->size.x) - plane->size.x / 2;
-            newBunny->position.y = 0;
-            newBunny->position.z = fmod(rand(), plane->size.z) - plane->size.z / 2;
-
-            newBunny->direction.x = ((rand() % 200) / 100.0) - 1;
-            newBunny->direction.y = 0;
-            newBunny->direction.z = ((rand() % 200) / 100.0) - 1;
-            newBunny->direction = normalize(newBunny->direction);
-
-            newBunny->speed = rand() % 5 + 5;
-
-            newBunny->model = bunny;
-            newBunny->material = rand() % 4;
-            newBunny->radius = 1;
-
-            bunnies.push_back(newBunny);
-        }
-
-
-        for (auto bunny : bunnies)
-        {
-            bunny->update(dt);
-        }
-
-        // Collision
-        for (int i = 0; i < bunnies.size(); i++)
-        {
-            if (!bunnies[i]->dead)
-            {
-                // Check walls
-                if (bunnies[i]->position.x - bunnies[i]->radius < plane->min.x)
-                {
-                    bunnies[i]->direction.x = abs(bunnies[i]->direction.x);
-                }
-                else if (bunnies[i]->position.x + bunnies[i]->radius > plane->max.x)
-                {
-                    bunnies[i]->direction.x = -abs(bunnies[i]->direction.x);
-                }
-                if (bunnies[i]->position.z - bunnies[i]->radius < plane->min.z)
-                {
-                    bunnies[i]->direction.z = abs(bunnies[i]->direction.z);
-                }
-                else if (bunnies[i]->position.z + bunnies[i]->radius > plane->max.z)
-                {
-                    bunnies[i]->direction.z = -abs(bunnies[i]->direction.z);
-                }
-
-
-                // Check other bunnies
-                for(int j = i+1; j < bunnies.size(); j++){
-                    if (!bunnies[j]->dead)
-                    {
-                        float distBetween = sqrt(pow(bunnies[i]->position.x - bunnies[j]->position.x, 2) +
-                                                    pow(bunnies[i]->position.z - bunnies[j]->position.z, 2));
-                        // if distance between them is less than the sum of their radii, collision happened
-                        if(distBetween < (bunnies[i]->radius + bunnies[j]->radius) ){
-                            vec3 v = normalize(bunnies[i]->position - bunnies[j]->position);
-                            vec3 n = cross(v, vec3(0, 1, 0));
-                            bunnies[i]->direction = -reflect(bunnies[i]->direction, n);
-                            bunnies[j]->direction = -reflect(bunnies[j]->direction, -n);
-                        }
-                    }
-                }
-
-                // Check camera
-                float cameraDist = sqrt(pow(bunnies[i]->position.x - camera->eye.x, 2) +
-                                        pow(bunnies[i]->position.y - camera->eye.y, 2) +
-                                        pow(bunnies[i]->position.z - camera->eye.z, 2));
-                if (cameraDist < camera->radius + bunnies[i]->radius)
-                {
-                    bunnies[i]->material = 4;
-                    bunnies[i]->speed = 0;
-                    bunnies[i]->dead = true;
-                    score++;
-                }
-
-            }
-        }
-        */
     }
 
     void setLight(shared_ptr<Program> prog)
@@ -786,6 +911,41 @@ class Application : public EventCallbacks
             break;
         }
     }
+
+    // shadow mapping helper
+    mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
+    {
+        mat4 ortho = glm::ortho(-75.0f, 75.0f, -75.0f, 75.0f, 0.1f, 75.0f);
+        // fill in the glUniform call to send to the right shader!
+        glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
+                           value_ptr(ortho));
+        return ortho;
+    }
+
+    // shadow mapping helper
+    mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up)
+    {
+        mat4 Cam = lookAt(pos, LA, up);
+        // fill in the glUniform call to send to the right shader!
+        glUniformMatrix4fv(curShade->getUniform("LV"), 1, GL_FALSE, value_ptr(Cam));
+        return Cam;
+    }
+
+    void SetProjectionMatrix(shared_ptr<Program> curShade)
+    {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        float aspect = width / (float)height;
+        mat4 Projection = perspective(radians(50.0f), aspect, 0.1f, 200.0f);
+        glUniformMatrix4fv(curShade->getUniform("P"), 1, GL_FALSE,
+                           value_ptr(Projection));
+    }
+
+    void SetView(shared_ptr<Program> curShade)
+    {
+        mat4 Cam = lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
+        glUniformMatrix4fv(curShade->getUniform("V"), 1, GL_FALSE, value_ptr(Cam));
+    }
 };
 
 int main(int argc, char **argv)
@@ -826,7 +986,7 @@ int main(int argc, char **argv)
         double t = glfwGetTime();
         double dt = std::min(t - prevTime, 0.1);
         prevTime = t;
-        application->render(dt);
+        application->render();
         application->update(dt);
 
         // Swap front and back buffers.

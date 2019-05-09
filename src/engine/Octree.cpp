@@ -143,14 +143,15 @@ void Octree::init(shared_ptr<Shape> billboard, shared_ptr<Shape> cube)
     this->cube = cube;
 }
 
-void Octree::drawDebugBoundingSpheres(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, const mat4 &billboardMatrix)
+void Octree::drawDebugBoundingSpheres(shared_ptr<Program> prog)
 {
+    auto M = make_shared<MatrixStack>();
+
     for (auto object : objects)
     {
         M->pushMatrix();
             M->translate(object->position);
             M->scale(object->getRadius());
-            M->multMatrix(billboardMatrix);
             glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
             glUniform1f(prog->getUniform("radius"), object->getRadius());
             billboard->draw(prog);
@@ -158,8 +159,10 @@ void Octree::drawDebugBoundingSpheres(shared_ptr<Program> prog, shared_ptr<Matri
     }
 }
 
-void Octree::drawDebugOctants(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
+void Octree::drawDebugOctants(shared_ptr<Program> prog)
 {
+    auto M = make_shared<MatrixStack>();
+
     glDisable(GL_CULL_FACE);
 
     stack<shared_ptr<OctNode>> stack;

@@ -9,6 +9,6 @@ out vec3 fragPos;
 
 void main()
 {
-	gl_Position = P * V * M * vertPos;
+	gl_Position = P * V * M * mat4(inverse(mat3(V))) * vertPos;
     fragPos = vertPos.xyz;
 }

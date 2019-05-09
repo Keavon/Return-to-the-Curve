@@ -97,12 +97,14 @@ bool Program::init()
 
 void Program::bind()
 {
-	CHECKED_GL_CALL(glUseProgram(pid));
+	// CHECKED_GL_CALL(glUseProgram(pid));
+	glUseProgram(pid);
 }
 
 void Program::unbind()
 {
-	CHECKED_GL_CALL(glUseProgram(0));
+	// CHECKED_GL_CALL(glUseProgram(0));
+	glUseProgram(0);
 }
 
 void Program::addAttribute(const std::string &name)
