@@ -31,6 +31,7 @@ CSC 476 Lab 1
 #include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
+#include "engine/Octree.h"
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -64,18 +65,23 @@ class Application : public EventCallbacks
 	shared_ptr<Program> texProg;
 	shared_ptr<Program> matProg;
 	shared_ptr<Program> skyProg;
+	shared_ptr<Program> circleProg;
+	shared_ptr<Program> cubeOutlineProg;
 
 	// Shapes
 	shared_ptr<Shape> cube;
 	shared_ptr<Shape> boxModel;
 	shared_ptr<Shape> plane;
 	shared_ptr<Shape> bunny;
+	shared_ptr<Shape> billboard;
 	vector<shared_ptr<Object3D>> bunnies;
 	vector<shared_ptr<PhysicsObject>> boxes;
 
 	// Game objects
 	shared_ptr<Ball> ball;
 	shared_ptr<Enemy> enemy;
+
+	shared_ptr<Octree> octree;
 
 	// Textures
 	shared_ptr<Skybox> skyboxTexture;
@@ -143,6 +149,10 @@ class Application : public EventCallbacks
 			{
 				glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			}
+		}
+		else if (key == GLFW_KEY_H && action == GLFW_PRESS)
+		{
+			octree->debug = !octree->debug;
 		}
 	}
 
@@ -261,6 +271,40 @@ class Application : public EventCallbacks
 		skyProg->addUniform("V");
 		skyProg->addUniform("Texture0");
 		skyProg->addAttribute("vertPos");
+
+		// Shader for debug circle
+		circleProg = make_shared<Program>();
+		circleProg->setVerbose(true);
+		circleProg->setShaderNames(
+			resourceDirectory + "/shaders/circle_vert.glsl",
+			resourceDirectory + "/shaders/circle_frag.glsl");
+		if (!circleProg->init())
+		{
+			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+			exit(1);
+		}
+		circleProg->addUniform("P");
+		circleProg->addUniform("V");
+		circleProg->addUniform("M");
+		circleProg->addUniform("radius");
+		circleProg->addAttribute("vertPos");
+
+		// Shader for debug cube
+		cubeOutlineProg = make_shared<Program>();
+		cubeOutlineProg->setVerbose(true);
+		cubeOutlineProg->setShaderNames(
+			resourceDirectory + "/shaders/cube_outline_vert.glsl",
+			resourceDirectory + "/shaders/cube_outline_frag.glsl");
+		if (!cubeOutlineProg->init())
+		{
+			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+			exit(1);
+		}
+		cubeOutlineProg->addUniform("P");
+		cubeOutlineProg->addUniform("V");
+		cubeOutlineProg->addUniform("M");
+		cubeOutlineProg->addUniform("edge");
+		cubeOutlineProg->addAttribute("vertPos");
 	}
 
 	void initTextures(const string &resourceDirectory)
@@ -326,6 +370,7 @@ class Application : public EventCallbacks
 		cube = make_shared<Shape>();
 		cube->loadMesh(resourceDirectory + "/models/cube.obj");
 		cube->resize();
+		cube->measure();
 		cube->init();
 
 		boxModel = make_shared<Shape>();
@@ -344,6 +389,12 @@ class Application : public EventCallbacks
 		bunny->resize();
 		bunny->measure();
 		bunny->init();
+
+		billboard = make_shared<Shape>();
+		billboard->loadMesh(resourceDirectory + "/models/billboard.obj");
+		billboard->resize();
+		billboard->measure();
+		billboard->init();
 
 		auto sphere = make_shared<Shape>();
 		sphere->loadMesh(resourceDirectory + "/models/quadSphere.obj");
@@ -372,6 +423,13 @@ class Application : public EventCallbacks
 		// boxes.push_back(box);
 		// box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, -0.5)), boxModel);
 		// boxes.push_back(box);
+
+		// Need to add each physics object to the octree
+		octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
+		octree->init(billboard, cube);
+		octree->queue(box);
+		octree->queue(ball);
+		octree->queue(boxes);
 	}
 
 	void render(double dt)
@@ -395,7 +453,7 @@ class Application : public EventCallbacks
 		auto V = make_shared<MatrixStack>();
 		// Apply perspective projection.
 		P->pushMatrix();
-		P->perspective(45.0f, aspect, 0.01f, 100.0f);
+		P->perspective(45.0f, aspect, 0.01f, 200.0f);
 
 		V->loadIdentity();
 		V->lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
@@ -467,6 +525,23 @@ class Application : public EventCallbacks
 
 		texProg->unbind();
 
+
+		if (octree->debug)
+		{
+			circleProg->bind();
+			glUniformMatrix4fv(circleProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+			glUniformMatrix4fv(circleProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
+			mat4 V2 = mat4(inverse(mat3(V->topMatrix()))); // undo rotation for billboarding
+			octree->drawDebugBoundingSpheres(circleProg, M, V2);
+		    circleProg->unbind();
+
+			cubeOutlineProg->bind();
+			glUniformMatrix4fv(cubeOutlineProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+			glUniformMatrix4fv(cubeOutlineProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
+			octree->drawDebugOctants(cubeOutlineProg, M);
+		    cubeOutlineProg->unbind();
+		}
+
 		M->popMatrix();
 
 		P->popMatrix();
@@ -483,14 +558,20 @@ class Application : public EventCallbacks
 
 	void update(float dt)
 	{
+		octree->clear();
+		octree->build();
+
 		if (ballInGoal)
 		{
 			cout << "You win!" << endl;
 		}
-		for (auto box : boxes)
+
+		auto boxesToCheck = octree->query(ball);
+		for (auto box : boxesToCheck)
 		{
 			box->checkCollision(ball.get());
 		}
+
 		for (auto box : boxes)
 		{
 			box->update(dt);
