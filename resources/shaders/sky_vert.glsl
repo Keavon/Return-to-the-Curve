@@ -8,6 +8,6 @@ out vec3 vTexCoord;
 
 void main()
 {
-	gl_Position = P * V * vertPos;
+	gl_Position = P * mat4(mat3(V)) * vertPos;
 	vTexCoord = vec3(vertPos);
 }

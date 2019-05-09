@@ -7,14 +7,34 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 
-out vec3 fragNor;
-out vec3 fragPos;
-out vec2 vTexCoord;
+uniform mat4 LS;
+// uniform vec3 lightDir;
+
+out OUT_struct {
+	vec3 fPos;
+	vec3 fragNor;
+	vec2 vTexCoord;
+	vec4 fPosLS;
+	// vec3 vColor;
+} out_struct;
 
 void main()
 {
-	vTexCoord = vertTex;
-	gl_Position = P * V * M * vertPos;
-	fragNor = vec3(M * vec4(vertNor, 0.0));
-	fragPos = vec3(M * vertPos);
+	/* First model transforms */
+	gl_Position = P * V * M * vec4(vertPos.xyz, 1.0);
+
+	/* the position in world coordinates */
+	out_struct.fPos = (M*vec4(vertPos.xyz, 1.0)).xyz;
+
+	/* the normal */
+	out_struct.fragNor = (M*vec4(vertNor, 0.0)).xyz;
+
+	/* pass through the texture coordinates to be interpolated */
+	out_struct.vTexCoord = vertTex;
+
+	/* The vertex in light space TODO: fill in appropriately*/
+	out_struct.fPosLS = LS * vec4(out_struct.fPos, 1.0);
+
+	/* a color that could be blended - or be shading */
+	// out_struct.vColor = vec3(max(dot(out_struct.fragNor, normalize(lightDir)), 0));
 }
