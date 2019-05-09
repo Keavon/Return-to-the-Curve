@@ -56,8 +56,10 @@ class Application : public EventCallbacks
 	// Constants
 	float SPAWN_RATE = 5;
 
-	float timer = 0;
-	float printTimer = 0;
+	// Game info
+	float startTime;
+	vec3 startPos = vec3(0, 3, -3);
+	bool didWin = false;
 
 	shared_ptr<Camera> camera;
 
@@ -74,12 +76,15 @@ class Application : public EventCallbacks
 	shared_ptr<Shape> plane;
 	shared_ptr<Shape> bunny;
 	shared_ptr<Shape> billboard;
+	shared_ptr<Shape> goalModel;
 	vector<shared_ptr<Object3D>> bunnies;
 	vector<shared_ptr<PhysicsObject>> boxes;
 
 	// Game objects
 	shared_ptr<Ball> ball;
 	shared_ptr<Enemy> enemy;
+	shared_ptr<Goal> goal;
+	shared_ptr<PhysicsObject> goalObject;
 
 	shared_ptr<Octree> octree;
 
@@ -153,6 +158,14 @@ class Application : public EventCallbacks
 		else if (key == GLFW_KEY_H && action == GLFW_PRESS)
 		{
 			octree->debug = !octree->debug;
+		}
+		else if (key == GLFW_KEY_R && action == GLFW_PRESS)
+		{
+			ball->position = startPos;
+			ball->velocity = vec3(0);
+			didWin = false;
+			ballInGoal = false;
+			startTime = glfwGetTime();
 		}
 	}
 
@@ -396,13 +409,19 @@ class Application : public EventCallbacks
 		billboard->measure();
 		billboard->init();
 
+		goalModel = make_shared<Shape>();
+		goalModel->loadMesh(resourceDirectory + "/models/goal.obj");
+		goalModel->resize();
+		goalModel->measure();
+		goalModel->init();
+
 		auto sphere = make_shared<Shape>();
 		sphere->loadMesh(resourceDirectory + "/models/quadSphere.obj");
 		sphere->resize();
 		sphere->measure();
 		sphere->init();
 
-		ball = make_shared<Ball>(vec3(0, 3, -3), quat(1, 0, 0, 0), sphere, 1);
+		ball = make_shared<Ball>(startPos, quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
 		ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
@@ -418,6 +437,12 @@ class Application : public EventCallbacks
 		auto box = make_shared<Box>(vec3(0, -1.01f, 0), quat(1, 0, 0, 0), boxModel);
 		box->scale = vec3(20, 1, 20);
 		boxes.push_back(box);
+
+		goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), goalModel);
+		goalObject->scale = vec3(4);
+
+		goal = make_shared<Goal>(goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
+
 		//6 makes for even Z spread, 8 for X
 		// auto box = make_shared<Box>(vec3(0), normalize(quat(1, 0, 0, 0.5)), boxModel);
 		// boxes.push_back(box);
@@ -427,7 +452,8 @@ class Application : public EventCallbacks
 		// Need to add each physics object to the octree
 		octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
 		octree->init(billboard, cube);
-		octree->queue(box);
+		octree->queue(goal);
+		octree->queue(goalObject);
 		octree->queue(ball);
 		octree->queue(boxes);
 	}
@@ -516,6 +542,7 @@ class Application : public EventCallbacks
 
 		setTextureMaterial(1);
 		ball->draw(texProg, M);
+		goalObject->draw(texProg, M);
 
 		setTextureMaterial(2);
 		for (auto box : boxes)
@@ -561,9 +588,13 @@ class Application : public EventCallbacks
 		octree->clear();
 		octree->build();
 
-		if (ballInGoal)
+		if (ballInGoal && !didWin)
 		{
+			didWin = true;
+			cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
 			cout << "You win!" << endl;
+			cout << "Time: " << glfwGetTime() - startTime << endl;
+			cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
 		}
 
 		auto boxesToCheck = octree->query(ball);
@@ -576,8 +607,10 @@ class Application : public EventCallbacks
 		{
 			box->update(dt);
 		}
+		goalObject->update(dt);
 		ball->update(dt, camera->getDolly(), camera->getStrafe());
 		camera->update(dt, ball);
+		goal->update(dt);
 		//TODO:: fix enemy's updating
 
 		// Lab 1 stuff
@@ -774,6 +807,7 @@ int main(int argc, char **argv)
 	application->initGeom(resourceDir);
 
 	double prevTime = glfwGetTime();
+	application->startTime = glfwGetTime();
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))

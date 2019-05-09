@@ -28,4 +28,5 @@ void Goal::update(float dt)
             ballInGoal = true;
         }
     }
+    collider->pendingCollisions.clear();
 }
