@@ -44,7 +44,7 @@ CSC 476 Lab 1
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 3
+#define NUMBER_OF_MARBLE_SKINS 22
 
 using namespace std;
 using namespace glm;
@@ -80,7 +80,7 @@ public:
     GLuint depthMap;
 
     // light position for shadows
-    vec3 g_light = vec3(2, 40, 2);
+    vec3 g_light = vec3(60, 40, 10);
 
     shared_ptr<Camera> camera;
 
@@ -703,7 +703,7 @@ public:
             DepthProg->bind();
             // TODO you will need to fix these
             mat4 LP = SetOrthoMatrix(DepthProg);
-            mat4 LV = SetLightView(DepthProg, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
+            mat4 LV = SetLightView(DepthProg, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
             LS = LP * LV;
             // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
             drawScene(DepthProg, 0, 0);
@@ -728,7 +728,7 @@ public:
                 DepthProgDebug->bind();
                 // render scene from light's point of view
                 SetOrthoMatrix(DepthProgDebug);
-                SetLightView(DepthProgDebug, g_light, vec3(0, 0, 0), vec3(0, 1, 0));
+                SetLightView(DepthProgDebug, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
                 drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
                 DepthProgDebug->unbind();
             }
