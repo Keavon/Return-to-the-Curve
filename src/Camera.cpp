@@ -55,34 +55,33 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     {
         speed_ *= sprintFactor;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
     {
         velocity += dolly;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_K) == GLFW_PRESS)
     {
         velocity -= dolly;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_L) == GLFW_PRESS)
     {
         velocity += strafe;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_J) == GLFW_PRESS)
     {
         velocity -= strafe;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_M) == GLFW_PRESS)
     {
         velocity += vec3(0, 1, 0);
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_N) == GLFW_PRESS)
     {
         velocity -= vec3(0, 1, 0);
     }
     if (length(velocity) != 0 && length(velocity) != NAN)
     {
         eye += normalize(velocity) * speed_ * (float) dt;
-        eye.y = std::max(0.025f, eye.y);
     }
     
     // Mouse

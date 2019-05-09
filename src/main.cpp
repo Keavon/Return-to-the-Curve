@@ -84,7 +84,7 @@ class Application : public EventCallbacks
 	shared_ptr<Ball> ball;
 	shared_ptr<Enemy> enemy;
 	shared_ptr<Goal> goal;
-	shared_ptr<PhysicsObject> goalObject;
+	shared_ptr<Box> goalObject;
 
 	shared_ptr<Octree> octree;
 

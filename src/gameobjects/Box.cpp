@@ -17,5 +17,5 @@ Box::Box(vec3 position, quat orientation, shared_ptr<Shape> model) :
     invMass = 0;
     elasticity = 0;
     velocity = vec3(0);
-    elasticity = 0.3;
+    elasticity = 0.5;
 }
