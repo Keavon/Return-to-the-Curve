@@ -28,7 +28,7 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
 
     mass = 10;
     invMass = 1 / mass;
-    elasticity = 0.3;
+    elasticity = 0.5;
 
     friction = 0.25;
 
@@ -45,19 +45,19 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     PhysicsObject::update(dt);
 
     vec3 direction = vec3(0);
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_I) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
     {
         direction += vec3(dolly.x, 0.0f, dolly.z);
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_K) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_S) == GLFW_PRESS)
     {
         direction -= vec3(dolly.x, 0.0f, dolly.z);
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_J) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS)
     {
         direction -= vec3(strafe.x, 0.0f, strafe.z);
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_L) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_D) == GLFW_PRESS)
     {
         direction += vec3(strafe.x, 0.0f, strafe.z);
     }

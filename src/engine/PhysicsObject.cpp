@@ -9,6 +9,7 @@
 #include <memory>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 using namespace glm;
@@ -91,5 +92,17 @@ void PhysicsObject::checkCollision(PhysicsObject *other)
     if (other->collider != NULL)
     {
         collider->checkCollision(this, other, other->collider.get());
+    }
+}
+
+float PhysicsObject::getRadius()
+{
+    if (collider == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        return std::max({scale.x, scale.y, scale.z}) * collider->bbox.radius;
     }
 }
