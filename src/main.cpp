@@ -61,7 +61,7 @@ public:
 
     // Game info
     float startTime;
-    vec3 startPos = vec3(0, 3, -3);
+    vec3 startPos = vec3(120, 3, 7);
     bool didWin = false;
 		
     // Constants
@@ -221,6 +221,7 @@ public:
             mouseDown = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
+            cout << "" << ball->position.x << ", " << ball->position.y << ", " << ball->position.z << endl;
             Moving = true;
         }
 
@@ -551,9 +552,9 @@ public:
             auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), boxModel);
             boxes.push_back(box);
         }
-        auto box = make_shared<Box>(vec3(0, -1.01f, 0), quat(1, 0, 0, 0), boxModel);
-        box->scale = vec3(20, 1, 20);
-        boxes.push_back(box);
+        // auto box = make_shared<Box>(vec3(0, -1.01f, 0), quat(1, 0, 0, 0), boxModel);
+        // box->scale = vec3(20, 1, 20);
+        // boxes.push_back(box);
 
         goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), goalModel);
         goalObject->scale = vec3(4);
@@ -658,13 +659,14 @@ public:
         M->pushMatrix();
         glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
                            value_ptr(M->topMatrix()));
-        plane->draw(texProg);
+        // plane->draw(texProg);
         M->popMatrix();
         // =================================================================================================
 
         // Draw ball
         setTextureMaterial(1);
         ball->draw(texProg, M);
+        goalObject->draw(texProg, M);
         // =================================================================================================
 
         // Draw Boxes
@@ -931,7 +933,7 @@ public:
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         float aspect = width / (float)height;
-        mat4 Projection = perspective(radians(50.0f), aspect, 0.1f, 100.0f);
+        mat4 Projection = perspective(radians(50.0f), aspect, 0.1f, 200.0f);
         glUniformMatrix4fv(curShade->getUniform("P"), 1, GL_FALSE,
                            value_ptr(Projection));
     }
