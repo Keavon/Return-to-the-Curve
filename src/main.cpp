@@ -3,8 +3,7 @@ CSC 476 Lab 1
 */
 
 #define _USE_MATH_DEFINES
-#include<math.h>;
-
+#include<math.h>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -59,6 +58,7 @@ class Application : public EventCallbacks
 	// Game info
 	float startTime;
 	vec3 startPos = vec3(0, 3, -3);
+	vec3 enemyPos = vec3(-10.0 ,0.0, 2.0);
 	bool didWin = false;
 
 	shared_ptr<Camera> camera;
@@ -424,6 +424,9 @@ class Application : public EventCallbacks
 		ball = make_shared<Ball>(startPos, quat(1, 0, 0, 0), sphere, 1);
 		ball->init(windowManager);
 
+		enemy = make_shared<Enemy>(enemyPos, quat(1, 0, 0, 0), sphere, 1);
+		enemy->init(windowManager);
+
 		ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
 		float xval, yval, zval;
 		//for (int i = 0; i < 2; i++)
@@ -456,6 +459,7 @@ class Application : public EventCallbacks
 		octree->queue(goalObject);
 		octree->queue(ball);
 		octree->queue(boxes);
+		octree->queue(enemy);
 	}
 
 	void render(double dt)
@@ -537,8 +541,8 @@ class Application : public EventCallbacks
 		M->popMatrix();
 
 		// Draw ball
-		setTextureMaterial(0);
-		// enemy->draw(texProg, M);
+		setTextureMaterial(2);
+		enemy->draw(texProg, M);
 
 		setTextureMaterial(1);
 		ball->draw(texProg, M);
@@ -596,7 +600,6 @@ class Application : public EventCallbacks
 			cout << "Time: " << glfwGetTime() - startTime << endl;
 			cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
 		}
-
 		auto boxesToCheck = octree->query(ball);
 		for (auto box : boxesToCheck)
 		{
@@ -612,7 +615,14 @@ class Application : public EventCallbacks
 		camera->update(dt, ball);
 		goal->update(dt);
 		//TODO:: fix enemy's updating
-
+		enemy->update(dt);
+		auto colliWEnemy = octree->query(enemy);
+		/*for (auto thing : colliWEnemy){
+			if (dynamic_pointer_cast<Ball>(thing) != NULL)
+			{
+				cout << "hit" << endl;
+			}
+		} */
 		// Lab 1 stuff
 		/*
 		printTimer += dt;

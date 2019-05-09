@@ -10,13 +10,13 @@ class Enemy : public PhysicsObject
 {
 public:
     Enemy(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
-    void init(std::shared_ptr<Shape> model, WindowManager *windowManager);
+    void init(WindowManager *windowManager);
     void update(float dt);
 
 	WindowManager *windowManager;
     float moveSpeed;
     float radius;
-    float t = 0;
+    float t = 0.1;
     float targetX;
     float targetZ;
     bool forward;
