@@ -3,7 +3,7 @@ CSC 476 Lab 1
 */
 
 #define _USE_MATH_DEFINES
-#include<math.h>
+#include <math.h>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -43,7 +43,7 @@ CSC 476 Lab 1
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 22
+#define NUMBER_OF_MARBLE_SKINS 3
 
 using namespace std;
 using namespace glm;
@@ -655,30 +655,42 @@ public:
         M->pushMatrix();
         M->loadIdentity();
 
-        glUniform3fv(texProg->getUniform("viewPos"), 1, value_ptr(camera->eye));
+        if (shader == texProg)
+        {
+            glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
+        }
         // =================================================================================================
 
         // Draw plane
-        setTextureMaterial(0);
+        if (shader == texProg)
+        {
+            setTextureMaterial(0);
+        }
         M->pushMatrix();
-        glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,
+        glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE,
                            value_ptr(M->topMatrix()));
-        // plane->draw(texProg);
+        plane->draw(shader);
         M->popMatrix();
         // =================================================================================================
 
         // Draw ball
-        setTextureMaterial(1);
-        ball->draw(texProg, M);
-        goalObject->draw(texProg, M);
-        enemy->draw(texProg, M);
+        if (shader == texProg)
+        {
+            setTextureMaterial(1);
+        }
+        ball->draw(shader, M);
+        goalObject->draw(shader, M);
+        enemy->draw(shader, M);
         // =================================================================================================
 
         // Draw Boxes
-        setTextureMaterial(2);
+        if (shader == texProg)
+        {
+            setTextureMaterial(2);
+        }
         for (auto box : boxes)
         {
-            box->draw(texProg, M);
+            box->draw(shader, M);
         }
         // =================================================================================================
 
