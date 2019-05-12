@@ -33,8 +33,8 @@ public:
     std::vector<std::shared_ptr<PhysicsObject>> query(std::shared_ptr<PhysicsObject> object);
     void queue(std::shared_ptr<PhysicsObject> object);
     void queue(std::vector<std::shared_ptr<PhysicsObject>> objects);
-    void drawDebugBoundingSpheres(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M, const glm::mat4 &billboardMatrix);
-    void drawDebugOctants(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M);
+    void drawDebugBoundingSpheres(std::shared_ptr<Program> prog);
+    void drawDebugOctants(std::shared_ptr<Program> prog);
     void clear();
     void build();
     std::shared_ptr<OctNode> root;
