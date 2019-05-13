@@ -61,7 +61,6 @@ public:
     // Game info
     float startTime;
     vec3 startPos = vec3(120, 3, 7);
-    vec3 enemyPos = vec3(-10.0 ,0.0, 2.0);
     bool didWin = false;
 		
     // Constants
@@ -541,8 +540,14 @@ public:
 
         ball = make_shared<Ball>(startPos, quat(1, 0, 0, 0), sphere, 1);
         ball->init(windowManager);
-
-        enemy = make_shared<Enemy>(enemyPos, quat(1, 0, 0, 0), sphere, 1);
+				// Control points for enemy's bezier curve path
+				std::vector<glm::vec3> enemyPath = {
+					vec3{95.0, 2.0, 7.0},
+					vec3{100.0, 2.0, 15.0},
+					vec3{110.0, 2.0, -1.0},
+					vec3{115.0, 2.0, 7.0}
+				};
+        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
         enemy->init(windowManager);
 
         ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
