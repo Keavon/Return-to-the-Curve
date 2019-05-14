@@ -19,8 +19,8 @@ public:
     void build();
     std::shared_ptr<OctNode> octant[8];
     std::unordered_set<std::shared_ptr<PhysicsObject>> elements;
-    glm::vec3 min;
-    glm::vec3 max;
+    glm::vec3 imin;
+    glm::vec3 imax;
     glm::vec3 dimensions;
     glm::vec3 center;
 };
@@ -45,5 +45,5 @@ private:
     std::shared_ptr<Shape> billboard;
     std::shared_ptr<Shape> cube;
     std::vector<std::shared_ptr<PhysicsObject>> objects;
-    glm::vec3 min, max;
+    glm::vec3 imin, imax;
 };

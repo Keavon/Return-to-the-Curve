@@ -39,7 +39,7 @@ void PhysicsObject::update(float dt)
         float velAlongNormal = dot(relVel, collision.normal);
         if (velAlongNormal < 0)
         {
-            float e = std::min(other->elasticity, elasticity);
+            float e = min(other->elasticity, elasticity);
             float j = (-(1 + e) * velAlongNormal) / (invMass + other->invMass);
             vec3 colImpulse = j * collision.normal;
             velocity -= invMass * colImpulse;
@@ -61,7 +61,7 @@ void PhysicsObject::update(float dt)
             {
                 float percent = 0.2;
                 float slop = 0.01;
-                vec3 correction = std::max(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
+                vec3 correction = max(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
         }
@@ -103,6 +103,7 @@ float PhysicsObject::getRadius()
     }
     else
     {
-        return std::max({scale.x, scale.y, scale.z}) * collider->bbox.radius;
+        return max(scale.x, scale.y, scale.z) * collider->bbox.radius;
+        return max(scale.x, scale.y, scale.z) * collider->bbox.radius;
     }
 }

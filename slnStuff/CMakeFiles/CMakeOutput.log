@@ -9,7 +9,7 @@ The output was:
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
-Build started 5/7/2019 3:26:00 PM.
+Build started 5/12/2019 1:32:23 PM.
 Project "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
@@ -39,7 +39,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:02.00
+Time Elapsed 00:00:04.14
 
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -58,7 +58,7 @@ The output was:
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
-Build started 5/7/2019 3:26:03 PM.
+Build started 5/12/2019 1:32:27 PM.
 Project "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
@@ -88,7 +88,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.61
+Time Elapsed 00:00:02.33
 
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -100,33 +100,33 @@ The CXX compiler identification is MSVC, found in "C:/Users/Daniel/Documents/Git
 Determining if the C compiler works passed with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_ff6c7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_e03a2.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ff6c7.dir\Debug\\" /Fd"cmTC_ff6c7.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\testCCompiler.c"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_e03a2.dir\Debug\\" /Fd"cmTC_e03a2.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\testCCompiler.c"
   testCCompiler.c
   
-  cmTC_ff6c7.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_ff6c7.exe
+  cmTC_e03a2.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_e03a2.exe
 
 
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_017d3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_edc9b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_017d3.dir\Debug\\" /Fd"cmTC_017d3.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCCompilerABI.c"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_edc9b.dir\Debug\\" /Fd"cmTC_edc9b.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCCompilerABI.c"
   CMakeCCompilerABI.c
   
-  cmTC_017d3.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_017d3.exe
+  cmTC_edc9b.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_edc9b.exe
 
 
 
@@ -134,17 +134,17 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 Detecting C [] compiler features compiled with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_aa32a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_63198.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aa32a.dir\Debug\\" /Fd"cmTC_aa32a.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\feature_tests.c"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_63198.dir\Debug\\" /Fd"cmTC_63198.dir\Debug\vc142.pdb" /Gd /TC /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\feature_tests.c"
   feature_tests.c
   
-  cmTC_aa32a.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_aa32a.exe
+  cmTC_63198.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_63198.exe
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -152,33 +152,33 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 Determining if the CXX compiler works passed with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_0c2e4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_75776.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_0c2e4.dir\Debug\\" /Fd"cmTC_0c2e4.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\testCXXCompiler.cxx"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_75776.dir\Debug\\" /Fd"cmTC_75776.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\testCXXCompiler.cxx"
   testCXXCompiler.cxx
   
-  cmTC_0c2e4.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_0c2e4.exe
+  cmTC_75776.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_75776.exe
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_0c517.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_753f6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_0c517.dir\Debug\\" /Fd"cmTC_0c517.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXCompilerABI.cpp"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_753f6.dir\Debug\\" /Fd"cmTC_753f6.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXCompilerABI.cpp"
   CMakeCXXCompilerABI.cpp
   
-  cmTC_0c517.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_0c517.exe
+  cmTC_753f6.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_753f6.exe
 
 
 
@@ -186,17 +186,17 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 Detecting CXX [] compiler features compiled with the following output:
 Change Dir: C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_c9f0b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe cmTC_5c98b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:m 
 Microsoft (R) Build Engine version 16.0.461+g6ff56ef63c for .NET Framework
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Microsoft (R) C/C++ Optimizing Compiler Version 19.20.27508.1 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c9f0b.dir\Debug\\" /Fd"cmTC_c9f0b.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\feature_tests.cxx"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_5c98b.dir\Debug\\" /Fd"cmTC_5c98b.dir\Debug\vc142.pdb" /Gd /TP /errorReport:queue "C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\feature_tests.cxx"
   feature_tests.cxx
   
-  cmTC_c9f0b.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_c9f0b.exe
+  cmTC_5c98b.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\CMakeTmp\Debug\cmTC_5c98b.exe
 
 
     Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers

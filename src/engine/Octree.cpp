@@ -4,6 +4,7 @@
 #include "../Program.h"
 #include "../MatrixStack.h"
 
+#include <algorithm>
 #include <iostream>
 #include <glm/glm.hpp>
 #include <unordered_set>
@@ -15,8 +16,8 @@ using namespace std;
 
 // https://www.gamedev.net/articles/programming/general-and-gameplay-programming/introduction-to-octrees-r3529/
 
-OctNode::OctNode(vec3 min, vec3 max) :
-    min(min), max(max), dimensions(max - min), center(min + dimensions / 2.0f)
+OctNode::OctNode(vec3 imin, vec3 imax) :
+    imin(imin), imax(imax), dimensions(imax - imin), center(imin + dimensions / 2.0f)
 {
     for (int i = 0; i < 8; i++)
     {
@@ -39,14 +40,14 @@ void OctNode::build()
         return;
     }
 
-    octant[0] = make_shared<OctNode>(min, center);
-    octant[1] = make_shared<OctNode>(vec3(center.x, min.y, min.z), vec3(max.x, center.y, center.z));
-    octant[2] = make_shared<OctNode>(vec3(center.x, min.y, center.z), vec3(max.x, center.y, max.z));
-    octant[3] = make_shared<OctNode>(vec3(min.x, min.y, center.z), vec3(center.x, center.y, max.z));
-    octant[4] = make_shared<OctNode>(vec3(min.x, center.y, min.z), vec3(center.x, max.y, center.z));
-    octant[5] = make_shared<OctNode>(vec3(center.x, center.y, min.z), vec3(max.x, max.y, center.z));
-    octant[6] = make_shared<OctNode>(center, max);
-    octant[7] = make_shared<OctNode>(vec3(min.x, center.y, center.z), vec3(center.x, max.y, max.z));
+    octant[0] = make_shared<OctNode>(imin, center);
+    octant[1] = make_shared<OctNode>(vec3(center.x, imin.y, imin.z), vec3(imax.x, center.y, center.z));
+    octant[2] = make_shared<OctNode>(vec3(center.x, imin.y, center.z), vec3(imax.x, center.y, imax.z));
+    octant[3] = make_shared<OctNode>(vec3(imin.x, imin.y, center.z), vec3(center.x, center.y, imax.z));
+    octant[4] = make_shared<OctNode>(vec3(imin.x, center.y, imin.z), vec3(center.x, imax.y, center.z));
+    octant[5] = make_shared<OctNode>(vec3(center.x, center.y, imin.z), vec3(imax.x, imax.y, center.z));
+    octant[6] = make_shared<OctNode>(center, imax);
+    octant[7] = make_shared<OctNode>(vec3(imin.x, center.y, center.z), vec3(center.x, imax.y, imax.z));
 
     vector<shared_ptr<PhysicsObject>> delist;
 
@@ -54,7 +55,7 @@ void OctNode::build()
     {
         for (int i = 0; i < 8; i++)
         {
-            if (boxContainsSphere(octant[i]->min, octant[i]->max, element->position, element->getRadius()))
+            if (boxContainsSphere(octant[i]->imin, octant[i]->imax, element->position, element->getRadius()))
             {
                 octant[i]->elements.insert(element);
                 delist.push_back(element);
@@ -79,7 +80,7 @@ void OctNode::build()
 
 }
 
-Octree::Octree(vec3 min, vec3 max) : min(min), max(max), debug(false)
+Octree::Octree(vec3 min, vec3 max) : imin(min), imax(max), debug(false)
 {
 }
 
@@ -103,7 +104,7 @@ vector<shared_ptr<PhysicsObject>> Octree::query(shared_ptr<PhysicsObject> object
         for (int i = 0; i < 8; i++)
         {
             if (nodes.top()->octant[i] != nullptr &&
-                boxContainsSphere(nodes.top()->octant[i]->min, nodes.top()->octant[i]->max, object->position, object->getRadius()))
+                boxContainsSphere(nodes.top()->octant[i]->imin, nodes.top()->octant[i]->imax, object->position, object->getRadius()))
             {
                 nodes.push(nodes.top()->octant[i]);
                 end = false;
@@ -202,7 +203,7 @@ void Octree::clear()
 
 void Octree::build()
 {
-    root = make_shared<OctNode>(min, max);
+    root = make_shared<OctNode>(imin, imax);
     root->elements.insert(objects.begin(), objects.end());
     root->build();
 }
