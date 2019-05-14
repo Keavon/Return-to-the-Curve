@@ -15,6 +15,7 @@ class PhysicsObject : public GameObject
 {
 public:
     PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider);
+	PhysicsObject();
     void resolveCollision(float dt);
     void checkCollision(PhysicsObject *other);
     void update(float dt);

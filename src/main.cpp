@@ -568,7 +568,7 @@ public:
 					vec3{110.0, 2.0, -1.0},
 					vec3{115.0, 2.0, 7.0}
 				};
-        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
+        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), roboHead, 1.0f);
         enemy->init(windowManager);
 
         ifstream inLevel(resourceDirectory + "/levels/Level1.txt");

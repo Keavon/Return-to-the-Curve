@@ -9,7 +9,7 @@
 class Enemy : public PhysicsObject
 {
 public:
-    Enemy(std::vector<glm::vec3> enemyPath, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
+	Enemy(std::vector<glm::vec3> enemyPath, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
     void init(WindowManager *windowManager);
     void update(float dt);
 
