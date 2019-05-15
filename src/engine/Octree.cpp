@@ -4,6 +4,7 @@
 #include "../Program.h"
 #include "../MatrixStack.h"
 
+#include <algorithm>
 #include <iostream>
 #include <glm/glm.hpp>
 #include <unordered_set>

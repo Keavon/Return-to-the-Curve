@@ -49,6 +49,9 @@
     <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\Octree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\PhysicsObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,10 +132,10 @@
     <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\PhysicsObject.h">
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\Octree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\Raytrace.h">
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\PhysicsObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\src\engine\TriggerCylinder.h">
@@ -170,8 +173,20 @@
     <CustomBuild Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\circle_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\circle_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\cube_outline_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\cube_outline_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_fragDebug.1.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_fragDebug.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_vertDebug.1.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\depth_vertDebug.glsl" />
     <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\mat_frag.glsl" />
     <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\mat_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\pass_texfrag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\pass_vert.glsl" />
     <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\sky_frag.glsl" />
     <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\sky_vert.glsl" />
     <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\resources\shaders\tex_frag.glsl" />

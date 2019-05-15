@@ -96,6 +96,9 @@ public:
 
     // Shapes
     shared_ptr<Shape> cube;
+	shared_ptr<Shape> roboHead;
+	shared_ptr<Shape> roboLeg;
+	shared_ptr<Shape> roboFoot;
     shared_ptr<Shape> boxModel;
     shared_ptr<Shape> plane;
     shared_ptr<Shape> bunny;
@@ -520,6 +523,24 @@ public:
         bunny->measure();
         bunny->init();
 
+		roboHead = make_shared<Shape>();
+		roboHead->loadMesh(resourceDirectory + "/models/Robot/RobotHead.obj");
+		roboHead->resize();
+		roboHead->measure();
+		roboHead->init();
+
+		roboLeg = make_shared<Shape>();
+		roboLeg->loadMesh(resourceDirectory + "/models/Robot/RobotLeg.obj");
+		roboLeg->resize();
+		roboLeg->measure();
+		roboLeg->init();
+
+		roboFoot = make_shared<Shape>();
+		roboFoot->loadMesh(resourceDirectory + "/models/Robot/RobotFoot.obj");
+		roboFoot->resize();
+		roboFoot->measure();
+		roboFoot->init();
+
         billboard = make_shared<Shape>();
         billboard->loadMesh(resourceDirectory + "/models/billboard.obj");
         billboard->resize();
@@ -547,7 +568,7 @@ public:
 					vec3{110.0, 2.0, -1.0},
 					vec3{115.0, 2.0, 7.0}
 				};
-        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
+        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), roboHead, 1.0f);
         enemy->init(windowManager);
 
         ifstream inLevel(resourceDirectory + "/levels/Level1.txt");

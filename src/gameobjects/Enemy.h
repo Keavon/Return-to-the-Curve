@@ -9,7 +9,7 @@
 class Enemy : public PhysicsObject
 {
 public:
-    Enemy(std::vector<glm::vec3> enemyPath, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
+	Enemy(std::vector<glm::vec3> enemyPath, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
     void init(WindowManager *windowManager);
     void update(float dt);
 
@@ -23,4 +23,5 @@ public:
     bool pointReached;
     glm::vec3 direction;
     std::vector<glm::vec3> pathCtrlPts;
+	PhysicsObject uleg1, uleg2, uleg3, uleg4, lleg1, lleg2, lleg3, lleg4, foot1, foot2, foot3, foot4;
 };
