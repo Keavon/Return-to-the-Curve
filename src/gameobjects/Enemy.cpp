@@ -45,6 +45,11 @@ void Enemy::update(float dt)
                 3*t*pow(1-t,2)*pathCtrlPts[1].x +
                 3*pow(t,2)*(1-t)*pathCtrlPts[2].x +
                 pow(t,3)*pathCtrlPts[3][0];
+        targetY = 
+                pow(1 - t, 3)*pathCtrlPts[0].y +
+                3*t*pow(1-t,2)*pathCtrlPts[1].y +
+                3*pow(t,2)*(1-t)*pathCtrlPts[2].y +
+                pow(t,3)*pathCtrlPts[3][1];
         targetZ = 
                 pow(1 - t, 3)*pathCtrlPts[0].z +
                 3*t*pow(1-t,2)*pathCtrlPts[1].z +
@@ -69,7 +74,8 @@ void Enemy::update(float dt)
     }
         float dX = targetX - position.x;
         float dZ = targetZ - position.z;
-        direction = normalize(vec3{dX ,0 ,dZ});
+        float dY = targetY - position.y;
+        direction = normalize(vec3{dX ,dY ,dZ});
         velocity.x = velocity.z = 0;
         velocity.y = 0;
         //vec3 axis = vec3{0,1,0};

@@ -19,6 +19,7 @@ public:
     float t = 0.1;
     float targetX;
     float targetZ;
+    float targetY;
     bool forward;
     bool pointReached;
     glm::vec3 direction;

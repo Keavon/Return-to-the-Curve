@@ -107,6 +107,7 @@ public:
     // Game objects
     shared_ptr<Ball> ball;
     shared_ptr<Enemy> enemy;
+    shared_ptr<Enemy> enemy2;
     shared_ptr<Goal> goal;
     shared_ptr<Box> goalObject;
 
@@ -540,15 +541,23 @@ public:
 
         ball = make_shared<Ball>(startPos, quat(1, 0, 0, 0), sphere, 1);
         ball->init(windowManager);
-				// Control points for enemy's bezier curve path
-				std::vector<glm::vec3> enemyPath = {
-					vec3{95.0, 2.0, 7.0},
-					vec3{100.0, 2.0, 15.0},
-					vec3{110.0, 2.0, -1.0},
-					vec3{115.0, 2.0, 7.0}
-				};
+        // Control points for enemy's bezier curve path
+        std::vector<glm::vec3> enemyPath = {
+            vec3{95.0, 2.0, 7.0},
+            vec3{100.0, 2.0, 15.0},
+            vec3{110.0, 2.0, -1.0},
+            vec3{115.0, 2.0, 7.0}
+        };
         enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
         enemy->init(windowManager);
+        enemyPath = {
+            vec3{125.0, 8.0, 55.0},
+            vec3{115.0, 20.0, 55.0},
+            vec3{105.0, 5.0, 55.0},
+            vec3{95.0, 8.0, 55.0}
+        };
+        enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
+        enemy2->init(windowManager);
 
         ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
         float xval, yval, zval;
@@ -585,6 +594,7 @@ public:
         octree->queue(ball);
         octree->queue(boxes);
         octree->queue(enemy);
+        octree->queue(enemy2);
     }
 
     /* set up a quad for rendering a framebuffer */
@@ -686,6 +696,7 @@ public:
         ball->draw(shader, M);
         goalObject->draw(shader, M);
         enemy->draw(shader, M);
+        enemy2->draw(shader, M);
         // =================================================================================================
 
         // Draw Boxes
@@ -857,11 +868,19 @@ public:
         {
             box->update(dt);
         }
+        //TODO:: Do Collision checks between ball and Enemy
+        /*
+        auto enemiesToCheck = octree->query(ball);
+        for (auto enemies : enemiesToCheck) {
+            
+        }*/
+        
         goalObject->update(dt);
         ball->update(dt, camera->getDolly(), camera->getStrafe());
         camera->update(dt, ball);
         goal->update(dt);
         enemy->update(dt);
+        enemy2->update(dt);
     }
 
     void setLight(shared_ptr<Program> prog)
