@@ -4,6 +4,7 @@
 #include "../WindowManager.h"
 #include "../engine/ColliderSphere.h"
 #include "../engine/PhysicsObject.h"
+#include "Enemy.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/projection.hpp>
@@ -42,6 +43,14 @@ void Ball::init(WindowManager *windowManager)
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
+    for (auto collision : collider->pendingCollisions)
+    {
+        if (dynamic_cast<Enemy *>(collision.other) != NULL)
+        {
+            impulse -= collision.normal * 300.0f;
+        }
+    }
+
     PhysicsObject::update(dt);
 
     vec3 direction = vec3(0);
