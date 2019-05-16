@@ -14,10 +14,6 @@ GameObject::GameObject(vec3 position, quat orientation, shared_ptr<Shape> model)
 {
 }
 
-GameObject::GameObject()
-{
-}
-
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
     if (model != NULL)

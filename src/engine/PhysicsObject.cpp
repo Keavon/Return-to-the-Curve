@@ -26,14 +26,6 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation,
     netForce(0), impulse(0), acceleration(0)
 {
 }
-
-PhysicsObject::PhysicsObject() :
-	GameObject(),
-	netForce(0), impulse(0), acceleration(0)
-{
-	cout << "YOU SHOULDNT CALL THIS" << endl;
-}
-
 void PhysicsObject::update(float dt)
 {
     normForce = vec3(0);
