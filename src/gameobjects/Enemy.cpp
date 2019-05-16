@@ -39,6 +39,8 @@ void Enemy::init(WindowManager *windowManager)
 
 void Enemy::update(float dt)
 {
+    collider->pendingCollisions.clear();
+
     if (pointReached) {
         
         //Calculate new position over factor t
@@ -77,10 +79,9 @@ void Enemy::update(float dt)
         //vec3 axis = vec3{0,1,0};
         //quat q = rotate(, axis);
         //orientation = q * orientation;
-        velocity = direction * moveSpeed*dt;
+        velocity = direction * moveSpeed;
         //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
-        //UNCOMMENT LATER
-		position += velocity;
+        position += velocity * dt;
         //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
