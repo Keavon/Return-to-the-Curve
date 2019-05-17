@@ -32,7 +32,21 @@ Collider::Collider(float radius) :
 
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2)
 {
+    float d = distance(sphere1->position, sphere2->position);
+    if (d < sphere1->getRadius() + sphere2->getRadius())
+    {
+        Collision collision1;
+        collision1.other = sphere2;
+        collision1.normal = -normalize(sphere1->position - sphere2->position);
+        collision1.penetration = sphere1->getRadius() + sphere2->getRadius() - d;
+        sphereCol1->pendingCollisions.push_back(collision1);
 
+        Collision collision2;
+        collision2.other = sphere1;
+        collision2.normal = collision1.normal;
+        collision2.penetration = collision1.penetration;
+        sphereCol2->pendingCollisions.push_back(collision2);
+    }
 }
 
 
@@ -59,12 +73,12 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
             float d;
             bool rayDidIntersect = intersectRayTriangle(sphere->position, dir, v[0], v[1], v[2], bary, d);
 
-            if (rayDidIntersect && fabs(d) < sphereCol->radius)
+            if (rayDidIntersect && fabs(d) < sphere->getRadius())
             {
                 Collision collision;
                 collision.other = mesh;
                 collision.normal = dir;
-                collision.penetration = sphereCol->radius - d;
+                collision.penetration = sphere->getRadius() - d;
                 sphereCol->pendingCollisions.push_back(collision);
 
                 // add edges of triangle to set of edges we shouldn't check
@@ -88,13 +102,13 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
             vec3 closestPoint = v[0] + proj(sphere->position - v[0], normalize(v[1] - v[0]));
             float d = distance(sphere->position, closestPoint);
 
-            if (d < sphereCol->radius &&
+            if (d < sphere->getRadius() &&
                 dot(v[1] - v[0], closestPoint - v[0]) > 0 && dot(v[0] - v[1], closestPoint - v[1]) > 0)
             {
                 Collision collision;
                 collision.other = mesh;
                 collision.normal = normalize(closestPoint - sphere->position);
-                collision.penetration = sphereCol->radius - d;
+                collision.penetration = sphere->getRadius() - d;
                 sphereCol->pendingCollisions.push_back(collision);
 
                 // add vertices of edge to set of vertices we souldn't check 
@@ -115,12 +129,12 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
             }
 
             float d = distance(sphere->position, v);
-            if (d < sphereCol->radius)
+            if (d < sphere->getRadius())
             {
                 Collision collision;
                 collision.other = mesh;
                 collision.normal = normalize(v - sphere->position);
-                collision.penetration = sphereCol->radius - d;
+                collision.penetration = sphere->getRadius() - d;
                 sphereCol->pendingCollisions.push_back(collision);
             }
         }
@@ -129,10 +143,10 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
 
 void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphereCol, PhysicsObject *tSphere, TriggerSphere *tSphereTrig)
 {
-    if (distance2(cSphere->position, tSphere->position) < powf(cSphereCol->radius + tSphereTrig->radius, 2))
+    if (distance2(cSphere->position, tSphere->position) < powf(cSphere->getRadius() + tSphere->getRadius(), 2))
     {
         Collision collision;
-        collision.other = tSphere;
+        collision.other = cSphere;
         tSphereTrig->pendingCollisions.push_back(collision);
     }
 }

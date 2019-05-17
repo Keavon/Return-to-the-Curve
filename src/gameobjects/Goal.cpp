@@ -23,7 +23,7 @@ void Goal::update(float dt)
 {
     for (auto collision : collider->pendingCollisions)
     {
-        if (static_cast<Ball *>(collision.other) != NULL)
+        if (dynamic_cast<Ball *>(collision.other) != NULL)
         {
             ballInGoal = true;
         }

@@ -3,6 +3,7 @@
 #include "ColliderSphere.h"
 #include "Collider.h"
 
+#define NOMINMAX
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/projection.hpp>
 #include <glm/glm.hpp>
@@ -22,10 +23,10 @@ bool inRange(float n, float low, float high)
 PhysicsObject::PhysicsObject(vec3 position, quat orientation,
     shared_ptr<Shape> model, shared_ptr<Collider> collider) :
     GameObject(position, orientation, model), collider(collider),
-    netForce(0), impulse(0), acceleration(0)
+    netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
+    normForce(0), friction(0), elasticity(0), speed(0)
 {
 }
-
 void PhysicsObject::update(float dt)
 {
     normForce = vec3(0);
@@ -39,7 +40,7 @@ void PhysicsObject::update(float dt)
         float velAlongNormal = dot(relVel, collision.normal);
         if (velAlongNormal < 0)
         {
-            float e = std::min(other->elasticity, elasticity);
+            float e = (std::min)(other->elasticity, elasticity);
             float j = (-(1 + e) * velAlongNormal) / (invMass + other->invMass);
             vec3 colImpulse = j * collision.normal;
             velocity -= invMass * colImpulse;
@@ -61,7 +62,7 @@ void PhysicsObject::update(float dt)
             {
                 float percent = 0.2;
                 float slop = 0.01;
-                vec3 correction = std::max(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
+                vec3 correction = (std::max)(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
         }
@@ -103,6 +104,6 @@ float PhysicsObject::getRadius()
     }
     else
     {
-        return std::max({scale.x, scale.y, scale.z}) * collider->bbox.radius;
+        return (std::max)({scale.x, scale.y, scale.z}) * collider->bbox.radius;
     }
 }
