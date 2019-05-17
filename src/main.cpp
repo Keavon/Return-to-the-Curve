@@ -40,6 +40,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
+#define SHADOW_QUALITY 2 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 using namespace std;
 using namespace glm;
@@ -52,39 +53,33 @@ class Application : public EventCallbacks
 public:
     WindowManager *windowManager = nullptr;
 
-    int score = 0;
+    // Game Info Globals
+    float START_TIME = 0.0f;
+    bool DID_WIN = false;
+    bool MOVING = false;
+    bool MOUSE_DOWN = false;
+    bool SHOW_CURSOR = false;
+    int SCORE = 0;
+    int CURRENT_SKIN = 0;
+    vec3 START_POSITION = vec3(120, 3, 7);
 
-    // Game info
-    float startTime;
-    vec3 startPos = vec3(120, 3, 7);
-    bool didWin = false;
-
-    // Constants
-    float SPAWN_RATE = 5;
-
+    // Shadow Globals
     int SHADOWS = 1;
+    int SHADOW_AA = 4;
     int DEBUG_LIGHT = 0;
     int GEOM_DEBUG = 1;
+    GLuint SHADOW_SIZE = 0;
+    GLuint depthMapFBO = 0;
+    GLuint depthMap = 0;
 
-    float timer = 0;
-    float printTimer = 0;
-
-    // for shadows
-    GLuint depthMapFBO;
-    const GLuint S_WIDTH = 2048, S_HEIGHT = 2048;
-    GLuint depthMap;
-
-    // light position for shadows
-    vec3 g_light = vec3(80, 40, -20);
-
-    shared_ptr<Camera> camera;
+    // Light Position Globals
+    vec3 gameLight = vec3(60, 30, 50);
 
     // Shader programs
     shared_ptr<Program> texProg;
     shared_ptr<Program> skyProg;
     shared_ptr<Program> circleProg;
     shared_ptr<Program> cubeOutlineProg;
-
     shared_ptr<Program> DepthProg;
     shared_ptr<Program> DepthProgDebug;
     shared_ptr<Program> DebugProg;
@@ -96,50 +91,29 @@ public:
     shared_ptr<Shape> roboFoot;
     shared_ptr<Shape> boxModel;
     shared_ptr<Shape> plane;
-    shared_ptr<Shape> bunny;
     shared_ptr<Shape> billboard;
     shared_ptr<Shape> goalModel;
     shared_ptr<Shape> sphere;
 
-    vector<shared_ptr<Object3D>> bunnies;
-    vector<shared_ptr<PhysicsObject>> boxes;
+    // Camera
+    shared_ptr<Camera> camera;
 
     // Game objects
     shared_ptr<Ball> ball;
     shared_ptr<Enemy> enemy;
     shared_ptr<Goal> goal;
     shared_ptr<Box> goalObject;
-
+    vector<shared_ptr<PhysicsObject>> boxes;
     shared_ptr<Octree> octree;
 
-    // geometry for texture render
+    // BillBoard for rendering a texture to screen. (like the shadow map)
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
 
     // Textures
     shared_ptr<Skybox> skyboxTexture;
-    shared_ptr<Texture> grassTexture;
-    shared_ptr<Texture> brickTexture;
     shared_ptr<Texture> crateTexture;
-
     vector<shared_ptr<Texture>> marbleTextures;
-
-    // Contains vertex information for OpenGL
-    GLuint VertexArrayID;
-
-    // Data necessary to give our triangle to OpenGL
-    GLuint VertexBufferID;
-
-    bool FirstTime = true;
-    bool Moving = false;
-    int gMat = 0;
-
-    // used to track current player skin
-    int CURRENT_SKIN = 0;
-
-    float cTheta;
-    bool mouseDown = false;
-    bool showCursor = false;
 
     void init(const string &resourceDirectory)
     {
@@ -147,7 +121,6 @@ public:
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         GLSL::checkVersion();
 
-        cTheta = 0;
         // Set background color.
         glClearColor(.12f, .34f, .56f, 1.0f);
         // Enable z-buffer test.
@@ -266,6 +239,9 @@ public:
         texProg->addAttribute("vertNor");
         texProg->addAttribute("vertTex");
 
+        texProg->addUniform("shadows");
+        texProg->addUniform("shadowSize");
+        texProg->addUniform("shadowAA");
         texProg->addUniform("shadowDepth");
         texProg->addUniform("LS");
         // texProg->addUniform("lightDir");
@@ -395,6 +371,34 @@ public:
 
     void initShadow()
     {
+        switch (SHADOW_QUALITY)
+        {
+        case 0:
+            SHADOWS = 0;
+            SHADOW_AA = 1;
+            SHADOW_SIZE = 256;
+            break;
+        case 1:
+            SHADOWS = 1;
+            SHADOW_SIZE = 512;
+            break;
+        case 2:
+            SHADOWS = 1;
+            SHADOW_SIZE = 1024;
+            break;
+        case 3:
+            SHADOWS = 1;
+            SHADOW_SIZE = 2048;
+            break;
+        case 4:
+            SHADOWS = 1;
+            SHADOW_SIZE = 4096;
+            break;
+        default:
+            SHADOWS = 1;
+            SHADOW_SIZE = 1024;
+            break;
+        }
         /* set up the FBO for the light's depth */
         // generate the FBO for the shadow depth
         glGenFramebuffers(1, &depthMapFBO);
@@ -402,7 +406,7 @@ public:
         // generate the texture
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0,
                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -421,13 +425,13 @@ public:
 
     void setTextureMaterial(int i)
     {
+        // pulled these out of the switch since they were all identical
+        glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
+        glUniform1f(texProg->getUniform("Shine"), 32);
+
         switch (i)
         {
-            // pulled these out of the switch since they were all identical
-            glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
-            glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
-            glUniform1f(texProg->getUniform("Shine"), 32);
-
         case 0:
             marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
@@ -435,7 +439,7 @@ public:
             marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
         case 2:
-            crateTexture->bind(texProg->getUniform("Texture0"));
+            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
         }
     }
@@ -513,7 +517,7 @@ public:
 
     void initGameObjects()
     {
-        ball = make_shared<Ball>(startPos, quat(1, 0, 0, 0), sphere, 1);
+        ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), sphere, 1);
         ball->init(windowManager);
 
         goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), goalModel);
@@ -600,7 +604,7 @@ public:
 
         mat4 LS;
 
-        if (SHADOWS)
+        if (SHADOW_QUALITY)
         {
             createShadowMap(&LS);
         }
@@ -619,9 +623,16 @@ public:
         }
     }
 
-    void drawScene(shared_ptr<Program> shader, GLint texID, int TexOn)
+    void drawScene(shared_ptr<Program> shader)
     {
         // Draw textured models
+
+        if (shader == texProg)
+        {
+            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
+            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
+            glUniform1i(shader->getUniform("shadows"), SHADOWS);
+        }
 
         // Create the matrix stacks
         auto M = make_shared<MatrixStack>();
@@ -677,7 +688,7 @@ public:
     void createShadowMap(mat4 *LS)
     {
         // set up light's depth map
-        glViewport(0, 0, S_WIDTH, S_HEIGHT); // shadow map width and height
+        glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
@@ -687,10 +698,10 @@ public:
         DepthProg->bind();
         // TODO you will need to fix these
         mat4 LP = SetOrthoMatrix(DepthProg);
-        mat4 LV = SetLightView(DepthProg, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
+        mat4 LV = SetLightView(DepthProg, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
-        // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
-        drawScene(DepthProg, 0, 0);
+        // SetLightView(DepthProg, gameLight, g_lookAt, vec3(0, 1, 0));
+        drawScene(DepthProg);
         DepthProg->unbind();
         glCullFace(GL_BACK);
 
@@ -707,8 +718,8 @@ public:
             DepthProgDebug->bind();
             // render scene from light's point of view
             SetOrthoMatrix(DepthProgDebug);
-            SetLightView(DepthProgDebug, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
-            drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
+            SetLightView(DepthProgDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+            drawScene(DepthProgDebug);
             DepthProgDebug->unbind();
         }
         else
@@ -765,7 +776,7 @@ public:
         sendShadowMap();
 
         glUniformMatrix4fv(texProg->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
-        drawScene(texProg, texProg->getUniform("Texture0"), 1);
+        drawScene(texProg);
 
         texProg->unbind();
 
@@ -798,12 +809,12 @@ public:
         octree->clear();
         octree->build();
 
-        if (ballInGoal && !didWin)
+        if (ballInGoal && !DID_WIN)
         {
-            didWin = true;
+            DID_WIN = true;
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
             cout << "You win!" << endl;
-            cout << "Time: " << glfwGetTime() - startTime << endl;
+            cout << "Time: " << glfwGetTime() - START_TIME << endl;
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
         }
         auto boxesToCheck = octree->query(ball);
@@ -833,7 +844,7 @@ public:
     {
         // shadow mapping helper
 
-        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 128.0f);
+        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 96.0f);
         // fill in the glUniform call to send to the right shader!
         glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
                            value_ptr(ortho));
@@ -875,19 +886,22 @@ public:
         }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
+            SHADOW_AA = (SHADOW_AA + 1) % 9;
+            if (SHADOW_AA == 0)
+            {
+                SHADOW_AA++;
+            }
+        }
+        else if (key == GLFW_KEY_T && action == GLFW_PRESS)
+        {
             SHADOWS = !SHADOWS;
         }
-
         // other call backs
         else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
             glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR,
                              GLFW_CURSOR_NORMAL);
             glfwSetWindowShouldClose(window, GL_TRUE);
-        }
-        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-        {
-            gMat = (gMat + 1) % 4;
         }
         else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
         {
@@ -907,8 +921,8 @@ public:
         }
         else if (key == GLFW_KEY_P && action == GLFW_PRESS)
         {
-            showCursor = !showCursor;
-            if (showCursor)
+            SHOW_CURSOR = !SHOW_CURSOR;
+            if (SHOW_CURSOR)
             {
                 glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
@@ -923,17 +937,16 @@ public:
         }
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
-            ball->position = startPos;
+            ball->position = START_POSITION;
             ball->velocity = vec3(0);
-            didWin = false;
+            DID_WIN = false;
             ballInGoal = false;
-            startTime = glfwGetTime();
+            START_TIME = glfwGetTime();
         }
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
-        cTheta += (float)deltaX / 10;
     }
 
     void mouseCallback(GLFWwindow *window, int button, int action, int mods)
@@ -942,17 +955,17 @@ public:
 
         if (action == GLFW_PRESS)
         {
-            mouseDown = true;
+            MOUSE_DOWN = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << ball->position.x << ", " << ball->position.y << ", " << ball->position.z << endl;
-            Moving = true;
+            MOVING = true;
         }
 
         if (action == GLFW_RELEASE)
         {
-            Moving = false;
-            mouseDown = false;
+            MOVING = false;
+            MOUSE_DOWN = false;
         }
     }
 
@@ -979,7 +992,7 @@ int main(int argc, char **argv)
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    windowManager->init(1280, 720);
+    windowManager->init(1920, 1080);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
@@ -992,7 +1005,7 @@ int main(int argc, char **argv)
     application->initGeom(resourceDir);
 
     double prevTime = glfwGetTime();
-    application->startTime = glfwGetTime();
+    application->START_TIME = glfwGetTime();
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(windowManager->getHandle()))
