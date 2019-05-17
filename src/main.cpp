@@ -523,7 +523,7 @@ public:
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}
         };
-        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
+        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), roboHead, roboLeg, roboFoot, 1);
         enemy->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
@@ -531,23 +531,13 @@ public:
             vec3{105.0, 5.0, 55.0},
             vec3{95.0, 8.0, 55.0}
         };
-        enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), sphere, 1);
+        enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), roboHead, roboLeg, roboFoot, 1);
         enemy2->init(windowManager);
 
         goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), goalModel);
         goalObject->scale = vec3(4);
 
         goal = make_shared<Goal>(goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
-
-        // Control points for enemy's bezier curve path
-        std::vector<glm::vec3> enemyPath = {
-            vec3{95.0, 2.0, 7.0},
-            vec3{100.0, 2.0, 15.0},
-            vec3{110.0, 2.0, -1.0},
-            vec3{115.0, 2.0, 7.0}};
-
-        enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), roboHead, roboLeg, roboFoot, 1.0f);
-        enemy->init(windowManager);
 
         // Need to add each physics object to the octree
         octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
