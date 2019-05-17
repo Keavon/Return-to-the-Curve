@@ -6,7 +6,7 @@ uniform vec3 MatSpec;
 uniform vec3 MatAmb;
 uniform float Shine;
 
-uniform vec3 dirLightDir;
+uniform vec3 lightPos;
 uniform vec3 dirLightColor;
 uniform vec3 viewPos;
 
@@ -47,7 +47,7 @@ void main()
 
 	//normals
 	vec3 normal = normalize(in_struct.fragNor);
-	vec3 dirLightDirNorm = normalize(dirLightDir);
+	vec3 dirLightDirNorm = normalize(lightPos);
 
 	//diffuse
 	vec3 texColor0 = vec3(texture(Texture0, in_struct.vTexCoord));
