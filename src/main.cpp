@@ -40,7 +40,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
-#define SHADOW_QUALITY 2 // -1 for default;
+#define SHADOW_QUALITY 4 // -1 for default;
 
 using namespace std;
 using namespace glm;

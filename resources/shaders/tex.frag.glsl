@@ -71,17 +71,20 @@ void main()
 	if (shadows)
 	{
 		float increment = (1.0f / shadowSize);
-		vec4 subSample1 = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
-		vec4 subSample2 = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y + increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
-		vec4 subSample3 = vec4(in_struct.fPosLS.x + increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
-		vec4 subSample4 = vec4(in_struct.fPosLS.x + increment, in_struct.fPosLS.y + increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		vec4 subSample = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
 
-		Shade += TestShadow(subSample1);
-		Shade += TestShadow(subSample2);
-		Shade += TestShadow(subSample3);
-		Shade += TestShadow(subSample4);
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				subSample.x = in_struct.fPosLS.x + (i * increment);
+				subSample.y = in_struct.fPosLS.y +  (j * increment);
+				Shade += TestShadow(subSample);
+			}	
+		}
+		Shade = Shade / 9.0f;
 	}
-	Shade = Shade / 4.0f;
+	
 	
 	diffuse = (diffuse * (1.0 - Shade));
 
