@@ -11,6 +11,7 @@ uniform vec3 dirLightColor;
 uniform vec3 viewPos;
 
 uniform float shadowSize;
+float shadowAA = 8.0f;
 uniform bool shadows;
 
 out vec4 Outcolor;
@@ -71,18 +72,24 @@ void main()
 	if (shadows)
 	{
 		float increment = (1.0f / shadowSize);
-		vec4 subSample = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		float halfIncrement = (increment / 2.0f);
 
-		for (int i = 0; i < 3; i++)
+		float startX = (in_struct.fPosLS.x - ((shadowAA + 1.0f) * halfIncrement));
+		float startY = (in_struct.fPosLS.y - ((shadowAA + 1.0f) * halfIncrement));
+
+		vec4 startSample = vec4(startX, startY, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		vec4 subSample = startSample;
+
+		for (float i = 0.0f; i < shadowAA; i++)
 		{
-			for (int j = 0; j < 3; j++)
+			for (float j = 0.0f; j < shadowAA; j++)
 			{
-				subSample.x = in_struct.fPosLS.x + (i * increment);
-				subSample.y = in_struct.fPosLS.y +  (j * increment);
+				subSample.x = startX + (i * increment);
+				subSample.y = startY +  (j * increment);
 				Shade += TestShadow(subSample);
 			}	
 		}
-		Shade = Shade / 9.0f;
+		Shade = Shade / (shadowAA * shadowAA);
 	}
 	
 	

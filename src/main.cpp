@@ -40,7 +40,8 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
-#define SHADOW_QUALITY 4 // -1 for default;
+#define SHADOW_QUALITY 3 // -1 for default;
+#define SHADOW_AA 4
 
 using namespace std;
 using namespace glm;
@@ -269,6 +270,7 @@ public:
 
         texProg->addUniform("shadows");
         texProg->addUniform("shadowSize");
+        texProg->addUniform("shadowAA");
         texProg->addUniform("shadowDepth");
         texProg->addUniform("LS");
         // texProg->addUniform("lightDir");
@@ -455,7 +457,7 @@ public:
         glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
         glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
         glUniform1f(texProg->getUniform("Shine"), 32);
-        
+
         switch (i)
         {
         case 0:
@@ -656,6 +658,7 @@ public:
         if (shader == texProg)
         {
             glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
+            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
             glUniform1i(shader->getUniform("shadows"), SHADOWS);
         }
 
