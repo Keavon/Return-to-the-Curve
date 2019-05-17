@@ -11,7 +11,7 @@ uniform vec3 dirLightColor;
 uniform vec3 viewPos;
 
 uniform float shadowSize;
-float shadowAA = 8.0f;
+uniform float shadowAA;
 uniform bool shadows;
 
 out vec4 Outcolor;
