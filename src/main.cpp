@@ -40,6 +40,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
+#define SHADOW_QUALITY 2 // -1 for default;
 
 using namespace std;
 using namespace glm;
@@ -62,20 +63,20 @@ public:
     // Constants
     float SPAWN_RATE = 5;
 
-    int SHADOWS = 1;
-    int DEBUG_LIGHT = 0;
-    int GEOM_DEBUG = 1;
-
     float timer = 0;
     float printTimer = 0;
 
     // for shadows
     GLuint depthMapFBO;
-    const GLuint S_WIDTH = 2048, S_HEIGHT = 2048;
+    GLuint SHADOW_SIZE = 1024;
+    int SHADOWS = 1;
+    int DEBUG_LIGHT = 0;
+    int GEOM_DEBUG = 1;
+
     GLuint depthMap;
 
     // light position for shadows
-    vec3 g_light = vec3(80, 40, -20);
+    vec3 g_light = vec3(60, 30, 50);
 
     shared_ptr<Camera> camera;
 
@@ -266,6 +267,8 @@ public:
         texProg->addAttribute("vertNor");
         texProg->addAttribute("vertTex");
 
+        texProg->addUniform("shadows");
+        texProg->addUniform("shadowSize");
         texProg->addUniform("shadowDepth");
         texProg->addUniform("LS");
         // texProg->addUniform("lightDir");
@@ -395,6 +398,33 @@ public:
 
     void initShadow()
     {
+        switch (SHADOW_QUALITY)
+        {
+        case 0:
+            SHADOWS = 0;
+            SHADOW_SIZE = 256;
+            break;
+        case 1:
+            SHADOWS = 1;
+            SHADOW_SIZE = 512;
+            break;
+        case 2:
+            SHADOWS = 1;
+            SHADOW_SIZE = 1024;
+            break;
+        case 3:
+            SHADOWS = 1;
+            SHADOW_SIZE = 2048;
+            break;
+        case 4:
+            SHADOWS = 1;
+            SHADOW_SIZE = 4096;
+            break;
+        default:
+            SHADOWS = 1;
+            SHADOW_SIZE = 1024;
+            break;
+        }
         /* set up the FBO for the light's depth */
         // generate the FBO for the shadow depth
         glGenFramebuffers(1, &depthMapFBO);
@@ -402,7 +432,7 @@ public:
         // generate the texture
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0,
                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -421,13 +451,13 @@ public:
 
     void setTextureMaterial(int i)
     {
+        // pulled these out of the switch since they were all identical
+        glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
+        glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
+        glUniform1f(texProg->getUniform("Shine"), 32);
+        
         switch (i)
         {
-            // pulled these out of the switch since they were all identical
-            glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
-            glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
-            glUniform1f(texProg->getUniform("Shine"), 32);
-
         case 0:
             marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
@@ -435,7 +465,7 @@ public:
             marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
         case 2:
-            crateTexture->bind(texProg->getUniform("Texture0"));
+            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
             break;
         }
     }
@@ -600,7 +630,7 @@ public:
 
         mat4 LS;
 
-        if (SHADOWS)
+        if (SHADOW_QUALITY)
         {
             createShadowMap(&LS);
         }
@@ -619,9 +649,15 @@ public:
         }
     }
 
-    void drawScene(shared_ptr<Program> shader, GLint texID, int TexOn)
+    void drawScene(shared_ptr<Program> shader)
     {
         // Draw textured models
+
+        if (shader == texProg)
+        {
+            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
+            glUniform1i(shader->getUniform("shadows"), SHADOWS);
+        }
 
         // Create the matrix stacks
         auto M = make_shared<MatrixStack>();
@@ -677,7 +713,7 @@ public:
     void createShadowMap(mat4 *LS)
     {
         // set up light's depth map
-        glViewport(0, 0, S_WIDTH, S_HEIGHT); // shadow map width and height
+        glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
@@ -690,7 +726,7 @@ public:
         mat4 LV = SetLightView(DepthProg, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
         // SetLightView(DepthProg, g_light, g_lookAt, vec3(0, 1, 0));
-        drawScene(DepthProg, 0, 0);
+        drawScene(DepthProg);
         DepthProg->unbind();
         glCullFace(GL_BACK);
 
@@ -708,7 +744,7 @@ public:
             // render scene from light's point of view
             SetOrthoMatrix(DepthProgDebug);
             SetLightView(DepthProgDebug, g_light, vec3(60, 0, 0), vec3(0, 1, 0));
-            drawScene(DepthProgDebug, texProg->getUniform("Texture0"), 0);
+            drawScene(DepthProgDebug);
             DepthProgDebug->unbind();
         }
         else
@@ -765,7 +801,7 @@ public:
         sendShadowMap();
 
         glUniformMatrix4fv(texProg->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
-        drawScene(texProg, texProg->getUniform("Texture0"), 1);
+        drawScene(texProg);
 
         texProg->unbind();
 
@@ -833,7 +869,7 @@ public:
     {
         // shadow mapping helper
 
-        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 128.0f);
+        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 96.0f);
         // fill in the glUniform call to send to the right shader!
         glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
                            value_ptr(ortho));
@@ -979,7 +1015,7 @@ int main(int argc, char **argv)
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    windowManager->init(1280, 720);
+    windowManager->init(1920, 1080);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 

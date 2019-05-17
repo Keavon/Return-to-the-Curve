@@ -10,6 +10,9 @@ uniform vec3 lightPos;
 uniform vec3 dirLightColor;
 uniform vec3 viewPos;
 
+uniform float shadowSize;
+uniform bool shadows;
+
 out vec4 Outcolor;
 
 in OUT_struct {
@@ -17,28 +20,29 @@ in OUT_struct {
    vec3 fragNor;
    vec2 vTexCoord;
    vec4 fPosLS;
-   // vec3 vColor;
 } in_struct;
 
 // returns 1 if shadowed
 // called with the point projected into the light's coordinate space
 float TestShadow(vec4 LSfPos)
 {
-
 	// 1: shift the coordinates from -1, 1 to 0 ,1
 	vec3 shifted = (LSfPos.xyz + vec3(1)) * 0.5;
 
 	// 2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
-	float Ldepth = texture(shadowDepth, shifted.xy).r;
+	float Ldepth = 0.0f;
+	float increment = (1.0f / 512.0f);
+
+	Ldepth = texture(shadowDepth, shifted.xy).r;
 		
 	// 3: compare to the current depth (.z) of the projected depth
-	if (Ldepth < shifted.z - 0.001)
+	if (Ldepth < shifted.z - 0.0005)
 	{
 		//4: return 1 if the point is shadowed
-		return 1.0f;
+		return 0.8f;
 	}	
 
-	return 0.0;
+	return 0.0f;
 }
 
 void main()
@@ -61,8 +65,24 @@ void main()
 	vec3 H = normalize((dirLightDirNorm + viewDir) / 2.0);
 	vec3 specular = MatSpec * pow(max(0, dot(H, normal)), Shine) * dirLightColor;
 
+	
+	Shade = 0.0f;
 	//shadow
-	Shade = TestShadow(in_struct.fPosLS);
+	if (shadows)
+	{
+		float increment = (1.0f / shadowSize);
+		vec4 subSample1 = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		vec4 subSample2 = vec4(in_struct.fPosLS.x - increment, in_struct.fPosLS.y + increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		vec4 subSample3 = vec4(in_struct.fPosLS.x + increment, in_struct.fPosLS.y - increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+		vec4 subSample4 = vec4(in_struct.fPosLS.x + increment, in_struct.fPosLS.y + increment, in_struct.fPosLS.z, in_struct.fPosLS.w);
+
+		Shade += TestShadow(subSample1);
+		Shade += TestShadow(subSample2);
+		Shade += TestShadow(subSample3);
+		Shade += TestShadow(subSample4);
+	}
+	Shade = Shade / 4.0f;
+	
 	diffuse = (diffuse * (1.0 - Shade));
 
 	Outcolor = vec4(diffuse + ambient + specular, 1.0);
