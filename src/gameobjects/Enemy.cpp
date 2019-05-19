@@ -41,23 +41,25 @@ void Enemy::update(float dt)
     collider->pendingCollisions.clear();
 
     if (pointReached) {
-        curvePath->calcBezierCurve(t);
+		curvePath->calcBezierCurve(t);
         targetX = curvePath->getTargetPos().x;
         targetY = curvePath->getTargetPos().y;
         targetZ = curvePath->getTargetPos().z;
-        if (forward) {
+		if (t < 0){
+            forward = true;
+			//printf("Switch to forward\n");
+        }
+        if (t > 1) {
+            forward = false;
+			//printf("Switch to backward\n");
+        }
+		if (forward) {
             t += 0.02;
             //printf("Incremented t to : %f\n", t);
         }
         else {
             t -= 0.02;
             //printf("Decremented t to : %f\n", t);
-        }
-        if (t < 0){
-            forward = true;
-        }
-        if (t > 1) {
-            forward = false;
         }
         pointReached = false;
     }
@@ -76,7 +78,7 @@ void Enemy::update(float dt)
         //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
-            < 1 ) {
+            < 1.02 ) {
             pointReached = true;
         }
 }
