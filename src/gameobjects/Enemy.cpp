@@ -18,8 +18,7 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
     PhysicsObject(enemyPath[0], orientation, model, make_shared<ColliderSphere>(radius)),
     radius(radius), legModel(legmodel), footModel(footmodel)
 {
-    pathCtrlPts = enemyPath;
-    position = pathCtrlPts[0];
+    curvePath = new Pathing(enemyPath);
     speed = 0;
     material = 0;
 
@@ -42,24 +41,10 @@ void Enemy::update(float dt)
     collider->pendingCollisions.clear();
 
     if (pointReached) {
-        
-        //Calculate new position over factor t
-        targetX = 
-                pow(1 - t, 3)*pathCtrlPts[0].x +
-                3*t*pow(1-t,2)*pathCtrlPts[1].x +
-                3*pow(t,2)*(1-t)*pathCtrlPts[2].x +
-                pow(t,3)*pathCtrlPts[3][0];
-        targetY = 
-                pow(1 - t, 3)*pathCtrlPts[0].y +
-                3*t*pow(1-t,2)*pathCtrlPts[1].y +
-                3*pow(t,2)*(1-t)*pathCtrlPts[2].y +
-                pow(t,3)*pathCtrlPts[3][1];
-        targetZ = 
-                pow(1 - t, 3)*pathCtrlPts[0].z +
-                3*t*pow(1-t,2)*pathCtrlPts[1].z +
-                3*pow(t,2)*(1-t)*pathCtrlPts[2].z +
-                pow(t,3)*pathCtrlPts[3][2];
-
+        curvePath->calcBezierCurve(t);
+        targetX = curvePath->getTargetPos().x;
+        targetY = curvePath->getTargetPos().y;
+        targetZ = curvePath->getTargetPos().z;
         if (forward) {
             t += 0.02;
             //printf("Incremented t to : %f\n", t);

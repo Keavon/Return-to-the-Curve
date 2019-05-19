@@ -1,13 +1,28 @@
 #pragma once
 
 #include "WindowManager.h"
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+
+using namespace glm;
+using namespace std;
 
 class Pathing
 {
 public:
-    Pathing();
+    Pathing(std::vector<glm::vec3> ctrlPts);
     ~Pathing();
-    glm::vec3 calcBezierCurve(glm::vec3 controlPtA, glm::vec3 controlPtB, glm::vec3 controlPtC, glm::vec3 controlPtD, float t);
-	// Pathing data
+    void init();
+    void calcBezierCurve(float t);
+	glm::vec3 getTargetPos();
+    // Pathing data
+    float t;
+    glm::vec3 targetPos;
+    std::vector<glm::vec3> controlPoints;
 };
