@@ -8,9 +8,9 @@
 using namespace std;
 using namespace glm;
 
-Camera::Camera(WindowManager *windowManager) : windowManager(windowManager)
+Camera::Camera(WindowManager *windowManager, glm::vec3 centerOfLevel) : windowManager(windowManager)
 {
-    
+    levelCenterPoint = centerOfLevel;
 }
 
 Camera::~Camera()
@@ -37,12 +37,24 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     double radPerPx = M_PI / windowHeight;
     yaw += dx * radPerPx;
 
+    double t;
+    if (startTimer < 11){
+        t = glfwGetTime();
+        startTimer += std::min(t - prevTime, 0.1);
+        //printf("StartTimer: %f",startTimer);
+        if (9.0 < startTimer && startTimer < 10.0){
+            previewLvl = true;
+            startLvlPreview(levelCenterPoint);
+        }
+    }
+
     if (flying)
     {
         dolly = normalize(lookAtPoint - eye);
         pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
     }
     else if (previewLvl) {
+        //printf("Dt: %f\n",dt);
         // Linear Zoom Out from Marble
         if (pathT < 0.02) {
             cameraPath->calcCircPos(theta, pathRadius, 'y', 20*cos(theta));
@@ -89,7 +101,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
                     pathVect = normalize( vec3{ circNextPos.x - eye.x, 
                                                 circNextPos.y - eye.y, 
                                                 circNextPos.z - eye.z});
-                    printf("Theta: %f\nCircNextPos: (%f, %f, %f)\n", theta, circNextPos.x, circNextPos.y, circNextPos.z);
+                    //printf("Theta: %f\nCircNextPos: (%f, %f, %f)\n", theta, circNextPos.x, circNextPos.y, circNextPos.z);
                     pointReached = false;
                 }
                 pathVel = pathVect * pathSpeed;
@@ -97,6 +109,9 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
                 if (glm::distance(eye, circNextPos) < 0.6){
                     pointReached = true;
                 }
+            }
+            else {
+                previewLvl = false;
             }
         }
     }
@@ -175,6 +190,10 @@ void Camera::init()
     pitch = 0;
     yaw = 10;
     cameraPath = new Pathing();
+
+    prevTime = glfwGetTime();
+    startTimer = 0;
+    
 }
 
 void Camera::startLvlPreview(glm::vec3 lvlCenterPt) {

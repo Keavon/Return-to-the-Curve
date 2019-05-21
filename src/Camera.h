@@ -8,7 +8,7 @@
 class Camera
 {
 public:
-    Camera(WindowManager *windowManager);
+    Camera(WindowManager *windowManager, glm::vec3 centerOfLevel);
     ~Camera();
     void update(float dt, std::shared_ptr<Ball> ball);
 	void init();
@@ -43,6 +43,8 @@ public:
 	float pathRadius = 100;
 	float pathSpeed;
 	float pathT;
+	double prevTime;
+	float startTimer;
 	float theta;
 	
 	glm::vec3 cameraPathTarget;
