@@ -538,11 +538,11 @@ public:
         // Need to add each physics object to the octree
         octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
         octree->init(billboard, cube);
-        octree->queue(goal);
-        octree->queue(goalObject);
-        octree->queue(ball);
-        octree->queue(boxes);
-        octree->queue(enemy);
+        octree->insert(goal);
+        octree->insert(goalObject);
+        octree->insert(ball);
+        octree->insert(boxes);
+        octree->insert(enemy);
     }
 
     void loadLevel(const string &resourceDirectory)
@@ -806,8 +806,7 @@ public:
 
     void update(float dt)
     {
-        octree->clear();
-        octree->build();
+        octree->update();
 
         if (ballInGoal && !DID_WIN)
         {
