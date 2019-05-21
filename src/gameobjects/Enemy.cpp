@@ -18,8 +18,7 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
     PhysicsObject(enemyPath[0], orientation, model, make_shared<ColliderSphere>(radius)),
     radius(radius), legModel(legmodel), footModel(footmodel)
 {
-    pathCtrlPts = enemyPath;
-    position = pathCtrlPts[0];
+    curvePath = new Pathing(enemyPath);
     speed = 0;
     material = 0;
 
@@ -42,20 +41,19 @@ void Enemy::update(float dt)
     collider->pendingCollisions.clear();
 
     if (pointReached) {
-        
-        //Calculate new position over factor t
-        targetX = 
-                pow(1 - t, 3)*pathCtrlPts[0].x +
-                3*t*pow(1-t,2)*pathCtrlPts[1].x +
-                3*pow(t,2)*(1-t)*pathCtrlPts[2].x +
-                pow(t,3)*pathCtrlPts[3][0];
-        targetZ = 
-                pow(1 - t, 3)*pathCtrlPts[0].z +
-                3*t*pow(1-t,2)*pathCtrlPts[1].z +
-                3*pow(t,2)*(1-t)*pathCtrlPts[2].z +
-                pow(t,3)*pathCtrlPts[3][2];
-
-        if (forward) {
+		curvePath->calcBezierCurveTarget(t);
+        targetX = curvePath->getTargetPos().x;
+        targetY = curvePath->getTargetPos().y;
+        targetZ = curvePath->getTargetPos().z;
+		if (t < 0){
+            forward = true;
+			//printf("Switch to forward\n");
+        }
+        if (t > 1) {
+            forward = false;
+			//printf("Switch to backward\n");
+        }
+		if (forward) {
             t += 0.02;
             //printf("Incremented t to : %f\n", t);
         }
@@ -63,17 +61,12 @@ void Enemy::update(float dt)
             t -= 0.02;
             //printf("Decremented t to : %f\n", t);
         }
-        if (t < 0){
-            forward = true;
-        }
-        if (t > 1) {
-            forward = false;
-        }
         pointReached = false;
     }
         float dX = targetX - position.x;
         float dZ = targetZ - position.z;
-        direction = normalize(vec3{dX ,0 ,dZ});
+        float dY = targetY - position.y;
+        direction = normalize(vec3{dX ,dY ,dZ});
         velocity.x = velocity.z = 0;
         velocity.y = 0;
         //vec3 axis = vec3{0,1,0};
@@ -85,7 +78,7 @@ void Enemy::update(float dt)
         //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
-            < 1 ) {
+            < 1.02 ) {
             pointReached = true;
         }
 }
