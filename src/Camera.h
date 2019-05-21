@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Pathing.h"
 #include "WindowManager.h"
 #include "gameobjects/Ball.h"
 #include <glm/glm.hpp>
@@ -11,6 +12,7 @@ public:
     ~Camera();
     void update(float dt, std::shared_ptr<Ball> ball);
 	void init();
+	void startLvlPreview(glm::vec3 lvlCenterPt);
 	glm::vec3 getDolly();
 	glm::vec3 getStrafe();
 
@@ -19,6 +21,8 @@ public:
 	float radius = 1.5;
 	float height = 5;
 	bool flying = false;
+	bool previewLvl = false;
+	Pathing *cameraPath;
 	WindowManager *windowManager;
 
 	// Camera data
@@ -32,4 +36,23 @@ public:
 	glm::vec3 upVec;
 	glm::vec3 dolly;
 	glm::vec3 strafe;
+
+	//Camera Path Data
+	bool pointReached;
+	float lookAtPathSpeed;
+	float pathRadius = 100;
+	float pathSpeed;
+	float pathT;
+	float theta;
+	
+	glm::vec3 cameraPathTarget;
+	glm::vec3 cameraStartPos;
+	glm::vec3 circStartPos;
+	glm::vec3 circNextPos;
+	glm::vec3 levelCenterPoint;
+	glm::vec3 lookAtPathVel;
+	glm::vec3 lookAtTarget;
+	glm::vec3 lookAtVec;
+	glm::vec3 pathVect;
+	glm::vec3 pathVel;
 };

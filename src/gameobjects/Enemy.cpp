@@ -41,7 +41,7 @@ void Enemy::update(float dt)
     collider->pendingCollisions.clear();
 
     if (pointReached) {
-		curvePath->calcBezierCurve(t);
+		curvePath->calcBezierCurveTarget(t);
         targetX = curvePath->getTargetPos().x;
         targetY = curvePath->getTargetPos().y;
         targetZ = curvePath->getTargetPos().z;

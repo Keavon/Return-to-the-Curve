@@ -57,6 +57,7 @@ public:
     // Game info
     float startTime;
     vec3 startPos = vec3(120, 3, 7);
+    vec3 centerOfLevel = vec3(70, 3, 40);
     bool didWin = false;
 
     // Constants
@@ -946,6 +947,12 @@ public:
             didWin = false;
             ballInGoal = false;
             startTime = glfwGetTime();
+        }
+        else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+            camera->previewLvl = !camera->previewLvl;
+            if (camera->previewLvl){
+                camera->startLvlPreview(centerOfLevel);
+            }
         }
     }
 

@@ -16,10 +16,12 @@ using namespace std;
 class Pathing
 {
 public:
+    Pathing();
     Pathing(std::vector<glm::vec3> ctrlPts);
     ~Pathing();
     void init();
-    void calcBezierCurve(float t);
+    void calcBezierCurveTarget(float t);
+    void calcCircPos(float theta, float radius, char axis, float axisValue);
 	glm::vec3 getTargetPos();
     // Pathing data
     float t;
