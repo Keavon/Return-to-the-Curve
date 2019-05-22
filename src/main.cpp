@@ -137,7 +137,7 @@ public:
         glEnable(GL_CULL_FACE);
 
         // Initialize camera
-        camera = make_shared<Camera>(windowManager);
+        camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
 
         ballInGoal = false;
