@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\glad\src\glad.c" />
+    <ClCompile Include="..\Source\Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\GLSL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\GLTextureWriter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MatrixStack.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Object3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Program.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Shape.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Skybox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\WindowManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\BoundingBox.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Collider.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\ColliderMesh.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\ColliderSphere.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\GameObject.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Octree.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\PhysicsObject.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\TriggerCylinder.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\TriggerSphere.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Ball.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Blower.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Box.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Enemy.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Goal.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pathing.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="triangle.frag.glsl" />
+    <None Include="triangle.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{54e85d7c-b3d9-4d15-97e7-4d59ccd6449b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\engine">
+      <UniqueIdentifier>{9506a445-79c0-482b-8d47-308fa4beefbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\gameobjects">
+      <UniqueIdentifier>{d29f28c6-13ec-438e-94d0-6d44fa154610}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Camera.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GLSL.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GLTextureWriter.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MatrixStack.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Object3D.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Program.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Shape.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Skybox.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\stb_image.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\stb_image_write.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Texture.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\tiny_obj_loader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\WindowManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\BoundingBox.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Collider.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ColliderMesh.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ColliderSphere.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\GameObject.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Octree.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\PhysicsObject.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\TriggerCylinder.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\TriggerSphere.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Ball.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Blower.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Box.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Enemy.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Goal.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pathing.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{70DE0700-5B33-418F-9712-0FAB83A900B2}</ProjectGuid>
+    <RootNamespace>OpenGLBase</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <ProjectName>Engine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)..\yaml-cpp\include;$(IncludePath)</IncludePath>
+    <SourcePath>$(SolutionDir)..\yaml-cpp\src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\glfw\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\glad\src\glad.c" />
+    <ClCompile Include="..\Source\Camera.cpp" />
+    <ClCompile Include="..\Source\engine\BoundingBox.cpp" />
+    <ClCompile Include="..\Source\engine\Collider.cpp" />
+    <ClCompile Include="..\Source\engine\ColliderMesh.cpp" />
+    <ClCompile Include="..\Source\engine\ColliderSphere.cpp" />
+    <ClCompile Include="..\Source\engine\GameObject.cpp" />
+    <ClCompile Include="..\Source\engine\Octree.cpp" />
+    <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
+    <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
+    <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Ball.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Box.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Goal.cpp" />
+    <ClCompile Include="..\Source\GLSL.cpp" />
+    <ClCompile Include="..\Source\GLTextureWriter.cpp" />
+    <ClCompile Include="..\Source\main.cpp" />
+    <ClCompile Include="..\Source\MatrixStack.cpp" />
+    <ClCompile Include="..\Source\Object3D.cpp" />
+    <ClCompile Include="..\Source\Pathing.cpp" />
+    <ClCompile Include="..\Source\Program.cpp" />
+    <ClCompile Include="..\Source\Shape.cpp" />
+    <ClCompile Include="..\Source\Skybox.cpp" />
+    <ClCompile Include="..\Source\Texture.cpp" />
+    <ClCompile Include="..\Source\WindowManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="triangle.frag.glsl" />
+    <None Include="triangle.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Camera.h" />
+    <ClInclude Include="..\Source\engine\BoundingBox.h" />
+    <ClInclude Include="..\Source\engine\Collider.h" />
+    <ClInclude Include="..\Source\engine\ColliderMesh.h" />
+    <ClInclude Include="..\Source\engine\ColliderSphere.h" />
+    <ClInclude Include="..\Source\engine\GameObject.h" />
+    <ClInclude Include="..\Source\engine\Octree.h" />
+    <ClInclude Include="..\Source\engine\PhysicsObject.h" />
+    <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
+    <ClInclude Include="..\Source\engine\TriggerSphere.h" />
+    <ClInclude Include="..\Source\gameobjects\Ball.h" />
+    <ClInclude Include="..\Source\gameobjects\Blower.h" />
+    <ClInclude Include="..\Source\gameobjects\Box.h" />
+    <ClInclude Include="..\Source\gameobjects\Enemy.h" />
+    <ClInclude Include="..\Source\gameobjects\Goal.h" />
+    <ClInclude Include="..\Source\GLSL.h" />
+    <ClInclude Include="..\Source\GLTextureWriter.h" />
+    <ClInclude Include="..\Source\MatrixStack.h" />
+    <ClInclude Include="..\Source\Object3D.h" />
+    <ClInclude Include="..\Source\Pathing.h" />
+    <ClInclude Include="..\Source\Program.h" />
+    <ClInclude Include="..\Source\Shape.h" />
+    <ClInclude Include="..\Source\Skybox.h" />
+    <ClInclude Include="..\Source\stb_image.h" />
+    <ClInclude Include="..\Source\stb_image_write.h" />
+    <ClInclude Include="..\Source\Texture.h" />
+    <ClInclude Include="..\Source\tiny_obj_loader.h" />
+    <ClInclude Include="..\Source\WindowManager.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
