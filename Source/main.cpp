@@ -39,7 +39,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 22
+#define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 using namespace std;
@@ -375,7 +375,7 @@ public:
         string textureBaseFolder, textureNumber, textureExtension, textureName;
         double completion = 0;
         for (int i = 0; i < NUMBER_OF_MARBLE_SKINS; i++) {
-            textureBaseFolder = "/textures/marble/";
+            textureBaseFolder = "/textures/marble/albedo/";
             textureNumber = to_string(i);
             textureExtension = ".jpg";
 
@@ -467,19 +467,19 @@ public:
         //glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
         //glUniform1f(texProg->getUniform("Shine"), 32);
 
-        panelAlbedo->bind(texProg->getUniform("albedoMap"));
-        panelRoughness->bind(texProg->getUniform("roughnessMap"));
-        panelMetallic->bind(texProg->getUniform("metallicMap"));
+        crateAlbedo->bind(texProg->getUniform("albedoMap"));
+        crateRoughness->bind(texProg->getUniform("roughnessMap"));
+        crateMetallic->bind(texProg->getUniform("metallicMap"));
 
         switch (i) {
         case 0:
-            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
+            // marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         case 1:
             marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         case 2:
-            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
+            // marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         }
     }
