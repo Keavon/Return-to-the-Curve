@@ -61,6 +61,7 @@ public:
     int SCORE = 0;
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
+	vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
 
     // Shadow Globals
     int SHADOWS = 1;
