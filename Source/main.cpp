@@ -40,7 +40,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
-#define SHADOW_QUALITY 2 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 using namespace std;
 using namespace glm;
@@ -997,7 +997,9 @@ int main(int argc, char **argv) {
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    windowManager->init(1280, 720);
+    // windowManager->init(1280, 720);
+    // windowManager->init(1920, 1080);
+    windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 

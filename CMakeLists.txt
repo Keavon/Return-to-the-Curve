@@ -4,14 +4,14 @@ cmake_minimum_required(VERSION 2.7)
 project(curve)
 
 # Use glob to get the list of all source files.
-file(GLOB_RECURSE SOURCES "Source/*.cpp" "ext/glad/src/*.c")
+file(GLOB_RECURSE SOURCES "Source/*.cpp" "glad/src/*.c")
 
 # We don't really need to include header and resource files to build, but it's
 # nice to have them show up in IDEs.
-file(GLOB_RECURSE HEADERS "Source/*.h" "ext/glad/*/*.h")
+file(GLOB_RECURSE HEADERS "Source/*.h" "glad/*/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
 
-include_directories("ext/glad/include")
+include_directories("glad/include")
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
