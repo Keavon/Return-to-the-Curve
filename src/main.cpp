@@ -985,7 +985,7 @@ public:
 
 int main(int argc, char **argv) {
     // Where the resources are loaded from
-    std::string resourceDir = "../resources";
+    std::string resourceDir = "../Resources";
 
     if (argc >= 2) {
         resourceDir = argv[1];
