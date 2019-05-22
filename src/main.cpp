@@ -40,15 +40,14 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 22
-#define SHADOW_QUALITY 2 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 using namespace std;
 using namespace glm;
 
 extern bool ballInGoal;
 
-class Application : public EventCallbacks
-{
+class Application : public EventCallbacks {
 
 public:
     WindowManager *windowManager = nullptr;
@@ -62,7 +61,6 @@ public:
     int SCORE = 0;
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
-    vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
 
     // Shadow Globals
     int SHADOWS = 1;
@@ -74,7 +72,8 @@ public:
     GLuint depthMap = 0;
 
     // Light Position Globals
-    vec3 gameLight = vec3(60, 30, 50);
+    vec3 gameLight = vec3(300, 150, 250);
+    vec3 gameLightColor = vec3(250000, 250000, 250000);
 
     // Shader programs
     shared_ptr<Program> texProg;
@@ -114,11 +113,18 @@ public:
 
     // Textures
     shared_ptr<Skybox> skyboxTexture;
-    shared_ptr<Texture> crateTexture;
+
+    shared_ptr<Texture> crateAlbedo;
+    shared_ptr<Texture> crateRoughness;
+    shared_ptr<Texture> crateMetallic;
+
+    shared_ptr<Texture> panelAlbedo;
+    shared_ptr<Texture> panelRoughness;
+    shared_ptr<Texture> panelMetallic;
+
     vector<shared_ptr<Texture>> marbleTextures;
 
-    void init(const string &resourceDirectory)
-    {
+    void init(const string &resourceDirectory) {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         GLSL::checkVersion();
@@ -130,7 +136,7 @@ public:
         glEnable(GL_CULL_FACE);
 
         // Initialize camera
-        camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
+        camera = make_shared<Camera>(windowManager);
         camera->init();
 
         ballInGoal = false;
@@ -138,8 +144,7 @@ public:
 
     //=================================================
     // SHADERS
-    void initShaders(const string &resourceDirectory)
-    {
+    void initShaders(const string &resourceDirectory) {
         initShader_skyProg(resourceDirectory);
         initShader_texProg(resourceDirectory);
 
@@ -151,16 +156,14 @@ public:
         initShader_DepthProgDebug(resourceDirectory);
     }
 
-    void initShader_DepthProg(const string &resourceDirectory)
-    {
+    void initShader_DepthProg(const string &resourceDirectory) {
         DepthProg = make_shared<Program>();
         DepthProg->setVerbose(true);
         DepthProg->setShaderNames(resourceDirectory + "/shaders/depth_vert.glsl",
-                                  resourceDirectory + "/shaders/depth_frag.glsl");
-        if (!DepthProg->init())
-        {
+            resourceDirectory + "/shaders/depth_frag.glsl");
+        if (!DepthProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!"
-                      << std::endl;
+                << std::endl;
             exit(1);
         }
 
@@ -173,17 +176,15 @@ public:
         DepthProg->addAttribute("vertTex");
     }
 
-    void initShader_DepthProgDebug(const string &resourceDirectory)
-    {
+    void initShader_DepthProgDebug(const string &resourceDirectory) {
         DepthProgDebug = make_shared<Program>();
         DepthProgDebug->setVerbose(true);
         DepthProgDebug->setShaderNames(
             resourceDirectory + "/shaders/depth_vertDebug.glsl",
             resourceDirectory + "/shaders/depth_fragDebug.glsl");
-        if (!DepthProgDebug->init())
-        {
+        if (!DepthProgDebug->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!"
-                      << std::endl;
+                << std::endl;
             exit(1);
         }
 
@@ -196,16 +197,14 @@ public:
         DepthProgDebug->addAttribute("vertTex");
     }
 
-    void initShader_DebugProg(const string &resourceDirectory)
-    {
+    void initShader_DebugProg(const string &resourceDirectory) {
         DebugProg = make_shared<Program>();
         DebugProg->setVerbose(true);
         DebugProg->setShaderNames(resourceDirectory + "/shaders/pass_vert.glsl",
-                                  resourceDirectory + "/shaders/pass_texfrag.glsl");
-        if (!DebugProg->init())
-        {
+            resourceDirectory + "/shaders/pass_texfrag.glsl");
+        if (!DebugProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!"
-                      << std::endl;
+                << std::endl;
             exit(1);
         }
 
@@ -213,52 +212,53 @@ public:
         DebugProg->addAttribute("vertPos");
     }
 
-    void initShader_texProg(const string &resourceDirectory)
-    {
+    void initShader_texProg(const string &resourceDirectory) {
         // Shader for textured models
         texProg = make_shared<Program>();
         texProg->setVerbose(true);
-        texProg->setShaderNames(resourceDirectory + "/shaders/tex.vert.glsl",
-                                resourceDirectory + "/shaders/tex.frag.glsl");
-        if (!texProg->init())
-        {
+        texProg->setShaderNames(resourceDirectory + "/shaders/pbr.vert.glsl",
+            resourceDirectory + "/shaders/pbr.frag.glsl");
+        if (!texProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!"
-                      << std::endl;
+                << std::endl;
             exit(1);
         }
+
+        texProg->addAttribute("vertPos");
+        texProg->addAttribute("vertNor");
+        texProg->addAttribute("vertTex");
 
         texProg->addUniform("P");
         texProg->addUniform("V");
         texProg->addUniform("M");
-        texProg->addUniform("MatAmb");
-        texProg->addUniform("Texture0");
-        texProg->addUniform("MatSpec");
-        texProg->addUniform("Shine");
-        texProg->addUniform("lightPos");
-        texProg->addUniform("dirLightColor");
-        texProg->addUniform("viewPos");
-        texProg->addAttribute("vertPos");
-        texProg->addAttribute("vertNor");
-        texProg->addAttribute("vertTex");
 
         texProg->addUniform("shadows");
         texProg->addUniform("shadowSize");
         texProg->addUniform("shadowAA");
         texProg->addUniform("shadowDepth");
         texProg->addUniform("LS");
-        // texProg->addUniform("lightDir");
+
+        texProg->addUniform("albedoMap");
+        texProg->addUniform("roughnessMap");
+        texProg->addUniform("metallicMap");
+
+        texProg->addUniform("roughness");
+        texProg->addUniform("metallic");
+
+        texProg->addUniform("lightPosition");
+        texProg->addUniform("lightColor");
+
+        texProg->addUniform("viewPos");
     }
 
-    void initShader_skyProg(const string &resourceDirectory)
-    {
+    void initShader_skyProg(const string &resourceDirectory) {
         // Shader for skybox
         skyProg = make_shared<Program>();
         skyProg->setVerbose(true);
         skyProg->setShaderNames(
             resourceDirectory + "/shaders/sky_vert.glsl",
             resourceDirectory + "/shaders/sky_frag.glsl");
-        if (!skyProg->init())
-        {
+        if (!skyProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
             exit(1);
         }
@@ -268,16 +268,14 @@ public:
         skyProg->addAttribute("vertPos");
     }
 
-    void initShader_circleProg(const string &resourceDirectory)
-    {
+    void initShader_circleProg(const string &resourceDirectory) {
         // Shader for debug circle
         circleProg = make_shared<Program>();
         circleProg->setVerbose(true);
         circleProg->setShaderNames(
             resourceDirectory + "/shaders/circle_vert.glsl",
             resourceDirectory + "/shaders/circle_frag.glsl");
-        if (!circleProg->init())
-        {
+        if (!circleProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
             exit(1);
         }
@@ -288,16 +286,14 @@ public:
         circleProg->addAttribute("vertPos");
     }
 
-    void initShader_cubeOutlineProg(const string &resourceDirectory)
-    {
+    void initShader_cubeOutlineProg(const string &resourceDirectory) {
         // Shader for debug cube
         cubeOutlineProg = make_shared<Program>();
         cubeOutlineProg->setVerbose(true);
         cubeOutlineProg->setShaderNames(
             resourceDirectory + "/shaders/cube_outline_vert.glsl",
             resourceDirectory + "/shaders/cube_outline_frag.glsl");
-        if (!cubeOutlineProg->init())
-        {
+        if (!cubeOutlineProg->init()) {
             std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
             exit(1);
         }
@@ -310,31 +306,74 @@ public:
     //=================================================
     //=================================================
     // TEXTURES
-    void initTextures(const string &resourceDirectory)
-    {
-        initCrateTexture(resourceDirectory);
+    void initTextures(const string &resourceDirectory) {
+        initCrateAlbedo(resourceDirectory);
+        initCrateRoughness(resourceDirectory);
+        initCrateMetallic(resourceDirectory);
+
+        initPanelAlbedo(resourceDirectory);
+        initPanelRoughness(resourceDirectory);
+        initPanelMetallic(resourceDirectory);
+
         initMarbleTexture(resourceDirectory);
         initSkyBox(resourceDirectory);
         initShadow();
     }
 
-    void initCrateTexture(const string &resourceDirectory)
-    {
-
-        crateTexture = make_shared<Texture>();
-        crateTexture->setFilename(resourceDirectory + "/textures/crate.png");
-        crateTexture->init();
-        crateTexture->setUnit(1);
-        crateTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    void initCrateAlbedo(const string &resourceDirectory) {
+        crateAlbedo = make_shared<Texture>();
+        crateAlbedo->setFilename(resourceDirectory + "/textures/pbr/pbr_albedo_metal.png");
+        crateAlbedo->init();
+        crateAlbedo->setUnit(1);
+        crateAlbedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
-    void initMarbleTexture(const string &resourceDirectory)
-    {
+    void initCrateRoughness(const string &resourceDirectory) {
+        crateRoughness = make_shared<Texture>();
+        crateRoughness->setFilename(resourceDirectory + "/textures/pbr/pbr_roughness_metal.png");
+        crateRoughness->init();
+        crateRoughness->setUnit(2);
+        crateRoughness->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
+
+    void initCrateMetallic(const string &resourceDirectory) {
+        crateMetallic = make_shared<Texture>();
+        crateMetallic->setFilename(resourceDirectory + "/textures/pbr/pbr_metallic_metal.png");
+        crateMetallic->init();
+        crateMetallic->setUnit(3);
+        crateMetallic->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
+
+    void initPanelAlbedo(const string &resourceDirectory) {
+        panelAlbedo = make_shared<Texture>();
+        panelAlbedo->setFilename(resourceDirectory + "/textures/pbr/pbr_panel_albedo.jpg");
+        panelAlbedo->init();
+        panelAlbedo->setUnit(4);
+        panelAlbedo->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
+
+    void initPanelRoughness(const string &resourceDirectory) {
+        panelRoughness = make_shared<Texture>();
+        panelRoughness->setFilename(resourceDirectory + "/textures/pbr/pbr_panel_roughness.jpg");
+        panelRoughness->init();
+        panelRoughness->setUnit(5);
+        panelRoughness->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
+
+    void initPanelMetallic(const string &resourceDirectory) {
+        panelMetallic = make_shared<Texture>();
+        panelMetallic->setFilename(resourceDirectory + "/textures/pbr/pbr_panel_metallic.jpg");
+        panelMetallic->init();
+        panelMetallic->setUnit(6);
+        panelMetallic->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
+
+
+    void initMarbleTexture(const string &resourceDirectory) {
         // loops over the number of skin textures, initializing them and adding them to a vector
         string textureBaseFolder, textureNumber, textureExtension, textureName;
         double completion = 0;
-        for (int i = 0; i < NUMBER_OF_MARBLE_SKINS; i++)
-        {
+        for (int i = 0; i < NUMBER_OF_MARBLE_SKINS; i++) {
             textureBaseFolder = "/textures/marble/";
             textureNumber = to_string(i);
             textureExtension = ".jpg";
@@ -355,13 +394,11 @@ public:
         cout << "Loading Textures: complete." << endl;
     }
 
-    void initSkyBox(const string &resourceDirectory)
-    {
+    void initSkyBox(const string &resourceDirectory) {
         // Load skybox
-        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG",
-                                    "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
-        for (int i = 0; i < 6; i++)
-        {
+        string skyboxFilenames[] = { "sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG",
+                                    "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG" };
+        for (int i = 0; i < 6; i++) {
             skyboxFilenames[i] = resourceDirectory + "/skybox/" + skyboxFilenames[i];
         }
         skyboxTexture = make_shared<Skybox>();
@@ -371,10 +408,8 @@ public:
         skyboxTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
-    void initShadow()
-    {
-        switch (SHADOW_QUALITY)
-        {
+    void initShadow() {
+        switch (SHADOW_QUALITY) {
         case 0:
             SHADOWS = 0;
             SHADOW_AA = 1;
@@ -409,7 +444,7 @@ public:
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0,
-                     GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+            GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -419,37 +454,38 @@ public:
         // bind with framebuffer's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                               depthMap, 0);
+            depthMap, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void setTextureMaterial(int i)
-    {
+    void setTextureMaterial(int i) {
         // pulled these out of the switch since they were all identical
-        glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
-        glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
-        glUniform1f(texProg->getUniform("Shine"), 32);
+        //glUniform3f(texProg->getUniform("MatSpec"), 0.2f, 0.2f, 0.2f);
+        //glUniform3f(texProg->getUniform("MatAmb"), 0.05f, 0.05f, 0.05f);
+        //glUniform1f(texProg->getUniform("Shine"), 32);
 
-        switch (i)
-        {
+        panelAlbedo->bind(texProg->getUniform("albedoMap"));
+        panelRoughness->bind(texProg->getUniform("roughnessMap"));
+        panelMetallic->bind(texProg->getUniform("metallicMap"));
+
+        switch (i) {
         case 0:
-            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
+            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         case 1:
-            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
+            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         case 2:
-            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("Texture0"));
+            marbleTextures[CURRENT_SKIN]->bind(texProg->getUniform("albedoMap"));
             break;
         }
     }
     //=================================================
     //=================================================
     // GEOMETRY
-    void initGeom(const string &resourceDirectory)
-    {
+    void initGeom(const string &resourceDirectory) {
 
         loadModels(resourceDirectory);
 
@@ -458,8 +494,7 @@ public:
         initGameObjects();
     }
 
-    void loadModels(const string &resourceDirectory)
-    {
+    void loadModels(const string &resourceDirectory) {
         initQuad();
 
         //TODO:: update cube to use texture Coords
@@ -517,8 +552,7 @@ public:
         sphere->init();
     }
 
-    void initGameObjects()
-    {
+    void initGameObjects() {
         ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), sphere, 1);
         ball->init(windowManager);
         // Control points for enemy's bezier curve path
@@ -554,21 +588,18 @@ public:
         octree->insert(enemy);
     }
 
-    void loadLevel(const string &resourceDirectory)
-    {
+    void loadLevel(const string &resourceDirectory) {
         ifstream inLevel(resourceDirectory + "/levels/Level1.txt");
 
         float xval, yval, zval;
-        while (inLevel >> xval)
-        {
+        while (inLevel >> xval) {
             inLevel >> yval >> zval;
             auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), boxModel);
             boxes.push_back(box);
         }
     }
 
-    void initQuad()
-    {
+    void initQuad() {
         /* set up a quad for rendering a framebuffer */
 
         // now set up a simple quad for rendering FBO
@@ -599,22 +630,20 @@ public:
         glGenBuffers(1, &quad_vertexbuffer);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data),
-                     g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+            g_quad_vertex_buffer_data, GL_STATIC_DRAW);
     }
     //=================================================
     //=================================================
     // RENDERERING
 
-    void render()
-    {
+    void render() {
         // Get current frame buffer size.
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
         mat4 LS;
 
-        if (SHADOW_QUALITY)
-        {
+        if (SHADOW_QUALITY) {
             createShadowMap(&LS);
         }
 
@@ -622,22 +651,17 @@ public:
         // Clear framebuffer.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (DEBUG_LIGHT)
-        {
+        if (DEBUG_LIGHT) {
             drawDepthMap();
         }
-        else
-        {
+        else {
             renderPlayerView(&LS);
         }
     }
 
-    void drawScene(shared_ptr<Program> shader)
-    {
+    void drawScene(shared_ptr<Program> shader) {
         // Draw textured models
-
-        if (shader == texProg)
-        {
+        if (shader == texProg) {
             glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
             glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
             glUniform1i(shader->getUniform("shadows"), SHADOWS);
@@ -650,27 +674,24 @@ public:
         M->pushMatrix();
         M->loadIdentity();
 
-        if (shader == texProg)
-        {
+        if (shader == texProg) {
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
         }
         // =================================================================================================
 
         // Draw plane
-        if (shader == texProg)
-        {
+        if (shader == texProg) {
             setTextureMaterial(0);
         }
         M->pushMatrix();
         glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE,
-                           value_ptr(M->topMatrix()));
+            value_ptr(M->topMatrix()));
         plane->draw(shader);
         M->popMatrix();
         // =================================================================================================
 
         // Draw ball
-        if (shader == texProg)
-        {
+        if (shader == texProg) {
             setTextureMaterial(1);
         }
         ball->draw(shader, M);
@@ -680,12 +701,10 @@ public:
         // =================================================================================================
 
         // Draw Boxes
-        if (shader == texProg)
-        {
+        if (shader == texProg) {
             setTextureMaterial(2);
         }
-        for (auto box : boxes)
-        {
+        for (auto box : boxes) {
             box->draw(shader, M);
         }
         // =================================================================================================
@@ -695,8 +714,7 @@ public:
         // =================================================================================================
     }
 
-    void createShadowMap(mat4 *LS)
-    {
+    void createShadowMap(mat4 *LS) {
         // set up light's depth map
         glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -718,13 +736,11 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void drawDepthMap()
-    {
+    void drawDepthMap() {
         /* code to draw the light depth buffer */
         // geometry style debug on light - test transforms, draw geometry from
         // light perspective
-        if (GEOM_DEBUG)
-        {
+        if (GEOM_DEBUG) {
             DepthProgDebug->bind();
             // render scene from light's point of view
             SetOrthoMatrix(DepthProgDebug);
@@ -732,8 +748,7 @@ public:
             drawScene(DepthProgDebug);
             DepthProgDebug->unbind();
         }
-        else
-        {
+        else {
             // actually draw the light depth map
             DebugProg->bind();
             glActiveTexture(GL_TEXTURE0);
@@ -748,8 +763,7 @@ public:
         }
     }
 
-    void drawSkyBox()
-    {
+    void drawSkyBox() {
         // Draw skybox
         skyProg->bind();
         setProjectionMatrix(skyProg);
@@ -765,16 +779,14 @@ public:
         skyProg->unbind();
     }
 
-    void sendShadowMap()
-    {
+    void sendShadowMap() {
         /* also set up light depth map */
         glActiveTexture(GL_TEXTURE30);
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glUniform1i(texProg->getUniform("shadowDepth"), 0);
     }
 
-    void renderPlayerView(mat4 *LS)
-    {
+    void renderPlayerView(mat4 *LS) {
         drawSkyBox();
 
         texProg->bind();
@@ -790,14 +802,12 @@ public:
 
         texProg->unbind();
 
-        if (octree->debug)
-        {
+        if (octree->debug) {
             drawOctree();
         }
     }
 
-    void drawOctree()
-    {
+    void drawOctree() {
         circleProg->bind();
         setProjectionMatrix(circleProg);
         setView(circleProg);
@@ -818,8 +828,7 @@ public:
     {
         octree->update();
 
-        if (ballInGoal && !DID_WIN)
-        {
+        if (ballInGoal && !DID_WIN) {
             DID_WIN = true;
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
             cout << "You win!" << endl;
@@ -827,13 +836,11 @@ public:
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
         }
         auto boxesToCheck = octree->query(ball);
-        for (auto box : boxesToCheck)
-        {
+        for (auto box : boxesToCheck) {
             box->checkCollision(ball.get());
         }
 
-        for (auto box : boxes)
-        {
+        for (auto box : boxes) {
             box->update(dt);
         }
         //TODO:: Do Collision checks between ball and Enemy
@@ -851,25 +858,22 @@ public:
         enemy2->update(dt);
     }
 
-    void setLight(shared_ptr<Program> prog)
-    {
-        glUniform3f(prog->getUniform("lightPos"), 0, 1, 1);
-        glUniform3f(prog->getUniform("dirLightColor"), 1, 1, 1);
+    void setLight(shared_ptr<Program> prog) {
+        glUniform3f(prog->getUniform("lightPosition"), gameLight.x, gameLight.y, gameLight.z);
+        glUniform3f(prog->getUniform("lightColor"), gameLightColor.x, gameLightColor.y, gameLightColor.z);
     }
 
-    mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
-    {
+    mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
         // shadow mapping helper
 
-        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 96.0f);
+        mat4 ortho = glm::ortho(-96.0f, 96.0f, -96.0f, 96.0f, 0.1f, 500.0f);
         // fill in the glUniform call to send to the right shader!
         glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE,
-                           value_ptr(ortho));
+            value_ptr(ortho));
         return ortho;
     }
 
-    mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up)
-    {
+    mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up) {
         // shadow mapping helper
 
         mat4 Cam = lookAt(pos, LA, up);
@@ -878,82 +882,65 @@ public:
         return Cam;
     }
 
-    void setProjectionMatrix(shared_ptr<Program> curShade)
-    {
+    void setProjectionMatrix(shared_ptr<Program> curShade) {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         float aspect = width / (float)height;
         mat4 Projection = perspective(radians(50.0f), aspect, 0.1f, 200.0f);
         glUniformMatrix4fv(curShade->getUniform("P"), 1, GL_FALSE,
-                           value_ptr(Projection));
+            value_ptr(Projection));
     }
 
-    void setView(shared_ptr<Program> curShade)
-    {
+    void setView(shared_ptr<Program> curShade) {
         mat4 Cam = lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
         glUniformMatrix4fv(curShade->getUniform("V"), 1, GL_FALSE, value_ptr(Cam));
     }
 
-    void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-    {
+    void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
         //skin switching key call back
-        if (key == GLFW_KEY_O && action == GLFW_PRESS)
-        {
+        if (key == GLFW_KEY_O && action == GLFW_PRESS) {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
         }
-        else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
             SHADOW_AA = (SHADOW_AA + 1) % 9;
-            if (SHADOW_AA == 0)
-            {
+            if (SHADOW_AA == 0) {
                 SHADOW_AA++;
             }
         }
-        else if (key == GLFW_KEY_T && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
             SHADOWS = !SHADOWS;
         }
         // other call backs
-        else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
             glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR,
-                             GLFW_CURSOR_NORMAL);
+                GLFW_CURSOR_NORMAL);
             glfwSetWindowShouldClose(window, GL_TRUE);
         }
-        else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
-        else if (key == GLFW_KEY_Z && action == GLFW_RELEASE)
-        {
+        else if (key == GLFW_KEY_Z && action == GLFW_RELEASE) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
-        else if (key == GLFW_KEY_V && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_V && action == GLFW_PRESS) {
             camera->flying = !camera->flying;
         }
-        else if (key == GLFW_KEY_U && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_U && action == GLFW_PRESS) {
             DEBUG_LIGHT = !DEBUG_LIGHT;
         }
-        else if (key == GLFW_KEY_P && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
             SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR)
-            {
+            if (SHOW_CURSOR) {
                 glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
-            else
-            {
+            else {
                 glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
         }
-        else if (key == GLFW_KEY_H && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_H && action == GLFW_PRESS) {
             octree->debug = !octree->debug;
         }
-        else if (key == GLFW_KEY_R && action == GLFW_PRESS)
-        {
+        else if (key == GLFW_KEY_R && action == GLFW_PRESS) {
             ball->position = START_POSITION;
             ball->velocity = vec3(0);
             DID_WIN = false;
@@ -972,12 +959,10 @@ public:
     {
     }
 
-    void mouseCallback(GLFWwindow *window, int button, int action, int mods)
-    {
+    void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
         double posX, posY;
 
-        if (action == GLFW_PRESS)
-        {
+        if (action == GLFW_PRESS) {
             MOUSE_DOWN = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
@@ -985,27 +970,23 @@ public:
             MOVING = true;
         }
 
-        if (action == GLFW_RELEASE)
-        {
+        if (action == GLFW_RELEASE) {
             MOVING = false;
             MOUSE_DOWN = false;
         }
     }
 
-    void resizeCallback(GLFWwindow *window, int width, int height)
-    {
+    void resizeCallback(GLFWwindow *window, int width, int height) {
         glViewport(0, 0, width, height);
     }
     //=================================================
 };
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     // Where the resources are loaded from
     std::string resourceDir = "../resources";
 
-    if (argc >= 2)
-    {
+    if (argc >= 2) {
         resourceDir = argv[1];
     }
 
@@ -1031,8 +1012,7 @@ int main(int argc, char **argv)
     application->START_TIME = glfwGetTime();
 
     // Loop until the user closes the window.
-    while (!glfwWindowShouldClose(windowManager->getHandle()))
-    {
+    while (!glfwWindowShouldClose(windowManager->getHandle())) {
         // Render scene.
         double t = glfwGetTime();
         double dt = std::min(t - prevTime, 0.1);

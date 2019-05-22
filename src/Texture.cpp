@@ -44,10 +44,10 @@ void Texture::init()
 	glBindTexture(GL_TEXTURE_2D, tid);
 	// Load the actual texture data
 	// Base level is 0, number of channels is 3, and border is 0.
-	if (ncomps == 4)
-  		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	else
-  		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	if (ncomps == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	else if (ncomps == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	else if (ncomps == 1) glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+
 	// Generate image pyramid
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Set texture wrap modes for the S and T directions
