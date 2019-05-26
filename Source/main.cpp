@@ -1011,17 +1011,30 @@ int main(int argc, char **argv) {
     application->initTextures(resourceDir);
     application->initGeom(resourceDir);
 
-    double prevTime = glfwGetTime();
     application->START_TIME = glfwGetTime();
+
+    double t = 0;
+    const double dt = 0.02;
+    double currentTime = application->START_TIME;
+    double accumulator = 0;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(windowManager->getHandle())) {
         // Render scene.
-        double t = glfwGetTime();
-        double dt = std::min(t - prevTime, 0.1);
-        prevTime = t;
+        double newTime = glfwGetTime();
+        double frameTime = newTime - currentTime;
+        currentTime = newTime;
+
+        accumulator += frameTime;
+
+        while (accumulator >= dt)
+        {
+            application->update(dt);
+            accumulator -= dt;
+            t += dt;
+        }
+
         application->render();
-        application->update(dt);
 
         // Swap front and back buffers.
         glfwSwapBuffers(windowManager->getHandle());
