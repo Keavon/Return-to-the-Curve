@@ -17,10 +17,16 @@ class TriggerSphere;
 class TriggerCylinder;
 class PhysicsObject;
 
+enum ColGeom {FACE, EDGE, VERT, SPHERE};
+
 struct Collision {
     PhysicsObject *other;
     float penetration;
     glm::vec3 normal;
+    ColGeom geom;
+
+    glm::vec3 v[3];
+    glm::vec3 pos;
 };
 
 class Collider

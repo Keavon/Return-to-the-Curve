@@ -39,12 +39,14 @@ void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, Physi
         collision1.other = sphere2;
         collision1.normal = -normalize(sphere1->position - sphere2->position);
         collision1.penetration = sphere1->getRadius() + sphere2->getRadius() - d;
+        collision1.geom = SPHERE;
         sphereCol1->pendingCollisions.push_back(collision1);
 
         Collision collision2;
         collision2.other = sphere1;
         collision2.normal = collision1.normal;
         collision2.penetration = collision1.penetration;
+        collision2.geom = SPHERE;
         sphereCol2->pendingCollisions.push_back(collision2);
     }
 }
@@ -79,6 +81,11 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
                 collision.other = mesh;
                 collision.normal = dir;
                 collision.penetration = sphere->getRadius() - d;
+                collision.geom = FACE;
+                collision.v[0] = v[0];
+                collision.v[1] = v[1];
+                collision.v[2] = v[2];
+                collision.pos = sphere->position + normal * collision.penetration;
                 sphereCol->pendingCollisions.push_back(collision);
 
                 // add edges of triangle to set of edges we shouldn't check
@@ -109,6 +116,8 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
                 collision.other = mesh;
                 collision.normal = normalize(closestPoint - sphere->position);
                 collision.penetration = sphere->getRadius() - d;
+                collision.geom = EDGE;
+                collision.pos = closestPoint;
                 sphereCol->pendingCollisions.push_back(collision);
 
                 // add vertices of edge to set of vertices we souldn't check 
@@ -135,6 +144,8 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
                 collision.other = mesh;
                 collision.normal = normalize(v - sphere->position);
                 collision.penetration = sphere->getRadius() - d;
+                collision.geom = VERT;
+                collision.pos = v;
                 sphereCol->pendingCollisions.push_back(collision);
             }
         }
@@ -147,6 +158,7 @@ void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphere
     {
         Collision collision;
         collision.other = cSphere;
+        collision.geom = SPHERE;
         tSphereTrig->pendingCollisions.push_back(collision);
     }
 }
