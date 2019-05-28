@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <irrKlang.h>
 
 #include "Camera.h"
 #include "GLSL.h"
@@ -41,7 +42,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 1 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 using namespace std;
 using namespace glm;
@@ -127,6 +128,8 @@ public:
 
     vector<shared_ptr<Texture>> marbleTextures;
 
+    irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
+
     void init(const string &resourceDirectory) {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -143,6 +146,8 @@ public:
         camera->init();
 
         ballInGoal = false;
+
+        
     }
 
     //=================================================
@@ -915,6 +920,8 @@ public:
         //skin switching key call back
         if (key == GLFW_KEY_O && action == GLFW_PRESS) {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
+
+            SoundEngine->play2D("../irrKlang/media/explosion.wav", GL_TRUE);
         }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
             SHADOW_AA = (SHADOW_AA + 1) % 9;
@@ -1016,9 +1023,9 @@ int main(int argc, char **argv) {
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    // windowManager->init(1280, 720);
+    windowManager->init(1280, 720);
     // windowManager->init(1920, 1080);
-    windowManager->init(2560, 1440);
+    // windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 

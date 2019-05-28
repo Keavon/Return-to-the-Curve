@@ -17,6 +17,8 @@ include_directories("glad/include")
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 
 
+include_directories("irrKlang/include")
+
 
 # Add GLFW
 # Get the GLFW environment variable.
@@ -79,13 +81,16 @@ if(WIN32)
 else()
   # Enable all pedantic warnings.
   # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -pedantic")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -L ../irrKlang/bin/linux-gcc/libIrrKlang.so")
 
   if(APPLE)
     # Add required frameworks for GLFW.
     target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
   else()
     #Link the Linux OpenGL library
-    target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl")
+
+    find_library({irrklang} NAMES irrklang PATHS /irrKlang/bin/linux-gcc)
+    
+    target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl" "${irrklang}")
   endif()
 endif()
