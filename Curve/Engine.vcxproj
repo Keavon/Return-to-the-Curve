@@ -132,6 +132,7 @@
     <ClCompile Include="..\Source\engine\Collider.cpp" />
     <ClCompile Include="..\Source\engine\ColliderMesh.cpp" />
     <ClCompile Include="..\Source\engine\ColliderSphere.cpp" />
+    <ClCompile Include="..\Source\engine\Frustum.cpp" />
     <ClCompile Include="..\Source\engine\GameObject.cpp" />
     <ClCompile Include="..\Source\engine\Octree.cpp" />
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\Source\engine\Collider.h" />
     <ClInclude Include="..\Source\engine\ColliderMesh.h" />
     <ClInclude Include="..\Source\engine\ColliderSphere.h" />
+    <ClInclude Include="..\Source\engine\Frustum.h" />
     <ClInclude Include="..\Source\engine\GameObject.h" />
     <ClInclude Include="..\Source\engine\Octree.h" />
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
