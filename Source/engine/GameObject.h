@@ -20,4 +20,5 @@ public:
     int material;
     glm::vec3 scale;
     std::shared_ptr<Shape> model;
+    bool inView;
 };

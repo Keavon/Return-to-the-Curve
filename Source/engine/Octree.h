@@ -8,6 +8,7 @@
 #include "../Program.h"
 #include "../Shape.h"
 #include "../MatrixStack.h"
+#include "Frustum.h"
 
 #define MAX_DEPTH
 #define MAX_ELEMENTS
@@ -36,6 +37,8 @@ public:
     Octree(glm::vec3 min, glm::vec3 max);
     void init(std::shared_ptr<Shape> billboard, std::shared_ptr<Shape> cube);
     std::vector<std::shared_ptr<PhysicsObject>> query(std::shared_ptr<PhysicsObject> object);
+    std::vector<std::shared_ptr<PhysicsObject>> query(Frustum &viewFrustum);
+    void markInView(Frustum &viewFrustum);
     void drawDebugBoundingSpheres(std::shared_ptr<Program> prog);
     void drawDebugOctants(std::shared_ptr<Program> prog);
     void clear();

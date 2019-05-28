@@ -33,6 +33,7 @@
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
 #include "engine/Octree.h"
+#include "engine/Frustum.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -98,6 +99,7 @@ public:
 
     // Camera
     shared_ptr<Camera> camera;
+    Frustum viewFrustum;
 
     // Game objects
     shared_ptr<Ball> ball;
@@ -837,6 +839,7 @@ public:
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
         }
         auto boxesToCheck = octree->query(ball);
+        cout << boxesToCheck.size() << endl;
         for (auto box : boxesToCheck) {
             box->checkCollision(ball.get());
         }
@@ -857,6 +860,9 @@ public:
         goal->update(dt);
         enemy->update(dt);
         enemy2->update(dt);
+
+        viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
+        octree->markInView(viewFrustum);
     }
 
     void setLight(shared_ptr<Program> prog) {
@@ -883,18 +889,26 @@ public:
         return Cam;
     }
 
-    void setProjectionMatrix(shared_ptr<Program> curShade) {
+    mat4 setProjectionMatrix(shared_ptr<Program> curShade) {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         float aspect = width / (float)height;
         mat4 Projection = perspective(radians(50.0f), aspect, 0.1f, 200.0f);
-        glUniformMatrix4fv(curShade->getUniform("P"), 1, GL_FALSE,
-            value_ptr(Projection));
+        if (curShade != nullptr)
+        {
+            glUniformMatrix4fv(curShade->getUniform("P"), 1, GL_FALSE,
+                value_ptr(Projection));
+        }
+        return Projection;
     }
 
-    void setView(shared_ptr<Program> curShade) {
+    mat4 setView(shared_ptr<Program> curShade) {
         mat4 Cam = lookAt(camera->eye, camera->lookAtPoint, camera->upVec);
-        glUniformMatrix4fv(curShade->getUniform("V"), 1, GL_FALSE, value_ptr(Cam));
+        if (curShade != nullptr)
+        {
+            glUniformMatrix4fv(curShade->getUniform("V"), 1, GL_FALSE, value_ptr(Cam));
+        }
+        return Cam;
     }
 
     void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {

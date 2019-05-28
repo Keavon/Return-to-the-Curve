@@ -10,13 +10,13 @@ using namespace std;
 using namespace glm;
 
 GameObject::GameObject(vec3 position, quat orientation, shared_ptr<Shape> model) :
-    position(position), orientation(orientation), model(model), scale(vec3(1))
+    position(position), orientation(orientation), model(model), scale(vec3(1)), inView(true)
 {
 }
 
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-    if (model != NULL)
+    if (model != NULL && inView)
     {
         M->pushMatrix();
             M->translate(position);

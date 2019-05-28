@@ -85,6 +85,11 @@ void Enemy::update(float dt)
 
 void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
+	if (!inView)
+	{
+		return;
+	}
+
 	shared_ptr<MatrixStack> M2 = M;
 	{
 		static float t = 0;

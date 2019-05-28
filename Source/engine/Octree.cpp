@@ -3,6 +3,7 @@
 #include "PhysicsObject.h"
 #include "../Program.h"
 #include "../MatrixStack.h"
+#include "Frustum.h"
 
 #include <algorithm>
 #include <iostream>
@@ -171,45 +172,75 @@ Octree::Octree(vec3 min, vec3 max) : imin(min), imax(max), debug(false)
 vector<shared_ptr<PhysicsObject>> Octree::query(shared_ptr<PhysicsObject> object)
 {
     vector<shared_ptr<PhysicsObject>> hits;
-
     stack<shared_ptr<OctNode>> nodes;
 
-    if (root == nullptr)
+    if (root != nullptr && boxContainsSphere(root->imin, root->imax, object->position, object->getRadius()))
     {
-        return hits;
-    }
-
-    nodes.push(root);
-
-    bool end = false;
-    while (!end)
-    {
-        end = true;
-        for (int i = 0; i < 8; i++)
-        {
-            if (nodes.top()->octant[i] != nullptr &&
-                boxContainsSphere(nodes.top()->octant[i]->imin, nodes.top()->octant[i]->imax, object->position, object->getRadius()))
-            {
-                nodes.push(nodes.top()->octant[i]);
-                end = false;
-                break;
-            }
-        }
+        nodes.push(root);
     }
 
     while (!nodes.empty())
     {
-        for (auto otherObject : nodes.top()->elements)
+        auto node = nodes.top();
+        nodes.pop();
+        for (int i = 0; i < 8; i++)
         {
-            if (otherObject != object)
+            if (node->octant[i] != nullptr &&
+                boxContainsSphere(node->octant[i]->imin, node->octant[i]->imax, object->position, object->getRadius()))
             {
-                hits.push_back(otherObject);
+                nodes.push(node->octant[i]);
             }
         }
-        nodes.pop();
+
+        hits.insert(hits.end(), node->elements.begin(), node->elements.end());
     }
 
     return hits;
+}
+
+vector<shared_ptr<PhysicsObject>> Octree::query(Frustum &viewFrustum)
+{
+    vector<shared_ptr<PhysicsObject>> hits;
+    stack<shared_ptr<OctNode>> nodes;
+
+    if (root != nullptr && viewFrustum.checkAABB(root->imin, root->imax))
+    {
+        nodes.push(root);
+    }
+
+    while (!nodes.empty())
+    {
+        auto node = nodes.top();
+        nodes.pop();
+        for (int i = 0; i < 8; i++)
+        {
+            if (node->octant[i] != nullptr && viewFrustum.checkAABB(node->octant[i]->imin, node->octant[i]->imax))
+            {
+                nodes.push(node->octant[i]);
+            }
+        }
+
+        hits.insert(hits.end(), node->elements.begin(), node->elements.end());
+    }
+
+    return hits;
+}
+
+void Octree::markInView(Frustum &viewFrustum)
+{
+    for (auto object : objects)
+    {
+        object->inView = false;
+    }
+
+    auto hits = query(viewFrustum);
+    for (auto object : hits)
+    {
+        if (viewFrustum.checkSphere(object->position, object->getRadius()))
+        {
+            object->inView = true;
+        }
+    }
 }
 
 void Octree::init(shared_ptr<Shape> billboard, shared_ptr<Shape> cube)
