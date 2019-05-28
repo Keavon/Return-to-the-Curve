@@ -972,6 +972,11 @@ public:
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
+        float newDistance = deltaY + camera->distToBall;
+        if (newDistance < 15 && newDistance > 2){
+            camera->distToBall += deltaY;
+        }
+        cout<< "DistToBall: " << camera->distToBall << endl;
     }
 
     void mouseCallback(GLFWwindow *window, int button, int action, int mods) {

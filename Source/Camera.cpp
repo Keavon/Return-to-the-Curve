@@ -37,6 +37,8 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     double radPerPx = M_PI / windowHeight;
     yaw += dx * radPerPx;
 
+    // Timer for camera path to start at the beginning of level
+    /*
     double t;
     if (startTimer < 11){
         t = glfwGetTime();
@@ -46,7 +48,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
             previewLvl = true;
             startLvlPreview(levelCenterPoint);
         }
-    }
+    } */
 
     if (flying)
     {
@@ -124,7 +126,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
         eye.z = lookAtPoint.z + distToBall * cos(pitch) * cos(M_PI - yaw); 
     }
     if (!previewLvl) {
-
+        
         if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ||
             glfwGetKey(windowManager->getHandle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
