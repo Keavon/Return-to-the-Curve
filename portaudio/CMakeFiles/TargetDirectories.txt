@@ -1,8 +1,0 @@
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/install/strip.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/install/local.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/portaudio.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/rebuild_cache.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/portaudio_static.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/edit_cache.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/list_install_components.dir
-/home/hluengas/Downloads/pa_stable_v190600_20161030/portaudio/CMakeFiles/install.dir
