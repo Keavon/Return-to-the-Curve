@@ -80,6 +80,9 @@
     <ClCompile Include="..\Source\Pathing.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\Frustum.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="triangle.frag.glsl" />
@@ -180,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\Pathing.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Frustum.h">
+      <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

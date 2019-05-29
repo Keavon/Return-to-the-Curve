@@ -844,7 +844,6 @@ public:
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
         }
         auto boxesToCheck = octree->query(ball);
-        cout << boxesToCheck.size() << endl;
         for (auto box : boxesToCheck) {
             box->checkCollision(ball.get());
         }
