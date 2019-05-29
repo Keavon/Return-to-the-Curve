@@ -85,10 +85,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.frag.glsl" />
-    <None Include="triangle.vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Source">
       <UniqueIdentifier>{54e85d7c-b3d9-4d15-97e7-4d59ccd6449b}</UniqueIdentifier>
     </Filter>

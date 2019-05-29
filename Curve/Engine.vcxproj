@@ -156,10 +156,6 @@
     <ClCompile Include="..\Source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.frag.glsl" />
-    <None Include="triangle.vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\Source\Camera.h" />
     <ClInclude Include="..\Source\engine\BoundingBox.h" />
     <ClInclude Include="..\Source\engine\Collider.h" />
