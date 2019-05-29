@@ -77,7 +77,7 @@ endif()
 # WINDOWS
 if(WIN32)
   target_link_libraries(${CMAKE_PROJECT_NAME} opengl32.lib)
-  target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_LIB_DIR}/Win64-visualStudio/irrKlang.lib)
+  target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_LIB_DIR}/Winx64-visualStudio/irrKlang.lib)
 
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")

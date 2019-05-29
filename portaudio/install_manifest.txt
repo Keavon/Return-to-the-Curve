@@ -1,0 +1,3 @@
+/install_location/lib/pkgconfig/portaudio-2.0.pc
+/install_location/include/portaudio.h
+/install_location/lib/libportaudio.so
