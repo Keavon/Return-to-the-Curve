@@ -11,14 +11,14 @@ file(GLOB_RECURSE SOURCES "Source/*.cpp" "glad/src/*.c")
 file(GLOB_RECURSE HEADERS "Source/*.h" "glad/*/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
 
-set(IRRKLANG_BIN_DIR ${CMAKE_SOURCE_DIR}/irrKlang/bin)
-set(IRRKLANG_LIB_DIR ${CMAKE_SOURCE_DIR}/irrKlang/lib)
+set(IRRKLANG_BIN_DIR ${CMAKE_SOURCE_DIR}/irrKlang64/bin)
+set(IRRKLANG_LIB_DIR ${CMAKE_SOURCE_DIR}/irrKlang64/lib)
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 
 include_directories("glad/include")
-include_directories("irrKlang/include")
+include_directories("irrKlang64/include")
 
 # Add GLFW
 # Get the GLFW environment variable.

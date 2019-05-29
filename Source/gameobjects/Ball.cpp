@@ -15,7 +15,6 @@
 #include <iostream>
 #include <unordered_set>
 
-
 using namespace glm;
 using namespace std;
 
@@ -36,8 +35,6 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     friction = 0.25;
 
     jumpForce = 200;
-
-    SoundEngine = irrklang::createIrrKlangDevice();
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -123,8 +120,6 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         {
             vec3 normForceDir = normalize(normForce);
             impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-
-            SoundEngine->play2D("../Resources/sounds/jump.wav", GL_FALSE);
         }
     }
 

@@ -5,6 +5,7 @@
 #include "../Shape.h"
 #include <glm/glm.hpp>
 #include <memory>
+#include <irrKlang.h> // audio lib
 
 #define GRAVITY -30.0f
 #define DRAG_COEFFICIENT 0.25f

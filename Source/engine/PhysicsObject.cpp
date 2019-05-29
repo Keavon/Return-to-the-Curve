@@ -15,6 +15,8 @@
 using namespace std;
 using namespace glm;
 
+irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
+
 bool inRange(float n, float low, float high)
 {
     return low <= n && n <= high;
@@ -83,6 +85,12 @@ void PhysicsObject::update(float dt)
     acceleration = netForce * invMass;
     velocity += acceleration * dt;
     position += velocity * dt;
+
+    if (glm::length(impulse) > 20.0)
+    {
+        cout << "impulse: " << glm::length(impulse) << endl;
+        SoundEngine->play2D("../Resources/sounds/marble_impact.wav", GL_FALSE);
+    }
 
     impulse = vec3(0);
     netForce = vec3(0);

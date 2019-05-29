@@ -5,7 +5,6 @@
 #include "../WindowManager.h"
 #include <memory>
 #include <glm/glm.hpp>
-#include <irrKlang.h> // audio lib
 
 class Ball : public PhysicsObject
 {
@@ -14,9 +13,8 @@ public:
     void init(WindowManager *windowManager);
     void update(float dt, glm::vec3 dolly, glm::vec3 strafe);
 
-	WindowManager *windowManager;
+    WindowManager *windowManager;
     float radius;
     float moveForce;
     float jumpForce;
-    irrklang::ISoundEngine *SoundEngine;
 };
