@@ -20,6 +20,7 @@ public:
 	float sprintFactor = 3;
 	float radius = 1.5;
 	float height = 5;
+    bool angleLocked = true;
 	bool flying = false;
 	bool previewLvl = false;
 	Pathing *cameraPath;
