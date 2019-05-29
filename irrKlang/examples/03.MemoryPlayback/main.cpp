@@ -206,7 +206,7 @@ int main(int argc, const char** argv)
 		return 0; // error starting up the engine
 
 	#ifdef __BIG_ENDIAN__
-	printf("This example won't work on power PCs because the way we are "\
+	printf("This example won't work on Power-PCs because the way we are "\
 	       "storing the wave data in this example source file. Sorry.");
 	return 0;
 	#endif

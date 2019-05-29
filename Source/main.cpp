@@ -128,8 +128,6 @@ public:
 
     vector<shared_ptr<Texture>> marbleTextures;
 
-    irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
-
     void init(const string &resourceDirectory) {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -920,7 +918,7 @@ public:
         if (key == GLFW_KEY_O && action == GLFW_PRESS) {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
 
-            SoundEngine->play2D("../irrKlang/media/explosion.wav", GL_TRUE);
+            
         }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
             SHADOW_AA = (SHADOW_AA + 1) % 9;

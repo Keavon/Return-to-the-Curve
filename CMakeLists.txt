@@ -11,14 +11,14 @@ file(GLOB_RECURSE SOURCES "Source/*.cpp" "glad/src/*.c")
 file(GLOB_RECURSE HEADERS "Source/*.h" "glad/*/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
 
-include_directories("glad/include")
+set(IRRKLANG_BIN_DIR ${CMAKE_SOURCE_DIR}/irrKlang/bin)
+set(IRRKLANG_LIB_DIR ${CMAKE_SOURCE_DIR}/irrKlang/lib)
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 
-
+include_directories("glad/include")
 include_directories("irrKlang/include")
-
 
 # Add GLFW
 # Get the GLFW environment variable.
@@ -73,24 +73,24 @@ endif()
 
 
 # OS specific options and libraries
+
+# WINDOWS
 if(WIN32)
-  # c++0x is enabled by default.
-  # -Wall produces way too many warnings.
-  # -pedantic is not supported.
   target_link_libraries(${CMAKE_PROJECT_NAME} opengl32.lib)
+  target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_LIB_DIR}/Win64-visualStudio/irrKlang.lib)
+
 else()
-  # Enable all pedantic warnings.
-  # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -pedantic")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -L ../irrKlang/bin/linux-gcc/libIrrKlang.so")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
+  # OSX
   if(APPLE)
-    # Add required frameworks for GLFW.
     target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
-  else()
-    #Link the Linux OpenGL library
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_BIN_DIR}/macosx-gcc/libirrklang.dylib)
 
-    find_library({irrklang} NAMES irrklang PATHS /irrKlang/bin/linux-gcc)
+  # LINUX
+  else()
+    target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl")
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_BIN_DIR}/linux-gcc-64/libIrrKlang.so)
     
-    target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl" "${irrklang}")
   endif()
 endif()

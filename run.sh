@@ -1,4 +1,4 @@
 cd build
-make
+make -j 2
 ./curve
 cd ..

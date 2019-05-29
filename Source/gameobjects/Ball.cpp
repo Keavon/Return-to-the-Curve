@@ -15,12 +15,12 @@
 #include <iostream>
 #include <unordered_set>
 
+
 using namespace glm;
 using namespace std;
 
-Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
-    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
-    radius(radius)
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
+                                                                                     radius(radius)
 {
     speed = 0;
     material = 0;
@@ -36,6 +36,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     friction = 0.25;
 
     jumpForce = 200;
+
+    SoundEngine = irrklang::createIrrKlangDevice();
 }
 
 void Ball::init(WindowManager *windowManager)
@@ -60,13 +62,13 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         switch (collider->pendingCollisions[i].geom)
         {
-            case FACE:
-                faceCollisions.push_back(&collider->pendingCollisions[i]);
-                break;
-            case EDGE:
-            case VERT:
-                notFaceCollisions.push_back(&collider->pendingCollisions[i]);
-                break;
+        case FACE:
+            faceCollisions.push_back(&collider->pendingCollisions[i]);
+            break;
+        case EDGE:
+        case VERT:
+            notFaceCollisions.push_back(&collider->pendingCollisions[i]);
+            break;
         }
     }
     unordered_set<Collision *> collisionsToRemove;
@@ -78,7 +80,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
             {
                 float d;
                 intersectRayPlane(notFaceCollisions[j]->pos, -faceCollisions[i]->normal,
-                    faceCollisions[i]->v[0], faceCollisions[i]->normal, d);
+                                  faceCollisions[i]->v[0], faceCollisions[i]->normal, d);
                 if (d < 0.1)
                 {
                     collisionsToRemove.insert(notFaceCollisions[j]);
@@ -95,7 +97,6 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
             collider->pendingCollisions.erase(collider->pendingCollisions.begin() + i);
         }
     }
-
 
     PhysicsObject::update(dt);
 
@@ -122,6 +123,8 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         {
             vec3 normForceDir = normalize(normForce);
             impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+
+            SoundEngine->play2D("../Resources/sounds/jump.wav", GL_FALSE);
         }
     }
 
@@ -138,6 +141,4 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
         orientation = q * orientation;
     }
-
-
 }

@@ -5,6 +5,7 @@
 #include "../WindowManager.h"
 #include <memory>
 #include <glm/glm.hpp>
+#include <irrKlang.h> // audio lib
 
 class Ball : public PhysicsObject
 {
@@ -17,4 +18,5 @@ public:
     float radius;
     float moveForce;
     float jumpForce;
+    irrklang::ISoundEngine *SoundEngine;
 };
