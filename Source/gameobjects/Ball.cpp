@@ -28,13 +28,13 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     acceleration = vec3(0);
     velocity = vec3(0);
 
-    mass = 10;
+    mass = 5;
     invMass = 1 / mass;
     elasticity = 0.5;
 
     friction = 0.25;
 
-    jumpForce = 200;
+    jumpForce = 150;
 }
 
 void Ball::init(WindowManager *windowManager)

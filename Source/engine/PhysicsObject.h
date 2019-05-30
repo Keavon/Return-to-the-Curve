@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-#define GRAVITY -30.0f
+#define GRAVITY -40.0f
 #define DRAG_COEFFICIENT 0.25f
 
 // https://gafferongames.com/post/physics_in_3d/
