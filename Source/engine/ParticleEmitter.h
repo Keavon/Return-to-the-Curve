@@ -13,9 +13,10 @@ class Particle
 public:
     Particle();
     virtual void update(float dt);
-    virtual void start() {};
+    virtual void start();
     void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard);
 
+    glm::vec3 startPosition;
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
@@ -23,6 +24,7 @@ public:
     float t;
     float scale;
     float rotation;
+    float rotationSpeed;
     float lifespan;
     bool respawn;
 };
@@ -35,6 +37,7 @@ public:
     void update(float dt);
     void draw(std::shared_ptr<Program> prog);
     void addParticle(std::shared_ptr<Particle> p);
+    void stop();
 
     int maxParticles;
     int numActiveParticles;
