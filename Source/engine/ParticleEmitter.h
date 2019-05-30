@@ -2,12 +2,15 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include "../Program.h"
+#include <memory>
 
 class Particle
 {
 public:
-    void update(float dt);
-    void draw();
+    virtual void update(float dt);
+    virtual void start() = 0;
+    void draw(std::shared_ptr<Program> prog);
 
     glm::vec3 position;
     glm::vec3 velocity;
@@ -24,9 +27,9 @@ class ParticleEmitter
 public:
     ParticleEmitter(int maxParticles);
     void update(float dt);
-    void draw();
-    void addParticle(const Particle &p);
+    void draw(std::shared_ptr<Program> prog);
+    void addParticle(std::shared_ptr<Particle> p);
 
     int maxParticles;
-    std::vector<Particle> particles;
+    std::vector<std::shared_ptr<Particle>> particles;
 };
