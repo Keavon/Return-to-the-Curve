@@ -11,12 +11,9 @@
 using namespace std;
 using namespace glm;
 
-
-Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
-    PhysicsObject(position, orientation, model, make_shared<TriggerSphere>(radius)),
-    radius(radius), ballInGoal(false), didWin(false)
+Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<TriggerSphere>(radius)),
+                                                                                     radius(radius), ballInGoal(false), didWin(false)
 {
-
 }
 
 void Goal::init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime)
@@ -44,6 +41,12 @@ void Goal::update(float dt)
 
 void Goal::onWin()
 {
+    if (!soundEngine)
+    {
+        soundEngine = std::make_shared<Sound>();
+    }
+    soundEngine->win();
+
     cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
     cout << "You win!" << endl;
     cout << "Time: " << glfwGetTime() - *startTime << endl;

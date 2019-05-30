@@ -160,7 +160,6 @@ public:
         camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
 
-
         sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
         glEnable(GL_BLEND);
@@ -760,16 +759,7 @@ public:
         {
             resetPlayer();
         }
-
-        if (ballInGoal && !DID_WIN)
-        {
-            soundEngine->win();
-            DID_WIN = true;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-            cout << "You win!" << endl;
-            cout << "Time: " << glfwGetTime() - START_TIME << endl;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-        }
+        
         auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
         for (auto box : boxesToCheck)
         {
