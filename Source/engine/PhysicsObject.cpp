@@ -15,18 +15,15 @@
 using namespace std;
 using namespace glm;
 
-irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
-
 bool inRange(float n, float low, float high)
 {
     return low <= n && n <= high;
 }
 
 PhysicsObject::PhysicsObject(vec3 position, quat orientation,
-    shared_ptr<Shape> model, shared_ptr<Collider> collider) :
-    GameObject(position, orientation, model), collider(collider),
-    netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
-    normForce(0), friction(0), elasticity(0), speed(0)
+                             shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, model), collider(collider),
+                                                                                       netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
+                                                                                       normForce(0), friction(0), elasticity(0), speed(0)
 {
 }
 void PhysicsObject::update(float dt)
@@ -85,12 +82,6 @@ void PhysicsObject::update(float dt)
     acceleration = netForce * invMass;
     velocity += acceleration * dt;
     position += velocity * dt;
-
-    if (glm::length(impulse) > 20.0)
-    {
-        cout << "impulse: " << glm::length(impulse) << endl;
-        SoundEngine->play2D("../Resources/sounds/marble_impact.wav", GL_FALSE);
-    }
 
     impulse = vec3(0);
     netForce = vec3(0);
