@@ -953,7 +953,7 @@ public:
     {
         deltaY *= -1;
         float newDistance = deltaY + camera->distToBall;
-        if (newDistance < 15 && newDistance > 2)
+        if (newDistance < 20 && newDistance > 2.5)
         {
             camera->distToBall += deltaY;
         }

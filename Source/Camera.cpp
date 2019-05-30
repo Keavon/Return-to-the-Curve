@@ -53,7 +53,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     if (flying)
     {
         dolly = normalize(lookAtPoint - eye);
-        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), -radians(80.0));
+        pitch = std::max(std::min(pitch + dy * radPerPx, radians(89.9)), -radians(89.9));
     }
     else if (previewLvl) {
         //printf("Dt: %f\n",dt);
@@ -120,7 +120,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     else
     {
         double deltaPitch = angleLocked ? 0 : dy;
-        pitch = std::max(std::min(pitch + deltaPitch * radPerPx, radians(80.0)), radians(10.0));
+        pitch = std::max(std::min(pitch + deltaPitch * radPerPx, radians(89.9)), radians(0.0));
         lookAtPoint = ball->position;
         eye.x = lookAtPoint.x + distToBall * cos(pitch) * sin(yaw);
         eye.y = lookAtPoint.y + distToBall * sin(pitch);
@@ -190,7 +190,7 @@ void Camera::init()
     eye = vec3(0, this->height, 0);
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
-    pitch = 0;
+    pitch = radians(30.0);
     yaw = 10;
     cameraPath = new Pathing();
 
