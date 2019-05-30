@@ -964,8 +964,8 @@ int main(int argc, char **argv)
 
     WindowManager *windowManager = new WindowManager();
     // windowManager->init(1280, 720);
-    // windowManager->init(1920, 1080);
-    windowManager->init(2560, 1440);
+    windowManager->init(1920, 1080);
+    // windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
