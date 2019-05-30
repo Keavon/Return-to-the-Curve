@@ -481,6 +481,7 @@ public:
         gameObjects.octree->insert(gameObjects.ball);
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
+        gameObjects.octree->insert(gameObjects.enemy2);
     }
 
     void loadLevel()

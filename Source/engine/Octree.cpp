@@ -146,7 +146,7 @@ void OctNode::update()
     }
 
     // Move leaf node up if possible
-    if (parent != NULL && numObjects == 1 && parent->numObjects == 1)
+    if (parent != NULL && numObjects == 1 && parent->numObjects == 1 && elements.size() > 0)
     {
         auto object = *(elements.begin());
         elements.erase(object);
