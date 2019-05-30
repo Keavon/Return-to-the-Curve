@@ -760,6 +760,7 @@ public:
 
         if (ballInGoal && !DID_WIN)
         {
+            soundEngine->win();
             DID_WIN = true;
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
             cout << "You win!" << endl;

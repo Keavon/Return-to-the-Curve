@@ -8,9 +8,11 @@ Sound::Sound()
 
     sfxSources.impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
     sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
+    sfxSources.winSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_win.wav");
 
     sfxSounds.impactSound = 0;
     sfxSounds.resetSound = 0;
+    sfxSounds.winSound = 0;
 
     // loops over the number of tracks, initializing them and adding them to a vector
     // double completion = 0.0;
@@ -57,5 +59,18 @@ void Sound::reset()
     {
         sfxSounds.resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
         sfxSounds.resetSound = 0;
+    }
+}
+
+void Sound::win()
+{
+    if (!sfxSounds.winSound)
+    {
+        sfxSounds.winSound = sfxEngine->play2D(sfxSources.winSoundSource, false);
+    }
+    if (sfxSounds.winSound)
+    {
+        sfxSounds.winSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+        sfxSounds.winSound = 0;
     }
 }

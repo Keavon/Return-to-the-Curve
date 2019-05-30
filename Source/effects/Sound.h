@@ -16,12 +16,14 @@ public:
     {
         irrklang::ISoundSource *resetSoundSource;
         irrklang::ISoundSource *impactSoundSource;
+        irrklang::ISoundSource *winSoundSource;
     } sfxSources;
     
     struct
     {
         irrklang::ISound *resetSound;
         irrklang::ISound *impactSound;
+        irrklang::ISound *winSound;
     } sfxSounds;
 
     // vector<irrklang::ISoundSource *> musicSources;
@@ -33,4 +35,5 @@ public:
 
     void impact();
     void reset();
+    void win();
 };
