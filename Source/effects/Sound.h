@@ -37,3 +37,5 @@ public:
     void reset();
     void win();
 };
+
+extern std::shared_ptr<Sound> soundEngine;

@@ -50,7 +50,7 @@
 using namespace std;
 using namespace glm;
 
-extern shared_ptr<Sound> soundEngine;
+shared_ptr<Sound> soundEngine;
 
 class Application : public EventCallbacks
 {

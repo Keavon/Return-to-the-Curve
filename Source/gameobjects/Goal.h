@@ -19,6 +19,4 @@ public:
     bool ballInGoal;
     bool didWin;
     float *startTime;
-
-    std::shared_ptr<Sound> soundEngine;
 };

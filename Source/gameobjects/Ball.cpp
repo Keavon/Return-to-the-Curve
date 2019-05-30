@@ -6,6 +6,7 @@
 #include "../engine/PhysicsObject.h"
 #include "../engine/ParticleEmitter.h"
 #include "../effects/ParticleSpark.h"
+#include "../effects/Sound.h"
 #include "Enemy.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -19,8 +20,6 @@
 
 using namespace glm;
 using namespace std;
-
-shared_ptr<Sound> soundEngine; // extern
 
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
                                                                                      radius(radius)

@@ -2,6 +2,7 @@
 #include "../engine/TriggerSphere.h"
 #include "../engine/ParticleEmitter.h"
 #include "../effects/ParticleFirework.h"
+#include "../effects/Sound.h"
 #include "Ball.h"
 
 #include <glm/glm.hpp>
@@ -41,10 +42,6 @@ void Goal::update(float dt)
 
 void Goal::onWin()
 {
-    if (!soundEngine)
-    {
-        soundEngine = std::make_shared<Sound>();
-    }
     soundEngine->win();
 
     cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
