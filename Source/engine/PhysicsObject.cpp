@@ -77,7 +77,8 @@ void PhysicsObject::update(float dt)
         }
     }
 
-
+    float maxImpact = -1;
+    Collision *maxImpactCollision = NULL;
     for (Collision collision : collider->pendingCollisions)
     {
         // resolve collision
@@ -111,7 +112,17 @@ void PhysicsObject::update(float dt)
                 vec3 correction = (std::max)(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
+
+            if (fabs(velAlongNormal) > maxImpact)
+            {
+                maxImpact = fabs(velAlongNormal);
+                maxImpactCollision = &collision;
+            }
         }
+    }
+    if (maxImpact > 0)
+    {
+        onHardCollision(maxImpact, *maxImpactCollision);
     }
     collider->pendingCollisions.clear();
 
@@ -152,4 +163,10 @@ float PhysicsObject::getRadius()
     {
         return (std::max)({scale.x, scale.y, scale.z}) * collider->bbox.radius;
     }
+}
+
+// Called when the object hits something with a normal velocity > 0
+void PhysicsObject::onHardCollision(float impactVel, Collision &collision)
+{
+
 }

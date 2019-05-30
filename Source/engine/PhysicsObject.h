@@ -19,6 +19,7 @@ public:
     void resolveCollision(float dt);
     void checkCollision(PhysicsObject *other);
     void update(float dt);
+    virtual void onHardCollision(float impactVel, Collision &collision);
     float getRadius(); // get radius of bounding sphere
 
     float friction;
