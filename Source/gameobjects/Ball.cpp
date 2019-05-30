@@ -116,6 +116,5 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
     if (impactVel > 10)
     {
         soundEngine->impact();
-        cout << impactVel << endl;
     }
 }
