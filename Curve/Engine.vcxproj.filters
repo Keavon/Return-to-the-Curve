@@ -83,6 +83,9 @@
     <ClCompile Include="..\Source\engine\Frustum.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="UIObject.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -181,6 +184,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\Frustum.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="UIObject.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>

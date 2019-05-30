@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLSL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLTextureWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\MatrixStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Object3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Pathing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\WindowManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\BoundingBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Octree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerCylinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Ball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Blower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Goal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLSL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLTextureWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\MatrixStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Object3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Pathing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Program.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\WindowManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\BoundingBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Frustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Octree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerCylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Ball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Blower.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Goal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include\KHR\khrplatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\circle_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\circle_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\cube_outline_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\cube_outline_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_fragDebug.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_vertDebug.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\mat_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\mat_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pass_texfrag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pass_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pbr.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pbr.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\sky_frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\sky_vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\tex.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\tex.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{CB356B96-1259-3C3B-AA31-AE3F4DB3824D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{BA8AC68E-1DAE-3D8F-A9F2-5E36EF67594E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

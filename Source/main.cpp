@@ -553,7 +553,6 @@ public:
         // Model identity
         M->pushMatrix();
         M->loadIdentity();
-
         if (shader == programs.pbr)
         {
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
@@ -591,6 +590,7 @@ public:
 
         // Cleanup
         M->popMatrix();
+		gameObjects.ball->drawPers(shader, M);
     }
 
     void createShadowMap(mat4 *LS)

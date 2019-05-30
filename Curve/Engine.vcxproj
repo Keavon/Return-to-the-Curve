@@ -184,7 +184,9 @@
     <ClInclude Include="..\Source\engine\Octree.h" />
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
-    <ClInclude Include="..\Source\engine\TriggerSphere.h" />
+    <ClInclude Include="..\Source\engine\TriggerSphere.h" />    
+    <ClCompile Include="..\Source\engine\UIObject.cpp" />
+    <ClCompile Include="..\Source\engine\UIObject.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Box.h" />
@@ -203,6 +205,7 @@
     <ClInclude Include="..\Source\Texture.h" />
     <ClInclude Include="..\Source\tiny_obj_loader.h" />
     <ClInclude Include="..\Source\WindowManager.h" />
+    <ClInclude Include="UIObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
