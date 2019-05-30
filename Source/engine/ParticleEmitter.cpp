@@ -3,6 +3,7 @@
 #include "../Texture.h"
 
 #include <memory>
+#include <iostream>
 
 using namespace std;
 using namespace glm;
@@ -71,11 +72,17 @@ void ParticleEmitter::addParticle(shared_ptr<Particle> p)
     }
 }
 
+void ParticleEmitter::stop()
+{
+    numActiveParticles = 0;
+    particles.clear();
+}
+
 void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard)
 {
     M->pushMatrix();
         M->translate(position);
-        // M->rotate(rotation);
+        // M->rotate(rotation, vec3(0, 0, 1));
         M->scale(scale);
         glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
         glUniform4fv(prog->getUniform("pColor"), 1, value_ptr(color));
@@ -90,12 +97,17 @@ void Particle::update(float dt)
     {
         start();
     }
-    velocity += acceleration;
+    velocity += dt * acceleration;
     position += dt * velocity;
-    
+    rotation += dt * rotationSpeed;
 }
 
 Particle::Particle() :
-    respawn(false), t(0), scale(1), rotation(0), acceleration(0), position(0), velocity(0), color(1)
+    respawn(false), t(0), scale(1), rotation(0), acceleration(0), position(0), velocity(0), color(1), rotationSpeed(0)
 {
+}
+
+void Particle::start()
+{
+    t = 0;
 }

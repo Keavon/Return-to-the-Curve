@@ -53,8 +53,6 @@
 using namespace std;
 using namespace glm;
 
-extern bool ballInGoal;
-
 class Application : public EventCallbacks
 {
 
@@ -63,7 +61,6 @@ public:
 
     // Game Info Globals
     float START_TIME = 0.0f;
-    bool DID_WIN = false;
     bool MOVING = false;
     bool MOUSE_DOWN = false;
     bool SHOW_CURSOR = false;
@@ -128,6 +125,7 @@ public:
 
     // Effects
     shared_ptr<ParticleEmitter> sparkEmitter;
+    shared_ptr<ParticleEmitter> fireworkEmitter;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -160,6 +158,7 @@ public:
         shared_ptr<Texture> panelMetallic;
         shared_ptr<Texture> panelAO;
         shared_ptr<Texture> spark;
+        shared_ptr<Texture> firework;
     } textures;
     vector<shared_ptr<Texture>> marbleTextures;
 
@@ -179,9 +178,6 @@ public:
         camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
 
-        ballInGoal = false;
-
-        sparkEmitter = make_shared<ParticleEmitter>(100);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     }
@@ -296,6 +292,7 @@ public:
 
     void initParticleTexture() {
         initTexture(textures.spark, "particle/star_07.png", 1);
+        initTexture(textures.firework, "particle/scorch_02.png", 1);
     }
     
     void initMarbleTexture()
@@ -486,7 +483,10 @@ public:
 
     void initEffects()
     {
+        sparkEmitter = make_shared<ParticleEmitter>(100);
         sparkEmitter->init(shapes.billboard, textures.spark);
+        fireworkEmitter = make_shared<ParticleEmitter>(100);
+        fireworkEmitter->init(shapes.billboard, textures.firework);
     }
 
     void initGameObjects()
@@ -513,6 +513,7 @@ public:
         gameObjects.goalObject->scale = vec3(4);
 
         gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
+        gameObjects.goal->init(fireworkEmitter, &START_TIME);
 
         // Need to add each physics object to the octree
         gameObjects.octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
@@ -762,6 +763,7 @@ public:
         setProjectionMatrix(programs.particle);
         setView(programs.particle);
         sparkEmitter->draw(programs.particle);
+        fireworkEmitter->draw(programs.particle);
         programs.particle->unbind();
     }
 
@@ -797,9 +799,8 @@ public:
 
         gameObjects.ball->position = START_POSITION;
         gameObjects.ball->velocity = vec3(0);
-        DID_WIN = false;
-        ballInGoal = false;
         START_TIME = glfwGetTime();
+        gameObjects.goal->reset();
     }
 
     void update(float dt)
@@ -826,14 +827,6 @@ public:
             resetPlayer();
         }
 
-        if (ballInGoal && !DID_WIN)
-        {
-            DID_WIN = true;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-            cout << "You win!" << endl;
-            cout << "Time: " << glfwGetTime() - START_TIME << endl;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-        }
         auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
         for (auto box : boxesToCheck)
         {
@@ -859,6 +852,7 @@ public:
         gameObjects.enemy2->update(dt);
 
         sparkEmitter->update(dt);
+        fireworkEmitter->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         gameObjects.octree->markInView(viewFrustum);
