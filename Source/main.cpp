@@ -302,7 +302,7 @@ public:
     void initSkyBox()
     {
         // Load skybox
-        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
+        string skyboxFilenames[] = { "px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg" };
         for (int i = 0; i < 6; i++)
         {
             skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
