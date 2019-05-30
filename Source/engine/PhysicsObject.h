@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Collider.h"
 #include "../Shape.h"
+#include "../effects/Sound.h"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -33,4 +34,6 @@ public:
     glm::vec3 netForce; // net forces acting on ball, calculated each frame
     glm::vec3 normForce;
     glm::vec3 impulse;
+
+    std::shared_ptr<Sound> soundEngine;
 };
