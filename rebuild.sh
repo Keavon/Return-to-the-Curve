@@ -1,5 +1,5 @@
-rm -r build
-mkdir build
 cd build
+rm -r CMakeFiles
+rm *.cmake *.txt curve
 cmake ..
 cd ..

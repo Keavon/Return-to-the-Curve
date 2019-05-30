@@ -71,8 +71,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\yaml-cpp\include;$(IncludePath)</IncludePath>
-    <SourcePath>$(SolutionDir)..\yaml-cpp\src;$(SourcePath)</SourcePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IncludePath>$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <SourcePath>$(SourcePath);$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,14 +86,17 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw-x86\include;..\irrKlang-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\glfw\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\glfw-x86\lib-vc2017;..\irrKlang-x86\lib\Win32-visualStudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>echo F|xcopy "$(SolutionDir)\..\irrKlang-x86\bin\win32-visualStudio\*.dll" "$(TargetDir)" /v /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -95,7 +104,16 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw\include;..\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\glfw\lib-vc2017;..\irrKlang\lib\Winx64-visualStudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;irrKlang.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo F|xcopy "$(SolutionDir)\..\irrKlang\bin\winx64-visualStudio\*.dll" "$(TargetDir)" /v /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -128,12 +146,17 @@
   <ItemGroup>
     <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="..\Source\Camera.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleFirework.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleSpark.cpp" />
+    <ClCompile Include="..\Source\effects\Sound.cpp" />
     <ClCompile Include="..\Source\engine\BoundingBox.cpp" />
     <ClCompile Include="..\Source\engine\Collider.cpp" />
     <ClCompile Include="..\Source\engine\ColliderMesh.cpp" />
     <ClCompile Include="..\Source\engine\ColliderSphere.cpp" />
+    <ClCompile Include="..\Source\engine\Frustum.cpp" />
     <ClCompile Include="..\Source\engine\GameObject.cpp" />
     <ClCompile Include="..\Source\engine\Octree.cpp" />
+    <ClCompile Include="..\Source\engine\ParticleEmitter.cpp" />
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
     <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
@@ -155,17 +178,18 @@
     <ClCompile Include="..\Source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.frag.glsl" />
-    <None Include="triangle.vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\Source\Camera.h" />
+    <ClInclude Include="..\Source\effects\ParticleFirework.h" />
+    <ClInclude Include="..\Source\effects\ParticleSpark.h" />
+    <ClInclude Include="..\Source\effects\Sound.h" />
     <ClInclude Include="..\Source\engine\BoundingBox.h" />
     <ClInclude Include="..\Source\engine\Collider.h" />
     <ClInclude Include="..\Source\engine\ColliderMesh.h" />
     <ClInclude Include="..\Source\engine\ColliderSphere.h" />
+    <ClInclude Include="..\Source\engine\Frustum.h" />
     <ClInclude Include="..\Source\engine\GameObject.h" />
     <ClInclude Include="..\Source\engine\Octree.h" />
+    <ClInclude Include="..\Source\engine\ParticleEmitter.h" />
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
