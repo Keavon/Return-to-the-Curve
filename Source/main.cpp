@@ -43,7 +43,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 1 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 #define RESOURCE_DIRECTORY string("../Resources")
 
@@ -71,7 +71,7 @@ public:
 
     // Shadow Globals
     int SHADOWS = 1;
-    int SHADOW_AA = 4;
+    int SHADOW_AA = 2;
     int DEBUG_LIGHT = 0;
     int GEOM_DEBUG = 1;
     GLuint SHADOW_SIZE = 0;
@@ -967,9 +967,9 @@ int main(int argc, char **argv)
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    // windowManager->init(1280, 720);
+    windowManager->init(1280, 720);
     // windowManager->init(1920, 1080);
-    windowManager->init(2560, 1440);
+    // windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
