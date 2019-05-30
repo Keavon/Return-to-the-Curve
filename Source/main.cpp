@@ -43,6 +43,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
+#define NUMBER_OF_MUSIC_TRACKS 5
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 #define RESOURCE_DIRECTORY string("../Resources")
@@ -58,12 +59,6 @@ class Application : public EventCallbacks
 public:
     WindowManager *windowManager = nullptr;
 
-    irrklang::ISoundEngine *sfxEngine = irrklang::createIrrKlangDevice();
-    irrklang::ISoundSource *resetSoundSource;
-    irrklang::ISoundSource *impactSoundSource;
-    irrklang::ISound *resetSound;
-    irrklang::ISound *impactSound;
-
     // Game Info Globals
     float START_TIME = 0.0f;
     bool DID_WIN = false;
@@ -74,6 +69,22 @@ public:
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
     vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
+
+    // Sound
+    irrklang::ISoundEngine *sfxEngine;
+    struct
+    {
+        irrklang::ISoundSource *resetSoundSource;
+        irrklang::ISoundSource *impactSoundSource;
+    } sfxSources;
+    struct
+    {
+        irrklang::ISound *resetSound;
+        irrklang::ISound *impactSound;
+    } sfxSounds;
+    vector<irrklang::ISoundSource *> musicSources;
+    vector<irrklang::ISound *> musicSounds;
+    int CURRENT_TRACK;
 
     // Shadow Globals
     int SHADOWS = 1;
@@ -267,7 +278,7 @@ public:
         // loops over the number of skin textures, initializing them and adding them to a vector
         string textureBaseFolder, textureNumber, textureExtension, textureName;
         double completion = 0;
-        for (int i = 0; i < NUMBER_OF_MARBLE_SKINS; i++)
+        for (int i = 1; i < NUMBER_OF_MARBLE_SKINS + 1; i++)
         {
             textureBaseFolder = "/textures/marble/albedo/";
             textureNumber = to_string(i);
@@ -275,8 +286,7 @@ public:
 
             textureName = textureBaseFolder + textureNumber + textureExtension;
             completion = ((float)i * 100 / (float)NUMBER_OF_MARBLE_SKINS);
-
-            cout << setprecision(2) << "Loading Textures: " << completion << "% complete." << endl;
+            cout << setprecision(3) << "Loading Textures: " << completion << "% complete." << endl;
 
             shared_ptr<Texture> marbleTexture = make_shared<Texture>();
             marbleTexture->setFilename(RESOURCE_DIRECTORY + textureName);
@@ -383,8 +393,32 @@ public:
     //=================================================
     void initSounds()
     {
-        impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
-        resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
+        sfxEngine = irrklang::createIrrKlangDevice();
+
+        sfxSources.impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
+        sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
+
+        CURRENT_TRACK = 1;
+
+        // loops over the number of tracks, initializing them and adding them to a vector
+        string textureBaseFolder, textureNumber, textureExtension, textureName;
+        double completion = 0.0;
+        for (int i = 1; i < NUMBER_OF_MUSIC_TRACKS + 1; i++)
+        {
+            string file = "../Resources/sounds/music/" + to_string(i) + ".wav";
+
+            irrklang::ISoundSource *musicSource = sfxEngine->addSoundSourceFromFile(file.c_str());
+            musicSources.push_back(musicSource);
+
+            irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i-1], GL_FALSE, true);
+            musicSounds.push_back(musicSound);
+            
+            completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
+            cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
+        }
+        cout << "Loading Textures: complete." << endl;
+
+
     }
 
     //=================================================
@@ -714,14 +748,14 @@ public:
 
     void resetPlayer()
     {
-        if (!resetSound)
+        if (!sfxSounds.resetSound)
         {
-            resetSound = sfxEngine->play2D(resetSoundSource, GL_FALSE);
+            sfxSounds.resetSound = sfxEngine->play2D(sfxSources.resetSoundSource, GL_FALSE);
         }
-        if (resetSound)
+        if (sfxSounds.resetSound)
         {
-            resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-            resetSound = 0;
+            sfxSounds.resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+            sfxSounds.resetSound = 0;
         }
 
         gameObjects.ball->position = START_POSITION;
@@ -739,14 +773,14 @@ public:
         {
             // cout << "impulse: " << glm::length(impulse) << endl;
 
-            if (!impactSound)
+            if (!sfxSounds.impactSound)
             {
-                impactSound = sfxEngine->play2D(impactSoundSource, GL_FALSE);
+                sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, GL_FALSE);
             }
-            if (impactSound)
+            if (sfxSounds.impactSound)
             {
-                impactSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-                impactSound = 0;
+                sfxSounds.impactSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+                sfxSounds.impactSound = 0;
             }
         }
 
@@ -846,6 +880,10 @@ public:
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
+        }
+        else if (key == GLFW_KEY_I && action == GLFW_PRESS)
+        {
+            // musicSounds[0]->setIsPaused(GL_FALSE);
         }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
@@ -954,6 +992,11 @@ public:
     {
         glViewport(0, 0, width, height);
     }
+
+    void dropSound()
+    {
+        sfxEngine->drop();
+    }
 };
 
 int main(int argc, char **argv)
@@ -1012,6 +1055,7 @@ int main(int argc, char **argv)
     }
 
     // Quit program.
+    application->dropSound();
     windowManager->shutdown();
     return 0;
 }
