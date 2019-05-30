@@ -58,6 +58,12 @@ class Application : public EventCallbacks
 public:
     WindowManager *windowManager = nullptr;
 
+    irrklang::ISoundEngine *sfxEngine = irrklang::createIrrKlangDevice();
+    irrklang::ISoundSource *resetSoundSource;
+    irrklang::ISoundSource *impactSoundSource;
+    irrklang::ISound *resetSound;
+    irrklang::ISound *impactSound;
+
     // Game Info Globals
     float START_TIME = 0.0f;
     bool DID_WIN = false;
@@ -136,8 +142,6 @@ public:
         shared_ptr<Texture> panelMetallic;
     } textures;
     vector<shared_ptr<Texture>> marbleTextures;
-
-    irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
 
     void init()
     {
@@ -374,6 +378,15 @@ public:
             break;
         }
     }
+    //=================================================
+    // Sounds
+    //=================================================
+    void initSounds()
+    {
+        impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
+        resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
+    }
+
     //=================================================
     // GEOMETRY
     //=================================================
@@ -701,7 +714,16 @@ public:
 
     void resetPlayer()
     {
-        SoundEngine->play2D("../Resources/sounds/marble_reset.wav", GL_FALSE);
+        if (!resetSound)
+        {
+            resetSound = sfxEngine->play2D(resetSoundSource, GL_FALSE);
+        }
+        if (resetSound)
+        {
+            resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+            resetSound = 0;
+        }
+
         gameObjects.ball->position = START_POSITION;
         gameObjects.ball->velocity = vec3(0);
         DID_WIN = false;
@@ -716,7 +738,16 @@ public:
         if (glm::length(gameObjects.ball->impulse) > 20.0)
         {
             // cout << "impulse: " << glm::length(impulse) << endl;
-            SoundEngine->play2D("../Resources/sounds/marble_impact.wav", GL_FALSE);
+
+            if (!impactSound)
+            {
+                impactSound = sfxEngine->play2D(impactSoundSource, GL_FALSE);
+            }
+            if (impactSound)
+            {
+                impactSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+                impactSound = 0;
+            }
         }
 
         if (gameObjects.ball->position.y < -25.0)
@@ -945,6 +976,7 @@ int main(int argc, char **argv)
     application->init();
     application->initShaders();
     application->initTextures();
+    application->initSounds();
     application->initGeom();
 
     application->START_TIME = glfwGetTime();
