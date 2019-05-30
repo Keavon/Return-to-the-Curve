@@ -36,6 +36,8 @@
 #include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
+#include "engine/ParticleEmitter.h"
+#include "effects/ParticleSpark.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -108,6 +110,7 @@ public:
         shared_ptr<Program> depth;
         shared_ptr<Program> depthDebug;
         shared_ptr<Program> debug;
+        shared_ptr<Program> particle;
     } programs;
 
     struct
@@ -122,6 +125,9 @@ public:
         shared_ptr<Shape> goalModel;
         shared_ptr<Shape> sphere;
     } shapes;
+
+    // Effects
+    shared_ptr<ParticleEmitter> sparkEmitter;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -151,6 +157,7 @@ public:
         shared_ptr<Texture> panelAlbedo;
         shared_ptr<Texture> panelRoughness;
         shared_ptr<Texture> panelMetallic;
+        shared_ptr<Texture> spark;
     } textures;
     vector<shared_ptr<Texture>> marbleTextures;
 
@@ -171,6 +178,10 @@ public:
         camera->init();
 
         ballInGoal = false;
+
+        sparkEmitter = make_shared<ParticleEmitter>(100);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     }
 
     //=================================================
@@ -242,6 +253,12 @@ public:
             "depth_debug",
             {"vertPos", "vertNor", "vertTex"},
             {"LP", "LV", "M"});
+
+        initShader(
+            programs.particle,
+            "particle",
+            {"vertPos", "vertNor", "vertTex"},
+            {"P", "V", "M", "pColor", "alphaTexture"});
     }
 
     //=================================================
@@ -254,6 +271,7 @@ public:
 
         initMarbleTexture();
         initSkyBox();
+        initParticleTexture();
         initShadow();
     }
 
@@ -273,6 +291,10 @@ public:
         initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
     }
 
+    void initParticleTexture() {
+        initTexture(textures.spark, "particle/star_07.png", 1);
+    }
+    
     void initMarbleTexture()
     {
         // loops over the number of skin textures, initializing them and adding them to a vector
@@ -428,6 +450,7 @@ public:
     {
         loadModels();
         loadLevel();
+        initEffects();
         initGameObjects();
     }
 
@@ -458,10 +481,15 @@ public:
         loadModel(shapes.sphere, "quadSphere.obj", true);
     }
 
+    void initEffects()
+    {
+        sparkEmitter->init(shapes.billboard, textures.spark);
+    }
+
     void initGameObjects()
     {
         gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
-        gameObjects.ball->init(windowManager);
+        gameObjects.ball->init(windowManager, sparkEmitter);
         // Control points for enemy's bezier curve path
         vector<glm::vec3> enemyPath = {
             vec3{95.0, 2.0, 7.0},
@@ -726,6 +754,12 @@ public:
         {
             drawOctree();
         }
+
+        programs.particle->bind();
+        setProjectionMatrix(programs.particle);
+        setView(programs.particle);
+        sparkEmitter->draw(programs.particle);
+        programs.particle->unbind();
     }
 
     void drawOctree()
@@ -820,6 +854,8 @@ public:
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt);
         gameObjects.enemy2->update(dt);
+
+        sparkEmitter->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         gameObjects.octree->markInView(viewFrustum);

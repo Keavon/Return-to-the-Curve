@@ -4,6 +4,8 @@
 #include "../WindowManager.h"
 #include "../engine/ColliderSphere.h"
 #include "../engine/PhysicsObject.h"
+#include "../engine/ParticleEmitter.h"
+#include "../effects/ParticleSpark.h"
 #include "Enemy.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -37,9 +39,10 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     jumpForce = 150;
 }
 
-void Ball::init(WindowManager *windowManager)
+void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
 {
     this->windowManager = windowManager;
+    this->sparkEmitter = sparkEmitter;
 }
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
@@ -49,49 +52,6 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
             impulse -= collision.normal * 300.0f;
-        }
-    }
-
-    // filter collisions so that ball doesn't bump over edges
-    vector<Collision *> faceCollisions;
-    vector<Collision *> notFaceCollisions;
-    for (int i = 0; i < collider->pendingCollisions.size(); i++)
-    {
-        switch (collider->pendingCollisions[i].geom)
-        {
-        case FACE:
-            faceCollisions.push_back(&collider->pendingCollisions[i]);
-            break;
-        case EDGE:
-        case VERT:
-            notFaceCollisions.push_back(&collider->pendingCollisions[i]);
-            break;
-        }
-    }
-    unordered_set<Collision *> collisionsToRemove;
-    for (int i = 0; i < faceCollisions.size(); i++)
-    {
-        for (int j = 0; j < notFaceCollisions.size(); j++)
-        {
-            if (faceCollisions[i]->other != notFaceCollisions[j]->other)
-            {
-                float d;
-                intersectRayPlane(notFaceCollisions[j]->pos, -faceCollisions[i]->normal,
-                                  faceCollisions[i]->v[0], faceCollisions[i]->normal, d);
-                if (d < 0.1)
-                {
-                    collisionsToRemove.insert(notFaceCollisions[j]);
-                }
-            }
-        }
-    }
-    for (int i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
-    {
-        Collision *col = &collider->pendingCollisions[i];
-        if (collisionsToRemove.find(col) != collisionsToRemove.end())
-        {
-            collisionsToRemove.erase(col);
-            collider->pendingCollisions.erase(collider->pendingCollisions.begin() + i);
         }
     }
 
@@ -135,5 +95,19 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
         orientation = q * orientation;
+    }
+
+
+}
+
+void Ball::onHardCollision(float impactVel, Collision &collision)
+{
+    if (impactVel > 5)
+    {
+        int numSparks = ((int) impactVel - 5) / 3;
+        for (int i = 0; i < (int) impactVel; i++)
+        {
+            sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
+        }
     }
 }
