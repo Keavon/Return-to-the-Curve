@@ -34,6 +34,8 @@
 #include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
+#include "engine/ParticleEmitter.h"
+#include "effects/ParticleSpark.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -80,6 +82,7 @@ public:
     // Shader programs
     shared_ptr<Program> texProg;
     shared_ptr<Program> skyProg;
+    shared_ptr<Program> particleProg;
     shared_ptr<Program> circleProg;
     shared_ptr<Program> cubeOutlineProg;
     shared_ptr<Program> DepthProg;
@@ -96,6 +99,9 @@ public:
     shared_ptr<Shape> billboard;
     shared_ptr<Shape> goalModel;
     shared_ptr<Shape> sphere;
+
+    // Effects
+    shared_ptr<ParticleEmitter> sparkEmitter;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -125,6 +131,8 @@ public:
     shared_ptr<Texture> panelRoughness;
     shared_ptr<Texture> panelMetallic;
 
+    shared_ptr<Texture> sparkTexture;
+
     vector<shared_ptr<Texture>> marbleTextures;
 
     void init(const string &resourceDirectory) {
@@ -143,6 +151,10 @@ public:
         camera->init();
 
         ballInGoal = false;
+
+        sparkEmitter = make_shared<ParticleEmitter>(100);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     }
 
     //=================================================
@@ -157,6 +169,8 @@ public:
         initShader_DepthProg(resourceDirectory);
         initShader_DebugProg(resourceDirectory);
         initShader_DepthProgDebug(resourceDirectory);
+
+        initShader_particleProg(resourceDirectory);
     }
 
     void initShader_DepthProg(const string &resourceDirectory) {
@@ -287,6 +301,8 @@ public:
         circleProg->addUniform("M");
         circleProg->addUniform("radius");
         circleProg->addAttribute("vertPos");
+        circleProg->addAttribute("vertNor");
+        circleProg->addAttribute("vertTex");
     }
 
     void initShader_cubeOutlineProg(const string &resourceDirectory) {
@@ -305,7 +321,31 @@ public:
         cubeOutlineProg->addUniform("M");
         cubeOutlineProg->addUniform("edge");
         cubeOutlineProg->addAttribute("vertPos");
+        cubeOutlineProg->addAttribute("vertNor");
+        cubeOutlineProg->addAttribute("vertTex");
     }
+
+    void initShader_particleProg(const string &resourceDirectory)
+    {
+        particleProg = make_shared<Program>();
+        particleProg->setVerbose(true);
+        particleProg->setShaderNames(
+            resourceDirectory + "/shaders/particle_vert.glsl",
+            resourceDirectory + "/shaders/particle_frag.glsl");
+        if (!particleProg->init()) {
+            std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+            exit(1);
+        }
+        particleProg->addUniform("P");
+        particleProg->addUniform("V");
+        particleProg->addUniform("M");
+        particleProg->addUniform("pColor");
+        particleProg->addUniform("alphaTexture");
+        particleProg->addAttribute("vertPos");
+        particleProg->addAttribute("vertNor");
+        particleProg->addAttribute("vertTex");
+    }
+
     //=================================================
     //=================================================
     // TEXTURES
@@ -317,6 +357,8 @@ public:
         initPanelAlbedo(resourceDirectory);
         initPanelRoughness(resourceDirectory);
         initPanelMetallic(resourceDirectory);
+
+        initSparkTexture(resourceDirectory);
 
         initMarbleTexture(resourceDirectory);
         initSkyBox(resourceDirectory);
@@ -371,6 +413,13 @@ public:
         panelMetallic->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
+    void initSparkTexture(const string &resourceDirectory) {
+        sparkTexture = make_shared<Texture>();
+        sparkTexture->setFilename(resourceDirectory + "/textures/particle/star_07.png");
+        sparkTexture->init();
+        sparkTexture->setUnit(1);
+        sparkTexture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    }
 
     void initMarbleTexture(const string &resourceDirectory) {
         // loops over the number of skin textures, initializing them and adding them to a vector
@@ -494,6 +543,8 @@ public:
 
         loadLevel(resourceDirectory);
 
+        initEffects();
+
         initGameObjects();
     }
 
@@ -555,9 +606,14 @@ public:
         sphere->init();
     }
 
+    void initEffects()
+    {
+        sparkEmitter->init(billboard, sparkTexture);
+    }
+
     void initGameObjects() {
         ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), sphere, 1);
-        ball->init(windowManager);
+        ball->init(windowManager, sparkEmitter);
         // Control points for enemy's bezier curve path
         std::vector<glm::vec3> enemyPath = {
             vec3{95.0, 2.0, 7.0},
@@ -808,6 +864,12 @@ public:
         if (octree->debug) {
             drawOctree();
         }
+
+        particleProg->bind();
+        setProjectionMatrix(particleProg);
+        setView(particleProg);
+        sparkEmitter->draw(particleProg);
+        particleProg->unbind();
     }
 
     void drawOctree() {
@@ -859,6 +921,8 @@ public:
         goal->update(dt);
         enemy->update(dt);
         enemy2->update(dt);
+
+        sparkEmitter->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         octree->markInView(viewFrustum);

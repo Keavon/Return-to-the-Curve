@@ -78,7 +78,7 @@ void PhysicsObject::update(float dt)
     }
 
     float maxImpact = -1;
-    Collision *maxImpactCollision = NULL;
+    Collision maxImpactCollision;
     for (Collision collision : collider->pendingCollisions)
     {
         // resolve collision
@@ -116,13 +116,13 @@ void PhysicsObject::update(float dt)
             if (fabs(velAlongNormal) > maxImpact)
             {
                 maxImpact = fabs(velAlongNormal);
-                maxImpactCollision = &collision;
+                maxImpactCollision = collision;
             }
         }
     }
     if (maxImpact > 0)
     {
-        onHardCollision(maxImpact, *maxImpactCollision);
+        onHardCollision(maxImpact, maxImpactCollision);
     }
     collider->pendingCollisions.clear();
 

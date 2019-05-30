@@ -4,6 +4,8 @@
 #include "../WindowManager.h"
 #include "../engine/ColliderSphere.h"
 #include "../engine/PhysicsObject.h"
+#include "../engine/ParticleEmitter.h"
+#include "../effects/ParticleSpark.h"
 #include "Enemy.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -38,9 +40,10 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     jumpForce = 200;
 }
 
-void Ball::init(WindowManager *windowManager)
+void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
 {
     this->windowManager = windowManager;
+    this->sparkEmitter = sparkEmitter;
 }
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
@@ -96,4 +99,16 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
 
 
+}
+
+void Ball::onHardCollision(float impactVel, Collision &collision)
+{
+    if (impactVel > 5)
+    {
+        int numSparks = ((int) impactVel - 5) / 3;
+        for (int i = 0; i < (int) impactVel; i++)
+        {
+            sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
+        }
+    }
 }
