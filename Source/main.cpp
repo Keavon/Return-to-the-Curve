@@ -50,6 +50,8 @@
 using namespace std;
 using namespace glm;
 
+extern shared_ptr<Sound> soundEngine;
+
 class Application : public EventCallbacks
 {
 
@@ -107,7 +109,6 @@ public:
     // Effects
     shared_ptr<ParticleEmitter> sparkEmitter;
     shared_ptr<ParticleEmitter> fireworkEmitter;
-    shared_ptr<Sound> soundEngine;
 
     // Camera
     shared_ptr<Camera> camera;

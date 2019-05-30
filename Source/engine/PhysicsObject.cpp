@@ -121,14 +121,6 @@ void PhysicsObject::update(float dt)
     }
     if (maxImpact > 0)
     {
-        if (maxImpact > 10.0)
-        {
-            if (!soundEngine)
-            {
-                soundEngine = std::make_shared<Sound>();
-            }
-            soundEngine->impact();
-        }
         onHardCollision(maxImpact, maxImpactCollision);
     }
     collider->pendingCollisions.clear();

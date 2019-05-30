@@ -20,6 +20,8 @@
 using namespace glm;
 using namespace std;
 
+shared_ptr<Sound> soundEngine; // extern
+
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
                                                                                      radius(radius)
 {
@@ -109,5 +111,11 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
         {
             sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
         }
+    }
+
+    if (impactVel > 10)
+    {
+        soundEngine->impact();
+        cout << impactVel << endl;
     }
 }
