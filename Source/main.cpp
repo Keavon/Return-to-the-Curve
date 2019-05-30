@@ -154,9 +154,11 @@ public:
         shared_ptr<Texture> crateAlbedo;
         shared_ptr<Texture> crateRoughness;
         shared_ptr<Texture> crateMetallic;
+        shared_ptr<Texture> crateAO;
         shared_ptr<Texture> panelAlbedo;
         shared_ptr<Texture> panelRoughness;
         shared_ptr<Texture> panelMetallic;
+        shared_ptr<Texture> panelAO;
         shared_ptr<Texture> spark;
     } textures;
     vector<shared_ptr<Texture>> marbleTextures;
@@ -222,7 +224,7 @@ public:
             programs.pbr,
             "pbr",
             {"vertPos", "vertNor", "vertTex"},
-            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "roughness", "metallic", "lightPosition", "lightColor", "viewPos"});
+            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"});
 
         initShader(
             programs.circle,
@@ -266,8 +268,8 @@ public:
     //=================================================
     void initTextures()
     {
-        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, "metal", "png");
-        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, "panel", "png");
+        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, textures.crateAO, "marble_tiles", "png");
+        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, textures.panelAO, "panel", "png");
 
         initMarbleTexture();
         initSkyBox();
@@ -284,11 +286,12 @@ public:
         texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
-    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, string fileName, string fileExt)
+    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, shared_ptr<Texture> &ao, string fileName, string fileExt)
     {
         initTexture(albedo, "pbr/" + fileName + "_albedo." + fileExt, 1);
         initTexture(roughness, "pbr/" + fileName + "_roughness." + fileExt, 2);
         initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
+        initTexture(ao, "pbr/" + fileName + "_ao." + fileExt, 4);
     }
 
     void initParticleTexture() {
@@ -947,25 +950,17 @@ public:
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
-        else if (key == GLFW_KEY_V && action == GLFW_PRESS)
+        else if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
         {
             camera->flying = !camera->flying;
+
+            SHOW_CURSOR = !SHOW_CURSOR;
+            if (SHOW_CURSOR) glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
             DEBUG_LIGHT = !DEBUG_LIGHT;
-        }
-        else if (key == GLFW_KEY_P && action == GLFW_PRESS)
-        {
-            SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR)
-            {
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            }
-            else
-            {
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            }
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
