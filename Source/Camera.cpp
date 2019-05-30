@@ -119,7 +119,8 @@ void Camera::update(float dt, shared_ptr<Ball> ball)
     }
     else
     {
-        pitch = std::max(std::min(pitch + dy * radPerPx, radians(80.0)), radians(10.0));
+        double deltaPitch = angleLocked ? 0 : dy;
+        pitch = std::max(std::min(pitch + deltaPitch * radPerPx, radians(80.0)), radians(10.0));
         lookAtPoint = ball->position;
         eye.x = lookAtPoint.x + distToBall * cos(pitch) * sin(yaw);
         eye.y = lookAtPoint.y + distToBall * sin(pitch);

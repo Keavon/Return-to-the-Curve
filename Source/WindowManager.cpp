@@ -35,10 +35,7 @@ bool WindowManager::init(int const width, int const height)
 	glfwSetErrorCallback(error_callback);
 
 	// Initialize glfw library
-	if (!glfwInit())
-	{
-		return false;
-	}
+	if (!glfwInit()) return false;
 
 	//request the highest possible version of OGL - important for mac
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -47,8 +44,8 @@ bool WindowManager::init(int const width, int const height)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	// Create a windowed mode window and its OpenGL context.
-	windowHandle = glfwCreateWindow(width, height, "** Return To the Curve **", nullptr, nullptr);
-	if (! windowHandle)
+	windowHandle = glfwCreateWindow(width, height, "Return To the Curve", nullptr, nullptr);
+	if (!windowHandle)
 	{
 		glfwTerminate();
 		return false;
