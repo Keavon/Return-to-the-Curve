@@ -89,6 +89,12 @@
     <ClCompile Include="..\Source\effects\ParticleSpark.cpp">
       <Filter>Source\effects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\effects\Sound.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\effects\ParticleFirework.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -196,6 +202,12 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\effects\ParticleSpark.h">
+      <Filter>Source\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\effects\Sound.h">
+      <Filter>Source\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\effects\ParticleFirework.h">
       <Filter>Source\effects</Filter>
     </ClInclude>
   </ItemGroup>
