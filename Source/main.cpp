@@ -7,12 +7,9 @@
 #include <glad/glad.h>
 #include <cmath>
 #include <algorithm>
-#include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <glad/glad.h>
-#include <iomanip>
-#include <iostream>
 #include <string>
 #include <irrKlang.h>
 
@@ -22,6 +19,7 @@
 #include "MatrixStack.h"
 #include "Object3D.h"
 #include "Program.h"
+#include "effects/Sound.h"
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
@@ -45,7 +43,6 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define NUMBER_OF_MUSIC_TRACKS 5
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 #define RESOURCE_DIRECTORY string("../Resources")
@@ -71,22 +68,6 @@ public:
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
     vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
-
-    // Sound
-    irrklang::ISoundEngine *sfxEngine;
-    struct
-    {
-        irrklang::ISoundSource *resetSoundSource;
-        irrklang::ISoundSource *impactSoundSource;
-    } sfxSources;
-    struct
-    {
-        irrklang::ISound *resetSound;
-        irrklang::ISound *impactSound;
-    } sfxSounds;
-    vector<irrklang::ISoundSource *> musicSources;
-    vector<irrklang::ISound *> musicSounds;
-    int CURRENT_TRACK;
 
     // Shadow Globals
     int SHADOWS = 1;
@@ -128,6 +109,7 @@ public:
 
     // Effects
     shared_ptr<ParticleEmitter> sparkEmitter;
+    shared_ptr<Sound> soundEngine;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -182,8 +164,9 @@ public:
         ballInGoal = false;
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
+        soundEngine = make_shared<Sound>();
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     //=================================================
@@ -294,10 +277,11 @@ public:
         initTexture(ao, "pbr/" + fileName + "_ao." + fileExt, 4);
     }
 
-    void initParticleTexture() {
+    void initParticleTexture()
+    {
         initTexture(textures.spark, "particle/star_07.png", 1);
     }
-    
+
     void initMarbleTexture()
     {
         // loops over the number of skin textures, initializing them and adding them to a vector
@@ -327,7 +311,7 @@ public:
     void initSkyBox()
     {
         // Load skybox
-        string skyboxFilenames[] = { "px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg" };
+        string skyboxFilenames[] = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
         for (int i = 0; i < 6; i++)
         {
             skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
@@ -416,35 +400,6 @@ public:
     //=================================================
     // Sounds
     //=================================================
-    void initSounds()
-    {
-        sfxEngine = irrklang::createIrrKlangDevice();
-
-        sfxSources.impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
-        sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
-
-        CURRENT_TRACK = 1;
-
-        // loops over the number of tracks, initializing them and adding them to a vector
-        string textureBaseFolder, textureNumber, textureExtension, textureName;
-        double completion = 0.0;
-        for (int i = 1; i < NUMBER_OF_MUSIC_TRACKS + 1; i++)
-        {
-            string file = "../Resources/sounds/music/" + to_string(i) + ".wav";
-
-            irrklang::ISoundSource *musicSource = sfxEngine->addSoundSourceFromFile(file.c_str());
-            musicSources.push_back(musicSource);
-
-            irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i-1], GL_FALSE, true);
-            musicSounds.push_back(musicSound);
-            
-            completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
-            cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
-        }
-        cout << "Loading Textures: complete." << endl;
-
-
-    }
 
     //=================================================
     // GEOMETRY
@@ -785,15 +740,7 @@ public:
 
     void resetPlayer()
     {
-        if (!sfxSounds.resetSound)
-        {
-            sfxSounds.resetSound = sfxEngine->play2D(sfxSources.resetSoundSource, GL_FALSE);
-        }
-        if (sfxSounds.resetSound)
-        {
-            sfxSounds.resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-            sfxSounds.resetSound = 0;
-        }
+        soundEngine->reset();
 
         gameObjects.ball->position = START_POSITION;
         gameObjects.ball->velocity = vec3(0);
@@ -805,21 +752,6 @@ public:
     void update(float dt)
     {
         gameObjects.octree->update();
-
-        if (glm::length(gameObjects.ball->impulse) > 20.0)
-        {
-            // cout << "impulse: " << glm::length(impulse) << endl;
-
-            if (!sfxSounds.impactSound)
-            {
-                sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, GL_FALSE);
-            }
-            if (sfxSounds.impactSound)
-            {
-                sfxSounds.impactSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-                sfxSounds.impactSound = 0;
-            }
-        }
 
         if (gameObjects.ball->position.y < -25.0)
         {
@@ -955,8 +887,10 @@ public:
             camera->flying = !camera->flying;
 
             SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR) glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            else glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            if (SHOW_CURSOR)
+                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else
+                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
@@ -1023,11 +957,6 @@ public:
     {
         glViewport(0, 0, width, height);
     }
-
-    void dropSound()
-    {
-        sfxEngine->drop();
-    }
 };
 
 int main(int argc, char **argv)
@@ -1050,7 +979,6 @@ int main(int argc, char **argv)
     application->init();
     application->initShaders();
     application->initTextures();
-    application->initSounds();
     application->initGeom();
 
     application->START_TIME = glfwGetTime();
@@ -1086,7 +1014,6 @@ int main(int argc, char **argv)
     }
 
     // Quit program.
-    application->dropSound();
     windowManager->shutdown();
     return 0;
 }
