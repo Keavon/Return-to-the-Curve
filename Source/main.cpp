@@ -43,7 +43,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 1 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 #define RESOURCE_DIRECTORY string("../Resources")
 
@@ -82,7 +82,8 @@ public:
     vec3 gameLight = vec3(300, 150, 250);
     vec3 gameLightColor = vec3(250000, 250000, 250000);
 
-    struct {
+    struct
+    {
         shared_ptr<Program> pbr;
         shared_ptr<Program> sky;
         shared_ptr<Program> circle;
@@ -92,7 +93,8 @@ public:
         shared_ptr<Program> debug;
     } programs;
 
-    struct {
+    struct
+    {
         shared_ptr<Shape> cube;
         shared_ptr<Shape> roboHead;
         shared_ptr<Shape> roboLeg;
@@ -108,7 +110,8 @@ public:
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
 
-    struct {
+    struct
+    {
         shared_ptr<Ball> ball;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
@@ -122,7 +125,8 @@ public:
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
 
-    struct {
+    struct
+    {
         shared_ptr<Skybox> skybox;
         shared_ptr<Texture> crateAlbedo;
         shared_ptr<Texture> crateRoughness;
@@ -157,80 +161,79 @@ public:
     //=================================================
     // SHADERS
     //=================================================
-    void initShader(shared_ptr<Program>& program, string file, vector<string> attributes, vector<string> uniforms) {
+    void initShader(shared_ptr<Program> &program, string file, vector<string> attributes, vector<string> uniforms)
+    {
         // Shader for textured models
         program = make_shared<Program>();
         program->setVerbose(true);
         program->setShaderNames(RESOURCE_DIRECTORY + "/shaders/" + file + ".vert.glsl", RESOURCE_DIRECTORY + "/shaders/" + file + ".frag.glsl");
-        if (!program->init()) {
+        if (!program->init())
+        {
             cerr << "Failed to compile " << file << " shader" << endl;
             exit(1);
         }
 
-        for (int i = 0; i < attributes.size(); i++) {
+        for (int i = 0; i < attributes.size(); i++)
+        {
             program->addAttribute(attributes[i]);
         }
 
-        for (int i = 0; i < uniforms.size(); i++) {
+        for (int i = 0; i < uniforms.size(); i++)
+        {
             program->addUniform(uniforms[i]);
         }
     }
 
-    void initShaders() {
+    void initShaders()
+    {
         initShader(
             programs.sky,
             "sky",
-            { "vertPos" },
-            { "P", "V", "Texture0" }
-        );
+            {"vertPos"},
+            {"P", "V", "Texture0"});
 
         initShader(
             programs.pbr,
             "pbr",
-            { "vertPos", "vertNor", "vertTex" },
-            { "P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "roughness", "metallic", "lightPosition", "lightColor", "viewPos" }
-        );
+            {"vertPos", "vertNor", "vertTex"},
+            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "roughness", "metallic", "lightPosition", "lightColor", "viewPos"});
 
         initShader(
             programs.circle,
             "circle",
-            { "vertPos" },
-            { "P", "V", "M", "radius" }
-        );
+            {"vertPos"},
+            {"P", "V", "M", "radius"});
 
         initShader(
             programs.cubeOutline,
             "cube_outline",
-            { "vertPos" },
-            { "P", "V", "M", "edge" }
-        );
+            {"vertPos"},
+            {"P", "V", "M", "edge"});
 
         initShader(
             programs.depth,
             "depth",
-            { "vertPos", "vertNor", "vertTex" },
-            { "LP", "LV", "M" }
-        );
+            {"vertPos", "vertNor", "vertTex"},
+            {"LP", "LV", "M"});
 
         initShader(
             programs.debug,
             "pass",
-            { "vertPos" },
-            { "texBuf" }
-        );
+            {"vertPos"},
+            {"texBuf"});
 
         initShader(
             programs.depthDebug,
             "depth_debug",
-            { "vertPos", "vertNor", "vertTex" },
-            { "LP", "LV", "M" }
-        );
+            {"vertPos", "vertNor", "vertTex"},
+            {"LP", "LV", "M"});
     }
 
     //=================================================
     // TEXTURES
     //=================================================
-    void initTextures() {
+    void initTextures()
+    {
         initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, "metal", "png");
         initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, "panel", "png");
 
@@ -239,7 +242,8 @@ public:
         initShadow();
     }
 
-    void initTexture(shared_ptr<Texture>& texture, string filePath, int textureUnit = 0) {
+    void initTexture(shared_ptr<Texture> &texture, string filePath, int textureUnit = 0)
+    {
         texture = make_shared<Texture>();
         texture->setFilename(RESOURCE_DIRECTORY + "/textures/" + filePath);
         texture->init();
@@ -247,13 +251,15 @@ public:
         texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
-	void initPBR(shared_ptr<Texture>& albedo, shared_ptr<Texture>& roughness, shared_ptr<Texture>& metallic, string fileName, string fileExt) {
+    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, string fileName, string fileExt)
+    {
         initTexture(albedo, "pbr/" + fileName + "_albedo." + fileExt, 1);
         initTexture(roughness, "pbr/" + fileName + "_roughness." + fileExt, 2);
         initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
     }
 
-    void initMarbleTexture() {
+    void initMarbleTexture()
+    {
         // loops over the number of skin textures, initializing them and adding them to a vector
         string textureBaseFolder, textureNumber, textureExtension, textureName;
         double completion = 0;
@@ -279,10 +285,12 @@ public:
         cout << "Loading Textures: complete." << endl;
     }
 
-    void initSkyBox() {
+    void initSkyBox()
+    {
         // Load skybox
-        string skyboxFilenames[] = { "sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG" };
-        for (int i = 0; i < 6; i++) {
+        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
+        for (int i = 0; i < 6; i++)
+        {
             skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
         }
 
@@ -369,22 +377,27 @@ public:
     //=================================================
     // GEOMETRY
     //=================================================
-    void initGeom() {
+    void initGeom()
+    {
         loadModels();
         loadLevel();
         initGameObjects();
     }
 
-    void loadModel(shared_ptr<Shape> &shape, string file, bool resize = false, bool findEdges = false) {
+    void loadModel(shared_ptr<Shape> &shape, string file, bool resize = false, bool findEdges = false)
+    {
         shape = make_shared<Shape>();
         shape->loadMesh(RESOURCE_DIRECTORY + "/models/" + file);
-        if (resize) shape->resize();
+        if (resize)
+            shape->resize();
         shape->measure();
-        if (findEdges) shape->findEdges();
+        if (findEdges)
+            shape->findEdges();
         shape->init();
     }
 
-    void loadModels() {
+    void loadModels()
+    {
         initQuad();
 
         loadModel(shapes.cube, "cube.obj", true);
@@ -398,7 +411,8 @@ public:
         loadModel(shapes.sphere, "quadSphere.obj", true);
     }
 
-    void initGameObjects() {
+    void initGameObjects()
+    {
         gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
         gameObjects.ball->init(windowManager);
         // Control points for enemy's bezier curve path
@@ -406,16 +420,14 @@ public:
             vec3{95.0, 2.0, 7.0},
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
-            vec3{115.0, 2.0, 7.0}
-        };
+            vec3{115.0, 2.0, 7.0}};
         gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
         gameObjects.enemy1->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
             vec3{115.0, 20.0, 55.0},
             vec3{105.0, 5.0, 55.0},
-            vec3{95.0, 8.0, 55.0}
-        };
+            vec3{95.0, 8.0, 55.0}};
         gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
         gameObjects.enemy2->init(windowManager);
 
@@ -434,7 +446,8 @@ public:
         gameObjects.octree->insert(gameObjects.enemy1);
     }
 
-    void loadLevel() {
+    void loadLevel()
+    {
         ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
 
         float xval, yval, zval;
@@ -455,13 +468,25 @@ public:
         glBindVertexArray(quad_VertexArrayID);
 
         static const GLfloat g_quad_vertex_buffer_data[] = {
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f,
+            -1.0f,
+            -1.0f,
+            0.0f,
+            1.0f,
+            -1.0f,
+            0.0f,
+            -1.0f,
+            1.0f,
+            0.0f,
 
-            -1.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f,
+            -1.0f,
+            1.0f,
+            0.0f,
+            1.0f,
+            -1.0f,
+            0.0f,
+            1.0f,
+            1.0f,
+            0.0f,
         };
 
         glGenBuffers(1, &quad_vertexbuffer);
@@ -502,7 +527,8 @@ public:
     void drawScene(shared_ptr<Program> shader)
     {
         // Draw textured models
-        if (shader == programs.pbr) {
+        if (shader == programs.pbr)
+        {
             glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
             glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
             glUniform1i(shader->getUniform("shadows"), SHADOWS);
@@ -515,12 +541,14 @@ public:
         M->pushMatrix();
         M->loadIdentity();
 
-        if (shader == programs.pbr) {
+        if (shader == programs.pbr)
+        {
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
         }
 
         // Draw plane
-        if (shader == programs.pbr) {
+        if (shader == programs.pbr)
+        {
             setTextureMaterial(0);
         }
         M->pushMatrix();
@@ -529,7 +557,8 @@ public:
         M->popMatrix();
 
         // Draw ball
-        if (shader == programs.pbr) {
+        if (shader == programs.pbr)
+        {
             setTextureMaterial(1);
         }
         gameObjects.ball->draw(shader, M);
@@ -538,7 +567,8 @@ public:
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == programs.pbr) {
+        if (shader == programs.pbr)
+        {
             setTextureMaterial(2);
         }
         for (auto box : boxes)
@@ -573,12 +603,14 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void drawDepthMap() {
+    void drawDepthMap()
+    {
         // Code to draw the light depth buffer
-        
+
         // geometry style debug on light - test transforms, draw geometry from
         // light perspective
-        if (GEOM_DEBUG) {
+        if (GEOM_DEBUG)
+        {
             programs.depthDebug->bind();
             // render scene from light's point of view
             SetOrthoMatrix(programs.depthDebug);
@@ -602,7 +634,8 @@ public:
         }
     }
 
-    void drawSkyBox() {
+    void drawSkyBox()
+    {
         programs.sky->bind();
         setProjectionMatrix(programs.sky);
         setView(programs.sky);
@@ -617,7 +650,8 @@ public:
         programs.sky->unbind();
     }
 
-    void sendShadowMap() {
+    void sendShadowMap()
+    {
         // Also set up light depth map
         glActiveTexture(GL_TEXTURE30);
         glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -641,12 +675,14 @@ public:
 
         programs.pbr->unbind();
 
-        if (gameObjects.octree->debug) {
+        if (gameObjects.octree->debug)
+        {
             drawOctree();
         }
     }
 
-    void drawOctree() {
+    void drawOctree()
+    {
         programs.circle->bind();
         setProjectionMatrix(programs.circle);
         setView(programs.circle);
@@ -673,7 +709,6 @@ public:
         START_TIME = glfwGetTime();
     }
 
-
     void update(float dt)
     {
         gameObjects.octree->update();
@@ -698,7 +733,8 @@ public:
             cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
         }
         auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
-        for (auto box : boxesToCheck) {
+        for (auto box : boxesToCheck)
+        {
             box->checkCollision(gameObjects.ball.get());
         }
 
@@ -712,7 +748,7 @@ public:
         for (auto enemies : enemiesToCheck) {
             
         }*/
-        
+
         gameObjects.goalObject->update(dt);
         gameObjects.ball->update(dt, camera->getDolly(), camera->getStrafe());
         camera->update(dt, gameObjects.ball);
@@ -793,7 +829,8 @@ public:
             SHADOWS = !SHADOWS;
         }
         // other call backs
-        else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        {
             glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             glfwSetWindowShouldClose(window, GL_TRUE);
         }
@@ -872,10 +909,12 @@ public:
             MOUSE_DOWN = false;
         }
 
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        {
             camera->angleLocked = false;
         }
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+        {
             camera->angleLocked = true;
         }
     }
@@ -886,16 +925,17 @@ public:
     }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     Application *application = new Application();
 
     // Your main will always include a similar set up to establish your window
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    windowManager->init(1280, 720);
+    // windowManager->init(1280, 720);
     // windowManager->init(1920, 1080);
-    // windowManager->init(2560, 1440);
+    windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
