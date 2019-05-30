@@ -457,14 +457,14 @@ public:
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy1->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
             vec3{115.0, 20.0, 55.0},
             vec3{105.0, 5.0, 55.0},
             vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy2->init(windowManager);
 
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
@@ -585,14 +585,14 @@ public:
         }
 
         // Draw plane
-        if (shader == programs.pbr)
-        {
-            setTextureMaterial(0);
-        }
-        M->pushMatrix();
-        glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        shapes.plane->draw(shader);
-        M->popMatrix();
+        // if (shader == programs.pbr)
+        // {
+        //     setTextureMaterial(0);
+        // }
+        // M->pushMatrix();
+        // glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        // shapes.plane->draw(shader);
+        // M->popMatrix();
 
         // Draw ball
         if (shader == programs.pbr)

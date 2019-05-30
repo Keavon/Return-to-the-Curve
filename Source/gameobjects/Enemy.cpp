@@ -43,7 +43,7 @@ void Enemy::update(float dt)
     if (pointReached) {
 		curvePath->calcBezierCurveTarget(t);
         targetX = curvePath->getTargetPos().x;
-        targetY = curvePath->getTargetPos().y;
+        targetY = curvePath->getTargetPos().y + 3;
         targetZ = curvePath->getTargetPos().z;
 		if (t < 0){
             forward = true;
@@ -111,7 +111,7 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		M2 = M;
 		scale = vec3(2, 2, 2);;
 		M->pushMatrix();
-		M->translate(position);
+		M->translate(position - vec3(0, 2.5, 0));
 		M->translate(vec3(0, (3.5 + sin(t * 4) / 3.0f), 0));
 		M->rotate(orientation);
 		M->scale(scale);
