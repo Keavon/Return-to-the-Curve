@@ -53,50 +53,6 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         }
     }
 
-    // filter collisions so that ball doesn't bump over edges
-    vector<Collision *> faceCollisions;
-    vector<Collision *> notFaceCollisions;
-    for (int i = 0; i < collider->pendingCollisions.size(); i++)
-    {
-        switch (collider->pendingCollisions[i].geom)
-        {
-            case FACE:
-                faceCollisions.push_back(&collider->pendingCollisions[i]);
-                break;
-            case EDGE:
-            case VERT:
-                notFaceCollisions.push_back(&collider->pendingCollisions[i]);
-                break;
-        }
-    }
-    unordered_set<Collision *> collisionsToRemove;
-    for (int i = 0; i < faceCollisions.size(); i++)
-    {
-        for (int j = 0; j < notFaceCollisions.size(); j++)
-        {
-            if (faceCollisions[i]->other != notFaceCollisions[j]->other)
-            {
-                float d;
-                intersectRayPlane(notFaceCollisions[j]->pos, -faceCollisions[i]->normal,
-                    faceCollisions[i]->v[0], faceCollisions[i]->normal, d);
-                if (d < 0.1)
-                {
-                    collisionsToRemove.insert(notFaceCollisions[j]);
-                }
-            }
-        }
-    }
-    for (int i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
-    {
-        Collision *col = &collider->pendingCollisions[i];
-        if (collisionsToRemove.find(col) != collisionsToRemove.end())
-        {
-            collisionsToRemove.erase(col);
-            collider->pendingCollisions.erase(collider->pendingCollisions.begin() + i);
-        }
-    }
-
-
     PhysicsObject::update(dt);
 
     vec3 direction = vec3(0);

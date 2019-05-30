@@ -6,11 +6,13 @@
 #define NOMINMAX
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/projection.hpp>
+#include <glm/gtx/intersect.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 using namespace glm;
@@ -31,6 +33,50 @@ void PhysicsObject::update(float dt)
 {
     normForce = vec3(0);
     netForce.y += GRAVITY * mass;
+
+    // filter collisions so that objects don't bump over edges
+    vector<Collision *> faceCollisions;
+    vector<Collision *> notFaceCollisions;
+    for (int i = 0; i < collider->pendingCollisions.size(); i++)
+    {
+        switch (collider->pendingCollisions[i].geom)
+        {
+            case FACE:
+                faceCollisions.push_back(&collider->pendingCollisions[i]);
+                break;
+            case EDGE:
+            case VERT:
+                notFaceCollisions.push_back(&collider->pendingCollisions[i]);
+                break;
+        }
+    }
+    unordered_set<Collision *> collisionsToRemove;
+    for (int i = 0; i < faceCollisions.size(); i++)
+    {
+        for (int j = 0; j < notFaceCollisions.size(); j++)
+        {
+            if (faceCollisions[i]->other != notFaceCollisions[j]->other)
+            {
+                float d;
+                intersectRayPlane(notFaceCollisions[j]->pos, -faceCollisions[i]->normal,
+                    faceCollisions[i]->v[0], faceCollisions[i]->normal, d);
+                if (d < 0.1)
+                {
+                    collisionsToRemove.insert(notFaceCollisions[j]);
+                }
+            }
+        }
+    }
+    for (int i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
+    {
+        Collision *col = &collider->pendingCollisions[i];
+        if (collisionsToRemove.find(col) != collisionsToRemove.end())
+        {
+            collisionsToRemove.erase(col);
+            collider->pendingCollisions.erase(collider->pendingCollisions.begin() + i);
+        }
+    }
+
 
     for (Collision collision : collider->pendingCollisions)
     {
