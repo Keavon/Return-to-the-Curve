@@ -163,9 +163,10 @@ public:
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
+        soundEngine->music();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
+        }
 
     //=================================================
     // SHADERS
@@ -848,10 +849,10 @@ public:
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
         }
-        else if (key == GLFW_KEY_I && action == GLFW_PRESS)
-        {
-            // musicSounds[0]->setIsPaused(GL_FALSE);
-        }
+        // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
+        // {
+            
+        // }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
             SHADOW_AA = (SHADOW_AA + 1) % 9;

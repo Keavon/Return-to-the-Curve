@@ -10,9 +10,14 @@ Sound::Sound()
     sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
     sfxSources.winSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_win.wav");
 
+    musicSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/music/1.wav");
+    musicSource->setDefaultVolume(0.5f);
+
     sfxSounds.impactSound = 0;
     sfxSounds.resetSound = 0;
     sfxSounds.winSound = 0;
+
+    musicSound = 0;
 
     // loops over the number of tracks, initializing them and adding them to a vector
     // double completion = 0.0;
@@ -72,5 +77,18 @@ void Sound::win()
     {
         sfxSounds.winSound->drop(); // don't forget to release the pointer once it is no longer needed by you
         sfxSounds.winSound = 0;
+    }
+}
+
+void Sound::music()
+{
+    if (!musicSound)
+    {
+        musicSound = sfxEngine->play2D(musicSource, true);
+    }
+    if (musicSound)
+    {
+        musicSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+        musicSound = 0;
     }
 }
