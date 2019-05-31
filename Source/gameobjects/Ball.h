@@ -21,4 +21,5 @@ public:
     float radius;
     float moveForce;
     float jumpForce;
+    bool frozen;
 };

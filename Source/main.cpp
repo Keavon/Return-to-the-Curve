@@ -59,10 +59,10 @@ public:
     WindowManager *windowManager = nullptr;
 
     // Game Info Globals
+    bool editMode = false;
     float START_TIME = 0.0f;
     bool MOVING = false;
     bool MOUSE_DOWN = false;
-    bool SHOW_CURSOR = false;
     int SCORE = 0;
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
@@ -882,13 +882,15 @@ public:
         }
         else if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
         {
-            camera->flying = !camera->flying;
-
-            SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR)
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            else
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            editMode = !editMode;
+            camera->cameraMode = editMode ? Camera::edit : Camera::marble;
+            gameObjects.ball->frozen = editMode;
+            if (editMode) {
+                camera->saveMarbleView();
+            }
+            else {
+                camera->restoreMarbleView();
+            }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
@@ -902,14 +904,14 @@ public:
         {
             resetPlayer();
         }
-        else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        {
-            camera->previewLvl = !camera->previewLvl;
-            if (camera->previewLvl)
-            {
-                camera->startLvlPreview(CENTER_LVL_POSITION);
-            }
-        }
+        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        //{
+        //    camera->previewLvl = !camera->previewLvl;
+        //    if (camera->previewLvl)
+        //    {
+        //        camera->startLvlPreview(CENTER_LVL_POSITION);
+        //    }
+        //}
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
@@ -943,11 +945,11 @@ public:
 
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         {
-            camera->angleLocked = false;
+            camera->freeViewing = true;
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
         {
-            camera->angleLocked = true;
+            camera->freeViewing = false;
         }
     }
 
