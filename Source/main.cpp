@@ -44,7 +44,7 @@
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
-
+#define PLAY_MUSIC false
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
@@ -163,7 +163,9 @@ public:
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
+        #if PLAY_MUSIC
         soundEngine->music();
+        #endif
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
