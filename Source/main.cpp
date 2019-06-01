@@ -441,6 +441,17 @@ public:
         loadModel(shapes.sphere, "quadSphere.obj", true);
     }
 
+    void loadLevel() {
+        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
+
+        vec3 transform;
+        while (inLevel >> transform.x) {
+            inLevel >> transform.y >> transform.z;
+            auto box = make_shared<Box>(vec3(transform.x * 8, transform.y, transform.z * 6), normalize(quat(0, 0, 0, 0)), shapes.boxModel);
+            boxes.push_back(box);
+        }
+    }
+
     void initEffects()
     {
         sparkEmitter = make_shared<ParticleEmitter>(100);
@@ -484,19 +495,6 @@ public:
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
         gameObjects.octree->insert(gameObjects.enemy2);
-    }
-
-    void loadLevel()
-    {
-        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
-
-        float xval, yval, zval;
-        while (inLevel >> xval)
-        {
-            inLevel >> yval >> zval;
-            auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), shapes.boxModel);
-            boxes.push_back(box);
-        }
     }
 
     void initQuad()
@@ -887,9 +885,15 @@ public:
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
             gameObjects.ball->frozen = editMode;
-
-            if (editMode) camera->saveMarbleView();
-            else camera->restoreMarbleView();
+            if (editMode) {
+                camera->saveMarbleView();
+                gameObjects.ball->playPosition = gameObjects.ball->position;
+                gameObjects.ball->position = gameObjects.ball->startPosition;
+            }
+            else {
+                camera->restoreMarbleView();
+                gameObjects.ball->position = gameObjects.ball->playPosition;
+            }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {

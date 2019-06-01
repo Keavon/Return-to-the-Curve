@@ -22,4 +22,6 @@ public:
     float moveForce;
     float jumpForce;
     bool frozen;
+    glm::vec3 startPosition;
+    glm::vec3 playPosition;
 };

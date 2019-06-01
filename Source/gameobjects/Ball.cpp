@@ -40,6 +40,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     jumpForce = 150;
 
     frozen = false;
+
+    startPosition = position;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
