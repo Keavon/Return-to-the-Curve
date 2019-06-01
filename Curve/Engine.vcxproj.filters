@@ -80,9 +80,6 @@
     <ClCompile Include="..\Source\Pathing.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\engine\Frustum.cpp">
-      <Filter>Source\engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\engine\ParticleEmitter.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
@@ -94,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\effects\ParticleFirework.cpp">
       <Filter>Source\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Frustum.cpp">
+      <Filter>Source\gameobjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

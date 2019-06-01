@@ -19,8 +19,6 @@ public:
     void flythroughModeUpdate();
     void saveMarbleView();
     void restoreMarbleView();
-    glm::vec3 getDolly();
-    glm::vec3 getStrafe();
 
     float moveSpeed = 10;
     float sprintFactor = 3;

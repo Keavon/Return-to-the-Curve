@@ -73,24 +73,25 @@ void Camera::editModeUpdate(float dt) {
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS) {
         velocity -= strafe;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS) {
-        velocity += vec3(0, 1, 0);
-    }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_Q) == GLFW_PRESS) {
-        velocity -= vec3(0, 1, 0);
+        velocity += cross(dolly, strafe);
+    }
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS) {
+        velocity -= cross(dolly, strafe);
     }
     if (length(velocity) != 0 && length(velocity) != NAN) {
         eye += normalize(velocity) * speed * (float)dt;
     }
 
     if (freeViewing) {
-        dolly = normalize(lookAtPoint - eye);
-        pitch = std::max(std::min(pitch + dy * radPerPx, radians(89.9)), -radians(89.9));
+        pitch -= dy * radPerPx;
+        pitch = std::max(std::min(pitch, radians(89.9)), -radians(89.9));
+
         yaw += dx * radPerPx;
 
-        lookAtPoint.x = eye.x + cos(pitch) * sin(yaw);
-        lookAtPoint.y = eye.y + sin(pitch);
-        lookAtPoint.z = eye.z + cos(pitch) * cos(M_PI - yaw);
+        lookAtPoint.x = eye.x + cos(-pitch) * sin(yaw + M_PI);
+        lookAtPoint.y = eye.y + sin(-pitch);
+        lookAtPoint.z = eye.z + cos(-pitch) * cos(yaw);
     }
 }
 
@@ -166,16 +167,6 @@ void Camera::restoreMarbleView() {
     pitch = savedPitch;
     yaw = savedYaw;
     distToBall = savedDistToBall;
-}
-
-vec3 Camera::getDolly() {
-    if (cameraMode == edit) return vec3(0, 0, -1);
-    return this->dolly;
-}
-
-vec3 Camera::getStrafe() {
-    if (cameraMode == edit) return vec3(1, 0, 0);
-    return this->strafe;
 }
 
 void Camera::init() {

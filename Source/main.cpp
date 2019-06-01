@@ -783,7 +783,7 @@ public:
         }*/
 
         gameObjects.goalObject->update(dt);
-        gameObjects.ball->update(dt, camera->getDolly(), camera->getStrafe());
+        gameObjects.ball->update(dt, camera->dolly, camera->strafe);
         camera->update(dt, gameObjects.ball);
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt);
@@ -887,12 +887,9 @@ public:
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
             gameObjects.ball->frozen = editMode;
-            if (editMode) {
-                camera->saveMarbleView();
-            }
-            else {
-                camera->restoreMarbleView();
-            }
+
+            if (editMode) camera->saveMarbleView();
+            else camera->restoreMarbleView();
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
