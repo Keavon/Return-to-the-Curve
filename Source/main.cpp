@@ -472,7 +472,7 @@ public:
         gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
         gameObjects.enemy2->init(windowManager);
 
-        enemyPath = { vec3{95.0, 2.0, 30} };
+        enemyPath = { vec3{65.0, 7.0, 32.0} };
         gameObjects.enemy3 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
         gameObjects.enemy3->init(windowManager);
 

@@ -24,9 +24,9 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
 		ballInRange = false;
 		sentryIdlePath = {
 			enemyPath[0],
-			vec3(enemyPath[0].x + 2, enemyPath[0].y, enemyPath[0].z),
-			vec3(enemyPath[0].x + 4, enemyPath[0].y, enemyPath[0].z),
-			vec3(enemyPath[0].x + 6, enemyPath[0].y, enemyPath[0].z)
+			vec3(enemyPath[0].x + 2.0, enemyPath[0].y, enemyPath[0].z),
+			vec3(enemyPath[0].x + 4.0, enemyPath[0].y, enemyPath[0].z),
+			vec3(enemyPath[0].x + 6.0, enemyPath[0].y, enemyPath[0].z)
 		};
 		curvePath = new Pathing(sentryIdlePath);
 		sentryHome = sentryIdlePath[0];
@@ -58,10 +58,16 @@ void Enemy::init(WindowManager *windowManager)
 void Enemy::update(float dt, vec3 ballPosition)
 {
 	/*
+		TODO:
 		Known issue: Sentry bot would occasionally randomly bug out and dissapper
+		UPDATE - this is due to something causing it's position to be set to NaN
 	*/
     collider->pendingCollisions.clear();
 	if (sentry){
+		if (isnan(position.x)) {
+			printf("Sentry Position: (%f, %f, %f)\n", position.x, position.y, position.z);
+			printf("State = %d\n", state);
+		}
 		//cout << "State : " << state << endl;
 		if (distance(sentryHome, ballPosition) < 15){
 			ballInRange = true;
@@ -72,12 +78,13 @@ void Enemy::update(float dt, vec3 ballPosition)
 			if (ballInRange){
 				sentryPathHome = {
 					position,
-					vec3(position.x + ((sentryHome.x - position.x)/3), position.y + ((sentryHome.y - position.y)/3), position.z + ((sentryHome.z - position.z)/3)),
-					vec3(position.x + 2*((sentryHome.x - position.x)/3), position.y + 2*((sentryHome.y - position.y)/3), position.z + 2*((sentryHome.z - position.z)/3)),
+					vec3(position.x + ((sentryHome.x - position.x)/3.0), position.y + ((sentryHome.y - position.y)/3.0), position.z + ((sentryHome.z - position.z)/ 3.0)),
+					vec3(position.x + 2.0*((sentryHome.x - position.x)/3.0), position.y + 2.0*((sentryHome.y - position.y)/3.0), position.z + 2.0*((sentryHome.z - position.z) / 3.0)),
 					sentryHome
 				};
 				curvePath = new Pathing(sentryPathHome);
 				state = 2;
+				t = 0.1;
 			}
 			ballInRange = false;
 		}
@@ -86,11 +93,12 @@ void Enemy::update(float dt, vec3 ballPosition)
 		//cout << "Following Player" << endl; 
 		sentryFollowPath = {
 			position,
-			vec3(position.x + ((ballPosition.x - position.x)/3), position.y + ((ballPosition.y - position.y)/3), position.z + ((ballPosition.z - position.z)/3)),
-			vec3(position.x + 2*((ballPosition.x - position.x)/3), position.y + 2*((ballPosition.y - position.y)/3), position.z + 2*((ballPosition.z - position.z)/3)),
+			vec3(position.x + ((ballPosition.x - position.x) / 3.0), position.y + ((ballPosition.y - position.y) / 3.0), position.z + ((ballPosition.z - position.z) / 3.0)),
+			vec3(position.x + 2.0*((ballPosition.x - position.x) / 3.0), position.y + 2.0*((ballPosition.y - position.y) / 3.0), position.z + 2.0*((ballPosition.z - position.z) / 3.0)),
 			ballPosition
 		};
 		curvePath = new Pathing(sentryFollowPath);
+		t = 0.1;
 	}
     if (pointReached) {
 		curvePath->calcBezierCurveTarget(t);
@@ -104,6 +112,7 @@ void Enemy::update(float dt, vec3 ballPosition)
 			if (state == 2){
 				state = 0;
 				curvePath = new Pathing(sentryIdlePath);
+				t = 0.1;
 			}
             forward = false;
         }
