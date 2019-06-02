@@ -4,6 +4,7 @@
 #include "../engine/ParticleEmitter.h"
 #include "../Shape.h"
 #include "../WindowManager.h"
+#include "PowerUp.h"
 #include <memory>
 #include <glm/glm.hpp>
 #include <vector>
@@ -21,4 +22,6 @@ public:
     float radius;
     float moveForce;
     float jumpForce;
+    //std::vector<PowerUp> activePowerUp;
+    bool hasPowerUp = false;
 };

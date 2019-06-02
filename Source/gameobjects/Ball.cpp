@@ -8,7 +8,7 @@
 #include "../effects/ParticleSpark.h"
 #include "../effects/Sound.h"
 #include "Enemy.h"
-
+#include "PowerUp.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/intersect.hpp>
@@ -53,6 +53,10 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
             impulse -= collision.normal * 300.0f;
+        }
+        if (dynamic_cast<PowerUp *>(collision.other) != NULL)
+        {
+            //hasPowerUp = true;
         }
     }
 

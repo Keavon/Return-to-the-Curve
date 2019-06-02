@@ -30,6 +30,7 @@
 #include "gameobjects/Box.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
+#include "gameobjects/PowerUp.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
 #include "engine/Octree.h"
@@ -43,7 +44,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY -1 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 
 #define RESOURCE_DIRECTORY string("../Resources")
 
@@ -104,6 +105,7 @@ public:
         shared_ptr<Shape> billboard;
         shared_ptr<Shape> goalModel;
         shared_ptr<Shape> sphere;
+        shared_ptr<Shape> spring;
     } shapes;
 
     // Effects
@@ -119,12 +121,14 @@ public:
         shared_ptr<Ball> ball;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
+        shared_ptr<Enemy> enemy3;
         shared_ptr<Goal> goal;
         shared_ptr<Box> goalObject;
         shared_ptr<Octree> octree;
+        shared_ptr<PowerUp> powerUp1;
     } gameObjects;
     vector<shared_ptr<PhysicsObject>> boxes;
-
+    
     // BillBoard for rendering a texture to screen. (like the shadow map)
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
@@ -437,6 +441,7 @@ public:
         loadModel(shapes.billboard, "billboard.obj", true);
         loadModel(shapes.goalModel, "goal.obj", true);
         loadModel(shapes.sphere, "quadSphere.obj", true);
+        loadModel(shapes.spring, "bunny.obj", true);
     }
 
     void initEffects()
@@ -467,6 +472,12 @@ public:
         gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
         gameObjects.enemy2->init(windowManager);
 
+        enemyPath = { vec3{95.0, 2.0, 30} };
+        gameObjects.enemy3 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy3->init(windowManager);
+
+        gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), shapes.spring, 1, 1);
+        gameObjects.powerUp1->init();
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
         gameObjects.goalObject->scale = vec3(4);
 
@@ -482,6 +493,8 @@ public:
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
         gameObjects.octree->insert(gameObjects.enemy2);
+        gameObjects.octree->insert(gameObjects.enemy3);
+        gameObjects.octree->insert(gameObjects.powerUp1);
     }
 
     void loadLevel()
@@ -603,7 +616,10 @@ public:
         gameObjects.goalObject->draw(shader, M);
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
-
+        gameObjects.enemy3->draw(shader, M);
+        if (!gameObjects.powerUp1->destroyed){
+            gameObjects.powerUp1->draw(shader,M);
+        }
         // Draw Boxes
         if (shader == programs.pbr)
         {
@@ -784,9 +800,12 @@ public:
         gameObjects.ball->update(dt, camera->getDolly(), camera->getStrafe());
         camera->update(dt, gameObjects.ball);
         gameObjects.goal->update(dt);
-        gameObjects.enemy1->update(dt);
-        gameObjects.enemy2->update(dt);
-
+        gameObjects.enemy1->update(dt, gameObjects.ball->position);
+        gameObjects.enemy2->update(dt, gameObjects.ball->position);
+        gameObjects.enemy3->update(dt, gameObjects.ball->position);
+        if (!gameObjects.powerUp1->destroyed){
+            gameObjects.powerUp1->update(dt);
+        }
         sparkEmitter->update(dt);
         fireworkEmitter->update(dt);
 
