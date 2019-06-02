@@ -80,8 +80,20 @@
     <ClCompile Include="..\Source\Pathing.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\engine\Frustum.cpp">
+    <ClCompile Include="..\Source\engine\ParticleEmitter.cpp">
       <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\effects\ParticleSpark.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\effects\Sound.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\effects\ParticleFirework.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Frustum.cpp">
+      <Filter>Source\gameobjects</Filter>
     </ClCompile>
     <ClCompile Include="UIObject.cpp">
       <Filter>Source\engine</Filter>
@@ -96,6 +108,9 @@
     </Filter>
     <Filter Include="Source\gameobjects">
       <UniqueIdentifier>{d29f28c6-13ec-438e-94d0-6d44fa154610}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\effects">
+      <UniqueIdentifier>{c5490b13-a541-4379-b8b3-bbe4dd560873}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +200,18 @@
     </ClInclude>
     <ClInclude Include="..\Source\engine\Frustum.h">
       <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ParticleEmitter.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\effects\ParticleSpark.h">
+      <Filter>Source\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\effects\Sound.h">
+      <Filter>Source\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\effects\ParticleFirework.h">
+      <Filter>Source\effects</Filter>
     </ClInclude>
     <ClInclude Include="UIObject.h">
       <Filter>Source\engine</Filter>

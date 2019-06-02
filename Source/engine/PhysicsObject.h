@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Collider.h"
 #include "../Shape.h"
+#include "../effects/Sound.h"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -19,6 +20,7 @@ public:
     void resolveCollision(float dt);
     void checkCollision(PhysicsObject *other);
     void update(float dt);
+    virtual void onHardCollision(float impactVel, Collision &collision);
     float getRadius(); // get radius of bounding sphere
 
     float friction;

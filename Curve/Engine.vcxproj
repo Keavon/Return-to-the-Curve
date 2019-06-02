@@ -146,6 +146,9 @@
   <ItemGroup>
     <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="..\Source\Camera.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleFirework.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleSpark.cpp" />
+    <ClCompile Include="..\Source\effects\Sound.cpp" />
     <ClCompile Include="..\Source\engine\BoundingBox.cpp" />
     <ClCompile Include="..\Source\engine\Collider.cpp" />
     <ClCompile Include="..\Source\engine\ColliderMesh.cpp" />
@@ -153,6 +156,7 @@
     <ClCompile Include="..\Source\engine\Frustum.cpp" />
     <ClCompile Include="..\Source\engine\GameObject.cpp" />
     <ClCompile Include="..\Source\engine\Octree.cpp" />
+    <ClCompile Include="..\Source\engine\ParticleEmitter.cpp" />
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
     <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
@@ -175,6 +179,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Camera.h" />
+    <ClInclude Include="..\Source\effects\ParticleFirework.h" />
+    <ClInclude Include="..\Source\effects\ParticleSpark.h" />
+    <ClInclude Include="..\Source\effects\Sound.h" />
     <ClInclude Include="..\Source\engine\BoundingBox.h" />
     <ClInclude Include="..\Source\engine\Collider.h" />
     <ClInclude Include="..\Source\engine\ColliderMesh.h" />
@@ -182,6 +189,7 @@
     <ClInclude Include="..\Source\engine\Frustum.h" />
     <ClInclude Include="..\Source\engine\GameObject.h" />
     <ClInclude Include="..\Source\engine\Octree.h" />
+    <ClInclude Include="..\Source\engine\ParticleEmitter.h" />
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />    

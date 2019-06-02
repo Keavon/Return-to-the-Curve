@@ -40,6 +40,7 @@ void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, Physi
         collision1.normal = -normalize(sphere1->position - sphere2->position);
         collision1.penetration = sphere1->getRadius() + sphere2->getRadius() - d;
         collision1.geom = SPHERE;
+        collision1.pos = sphere2->position + collision1.normal * sphere2->getRadius();
         sphereCol1->pendingCollisions.push_back(collision1);
 
         Collision collision2;
@@ -47,6 +48,7 @@ void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, Physi
         collision2.normal = collision1.normal;
         collision2.penetration = collision1.penetration;
         collision2.geom = SPHERE;
+        collision2.pos = collision1.pos;
         sphereCol2->pendingCollisions.push_back(collision2);
     }
 }
@@ -85,7 +87,7 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
                 collision.v[0] = v[0];
                 collision.v[1] = v[1];
                 collision.v[2] = v[2];
-                collision.pos = sphere->position + normal * collision.penetration;
+                collision.pos = sphere->position + collision.normal * d;
                 sphereCol->pendingCollisions.push_back(collision);
 
                 // add edges of triangle to set of edges we shouldn't check

@@ -37,7 +37,7 @@ public:
 	glm::vec3 center;
 	glm::vec3 size;
 
-private:
+// private:
 
 	std::vector<unsigned int> eleBuf;
 	std::vector<unsigned int> edgeBuf;

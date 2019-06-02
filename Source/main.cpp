@@ -7,12 +7,9 @@
 #include <glad/glad.h>
 #include <cmath>
 #include <algorithm>
-#include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <glad/glad.h>
-#include <iomanip>
-#include <iostream>
 #include <string>
 #include <irrKlang.h>
 
@@ -22,6 +19,7 @@
 #include "MatrixStack.h"
 #include "Object3D.h"
 #include "Program.h"
+#include "effects/Sound.h"
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
@@ -36,6 +34,8 @@
 #include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
+#include "engine/ParticleEmitter.h"
+#include "effects/ParticleSpark.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -44,13 +44,13 @@
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
-
+#define PLAY_MUSIC false
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
 using namespace glm;
 
-extern bool ballInGoal;
+shared_ptr<Sound> soundEngine;
 
 class Application : public EventCallbacks
 {
@@ -58,18 +58,11 @@ class Application : public EventCallbacks
 public:
     WindowManager *windowManager = nullptr;
 
-    irrklang::ISoundEngine *sfxEngine = irrklang::createIrrKlangDevice();
-    irrklang::ISoundSource *resetSoundSource;
-    irrklang::ISoundSource *impactSoundSource;
-    irrklang::ISound *resetSound;
-    irrklang::ISound *impactSound;
-
     // Game Info Globals
+    bool editMode = false;
     float START_TIME = 0.0f;
-    bool DID_WIN = false;
     bool MOVING = false;
     bool MOUSE_DOWN = false;
-    bool SHOW_CURSOR = false;
     int SCORE = 0;
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
@@ -97,6 +90,7 @@ public:
         shared_ptr<Program> depth;
         shared_ptr<Program> depthDebug;
         shared_ptr<Program> debug;
+        shared_ptr<Program> particle;
     } programs;
 
     struct
@@ -111,6 +105,10 @@ public:
         shared_ptr<Shape> goalModel;
         shared_ptr<Shape> sphere;
     } shapes;
+
+    // Effects
+    shared_ptr<ParticleEmitter> sparkEmitter;
+    shared_ptr<ParticleEmitter> fireworkEmitter;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -137,9 +135,13 @@ public:
         shared_ptr<Texture> crateAlbedo;
         shared_ptr<Texture> crateRoughness;
         shared_ptr<Texture> crateMetallic;
+        shared_ptr<Texture> crateAO;
         shared_ptr<Texture> panelAlbedo;
         shared_ptr<Texture> panelRoughness;
         shared_ptr<Texture> panelMetallic;
+        shared_ptr<Texture> panelAO;
+        shared_ptr<Texture> spark;
+        shared_ptr<Texture> firework;
     } textures;
     vector<shared_ptr<Texture>> marbleTextures;
 
@@ -159,8 +161,14 @@ public:
         camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
 
-        ballInGoal = false;
-    }
+        sparkEmitter = make_shared<ParticleEmitter>(100);
+        soundEngine = make_shared<Sound>();
+        #if PLAY_MUSIC
+        soundEngine->music();
+        #endif
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
 
     //=================================================
     // SHADERS
@@ -200,7 +208,7 @@ public:
             programs.pbr,
             "pbr",
             {"vertPos", "vertNor", "vertTex"},
-            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "roughness", "metallic", "lightPosition", "lightColor", "viewPos"});
+            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"});
 
         initShader(
             programs.circle,
@@ -231,6 +239,12 @@ public:
             "depth_debug",
             {"vertPos", "vertNor", "vertTex"},
             {"LP", "LV", "M"});
+
+        initShader(
+            programs.particle,
+            "particle",
+            {"vertPos", "vertNor", "vertTex"},
+            {"P", "V", "M", "pColor", "alphaTexture"});
     }
 
     //=================================================
@@ -238,11 +252,12 @@ public:
     //=================================================
     void initTextures()
     {
-        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, "metal", "png");
-        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, "panel", "png");
+        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, textures.crateAO, "marble_tiles", "png");
+        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, textures.panelAO, "panel", "png");
 
         initMarbleTexture();
         initSkyBox();
+        initParticleTexture();
         initShadow();
     }
 
@@ -255,11 +270,18 @@ public:
         texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
-    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, string fileName, string fileExt)
+    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, shared_ptr<Texture> &ao, string fileName, string fileExt)
     {
         initTexture(albedo, "pbr/" + fileName + "_albedo." + fileExt, 1);
         initTexture(roughness, "pbr/" + fileName + "_roughness." + fileExt, 2);
         initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
+        initTexture(ao, "pbr/" + fileName + "_ao." + fileExt, 4);
+    }
+
+    void initParticleTexture()
+    {
+        initTexture(textures.spark, "particle/star_07.png", 1);
+        initTexture(textures.firework, "particle/scorch_02.png", 1);
     }
 
     void initMarbleTexture()
@@ -267,7 +289,7 @@ public:
         // loops over the number of skin textures, initializing them and adding them to a vector
         string textureBaseFolder, textureNumber, textureExtension, textureName;
         double completion = 0;
-        for (int i = 0; i < NUMBER_OF_MARBLE_SKINS; i++)
+        for (int i = 1; i < NUMBER_OF_MARBLE_SKINS + 1; i++)
         {
             textureBaseFolder = "/textures/marble/albedo/";
             textureNumber = to_string(i);
@@ -275,8 +297,7 @@ public:
 
             textureName = textureBaseFolder + textureNumber + textureExtension;
             completion = ((float)i * 100 / (float)NUMBER_OF_MARBLE_SKINS);
-
-            cout << setprecision(2) << "Loading Textures: " << completion << "% complete." << endl;
+            cout << setprecision(3) << "Loading Textures: " << completion << "% complete." << endl;
 
             shared_ptr<Texture> marbleTexture = make_shared<Texture>();
             marbleTexture->setFilename(RESOURCE_DIRECTORY + textureName);
@@ -292,7 +313,7 @@ public:
     void initSkyBox()
     {
         // Load skybox
-        string skyboxFilenames[] = {"sea_ft.JPG", "sea_bk.JPG", "sea_up.JPG", "sea_dn.JPG", "sea_rt.JPG", "sea_lf.JPG"};
+        string skyboxFilenames[] = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
         for (int i = 0; i < 6; i++)
         {
             skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
@@ -381,11 +402,6 @@ public:
     //=================================================
     // Sounds
     //=================================================
-    void initSounds()
-    {
-        impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav");
-        resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav");
-    }
 
     //=================================================
     // GEOMETRY
@@ -394,6 +410,7 @@ public:
     {
         loadModels();
         loadLevel();
+        initEffects();
         initGameObjects();
     }
 
@@ -424,30 +441,39 @@ public:
         loadModel(shapes.sphere, "quadSphere.obj", true);
     }
 
+    void initEffects()
+    {
+        sparkEmitter = make_shared<ParticleEmitter>(100);
+        sparkEmitter->init(shapes.billboard, textures.spark);
+        fireworkEmitter = make_shared<ParticleEmitter>(100);
+        fireworkEmitter->init(shapes.billboard, textures.firework);
+    }
+
     void initGameObjects()
     {
         gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
-        gameObjects.ball->init(windowManager);
+        gameObjects.ball->init(windowManager, sparkEmitter);
         // Control points for enemy's bezier curve path
         vector<glm::vec3> enemyPath = {
             vec3{95.0, 2.0, 7.0},
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy1->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
             vec3{115.0, 20.0, 55.0},
             vec3{105.0, 5.0, 55.0},
             vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy2->init(windowManager);
 
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
         gameObjects.goalObject->scale = vec3(4);
 
         gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
+        gameObjects.goal->init(fireworkEmitter, &START_TIME);
 
         // Need to add each physics object to the octree
         gameObjects.octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
@@ -457,6 +483,7 @@ public:
         gameObjects.octree->insert(gameObjects.ball);
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
+        gameObjects.octree->insert(gameObjects.enemy2);
     }
 
     void loadLevel()
@@ -559,14 +586,14 @@ public:
         }
 
         // Draw plane
-        if (shader == programs.pbr)
-        {
-            setTextureMaterial(0);
-        }
-        M->pushMatrix();
-        glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        shapes.plane->draw(shader);
-        M->popMatrix();
+        // if (shader == programs.pbr)
+        // {
+        //     setTextureMaterial(0);
+        // }
+        // M->pushMatrix();
+        // glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        // shapes.plane->draw(shader);
+        // M->popMatrix();
 
         // Draw ball
         if (shader == programs.pbr)
@@ -692,6 +719,13 @@ public:
         {
             drawOctree();
         }
+
+        programs.particle->bind();
+        setProjectionMatrix(programs.particle);
+        setView(programs.particle);
+        sparkEmitter->draw(programs.particle);
+        fireworkEmitter->draw(programs.particle);
+        programs.particle->unbind();
     }
 
     void drawOctree()
@@ -714,55 +748,23 @@ public:
 
     void resetPlayer()
     {
-        if (!resetSound)
-        {
-            resetSound = sfxEngine->play2D(resetSoundSource, GL_FALSE);
-        }
-        if (resetSound)
-        {
-            resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-            resetSound = 0;
-        }
+        soundEngine->reset();
 
         gameObjects.ball->position = START_POSITION;
         gameObjects.ball->velocity = vec3(0);
-        DID_WIN = false;
-        ballInGoal = false;
         START_TIME = glfwGetTime();
+        gameObjects.goal->reset();
     }
 
     void update(float dt)
     {
         gameObjects.octree->update();
 
-        if (glm::length(gameObjects.ball->impulse) > 20.0)
-        {
-            // cout << "impulse: " << glm::length(impulse) << endl;
-
-            if (!impactSound)
-            {
-                impactSound = sfxEngine->play2D(impactSoundSource, GL_FALSE);
-            }
-            if (impactSound)
-            {
-                impactSound->drop(); // don't forget to release the pointer once it is no longer needed by you
-                impactSound = 0;
-            }
-        }
-
         if (gameObjects.ball->position.y < -25.0)
         {
             resetPlayer();
         }
 
-        if (ballInGoal && !DID_WIN)
-        {
-            DID_WIN = true;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-            cout << "You win!" << endl;
-            cout << "Time: " << glfwGetTime() - START_TIME << endl;
-            cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-        }
         auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
         for (auto box : boxesToCheck)
         {
@@ -781,11 +783,14 @@ public:
         }*/
 
         gameObjects.goalObject->update(dt);
-        gameObjects.ball->update(dt, camera->getDolly(), camera->getStrafe());
+        gameObjects.ball->update(dt, camera->dolly, camera->strafe);
         camera->update(dt, gameObjects.ball);
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt);
         gameObjects.enemy2->update(dt);
+
+        sparkEmitter->update(dt);
+        fireworkEmitter->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         gameObjects.octree->markInView(viewFrustum);
@@ -847,6 +852,10 @@ public:
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
         }
+        // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
+        // {
+            
+        // }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
             SHADOW_AA = (SHADOW_AA + 1) % 9;
@@ -873,25 +882,18 @@ public:
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
-        else if (key == GLFW_KEY_V && action == GLFW_PRESS)
+        else if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
         {
-            camera->flying = !camera->flying;
+            editMode = !editMode;
+            camera->cameraMode = editMode ? Camera::edit : Camera::marble;
+            gameObjects.ball->frozen = editMode;
+
+            if (editMode) camera->saveMarbleView();
+            else camera->restoreMarbleView();
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
             DEBUG_LIGHT = !DEBUG_LIGHT;
-        }
-        else if (key == GLFW_KEY_P && action == GLFW_PRESS)
-        {
-            SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR)
-            {
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            }
-            else
-            {
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            }
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
@@ -901,21 +903,21 @@ public:
         {
             resetPlayer();
         }
-        else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        {
-            camera->previewLvl = !camera->previewLvl;
-            if (camera->previewLvl)
-            {
-                camera->startLvlPreview(CENTER_LVL_POSITION);
-            }
-        }
+        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        //{
+        //    camera->previewLvl = !camera->previewLvl;
+        //    if (camera->previewLvl)
+        //    {
+        //        camera->startLvlPreview(CENTER_LVL_POSITION);
+        //    }
+        //}
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
         deltaY *= -1;
         float newDistance = deltaY + camera->distToBall;
-        if (newDistance < 15 && newDistance > 2)
+        if (newDistance < 20 && newDistance > 2.5)
         {
             camera->distToBall += deltaY;
         }
@@ -942,11 +944,11 @@ public:
 
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         {
-            camera->angleLocked = false;
+            camera->freeViewing = true;
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
         {
-            camera->angleLocked = true;
+            camera->freeViewing = false;
         }
     }
 
@@ -965,8 +967,8 @@ int main(int argc, char **argv)
 
     WindowManager *windowManager = new WindowManager();
     // windowManager->init(1280, 720);
-    // windowManager->init(1920, 1080);
-    windowManager->init(2560, 1440);
+    windowManager->init(1920, 1080);
+    // windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
@@ -976,7 +978,6 @@ int main(int argc, char **argv)
     application->init();
     application->initShaders();
     application->initTextures();
-    application->initSounds();
     application->initGeom();
 
     application->START_TIME = glfwGetTime();

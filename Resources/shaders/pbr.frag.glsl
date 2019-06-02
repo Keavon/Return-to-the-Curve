@@ -12,14 +12,14 @@ uniform sampler2D shadowDepth;
 uniform sampler2D albedoMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D metallicMap;
-// uniform sampler2D aoMap;
+uniform sampler2D aoMap;
 
 // Material parameters
 // uniform vec3 albedo;
 // uniform float roughness;
 // uniform float metallic;
 // uniform float ao;
-const float ao = 0;
+// const float ao = 1.0;
 
 // Lights
 uniform vec3 lightPosition;
@@ -115,15 +115,15 @@ float getShadeValue() {
 		Shade = Shade / (shadowAA * shadowAA);
 	}
 
-	return Shade;
+	return 1.0 - Shade;
 }
 
 void main() {
 	vec3 albedo = texture(albedoMap, TexCoords).rgb;
 	albedo = vec3(pow(albedo.r, 2.2), pow(albedo.g, 2.2), pow(albedo.b, 2.2));
-	float metallic  = texture(metallicMap, TexCoords).r;
-	float roughness = texture(roughnessMap, TexCoords).r;
-	// float roughness = 0.5;
+	float metallic = texture(metallicMap, TexCoords).r;
+	float roughness = texture(roughnessMap, TexCoords).r * 0.98 + 0.01;
+	float ao = texture(aoMap, TexCoords).r;
 
 	vec3 N = normalize(Normal);
 	vec3 V = normalize(viewPos - WorldPos);
@@ -152,19 +152,20 @@ void main() {
 	vec3 numerator = NDF * G * F;
 	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
 	vec3 specular = numerator / max(denominator, 0.001);
+	specular *= getShadeValue();
 
 	// Add to outgoing radiance Lo
 	float NdotL = max(dot(N, L), 0.0);
 	Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+	Lo *= getShadeValue();// * 0.75 + 0.25;
 
 	// Final color factor combination
-	vec3 ambient = vec3(0.03) * albedo * ao;
+	vec3 ambient = vec3(0.01) * albedo * ao;
 	vec3 color = ambient + Lo;
 
 	// Gamma correction
 	color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0/2.2));
-	color *= (1.0 - getShadeValue()) * 0.75 + 0.25;
 
 	FragColor = vec4(color, 1.0);
 }

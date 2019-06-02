@@ -86,6 +86,10 @@ else()
   if(APPLE)
     target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
     target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_BIN_DIR}/macosx-gcc/libirrklang.dylib)
+    add_custom_command (TARGET ${CMAKE_PROJECT_NAME}
+      POST_BUILD COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+          "-change" "/usr/local/lib/libirrklang.dylib" "@executable_path/../irrKlang/bin/macosx-gcc/libirrklang.dylib"
+      "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>" VERBATIM)
 
   # LINUX
   else()
