@@ -23,7 +23,7 @@ Sound::Sound()
         string file = "../Resources/sounds/music/" + to_string(i) + ".wav";
 
         irrklang::ISoundSource *musicSource = sfxEngine->addSoundSourceFromFile(file.c_str(), irrklang::ESM_AUTO_DETECT);
-        musicSource->setDefaultVolume(0.25f);
+        musicSource->setDefaultVolume(0.15f);
         musicSources.push_back(musicSource);
 
         irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i - 1], false, true);
@@ -40,11 +40,15 @@ Sound::~Sound()
     sfxEngine->drop();
 }
 
-void Sound::impact()
+void Sound::impact(float impactVal)
 {
     if (!sfxSounds.impactSound)
     {
-        sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, false);
+        float soundScale = min(1.0f, max(0.0f, ((impactVal * 2.0f)/50.0f)));
+
+        sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, false, true);
+        sfxSounds.impactSound->setVolume(soundScale);
+        sfxSounds.impactSound->setIsPaused(false);
     }
     if (sfxSounds.impactSound)
     {
@@ -57,7 +61,9 @@ void Sound::reset()
 {
     if (!sfxSounds.resetSound)
     {
-        sfxSounds.resetSound = sfxEngine->play2D(sfxSources.resetSoundSource, false);
+        sfxSounds.resetSound = sfxEngine->play2D(sfxSources.resetSoundSource, false, true);
+        sfxSounds.resetSound->setVolume(0.4f);
+        sfxSounds.resetSound->setIsPaused(false);
     }
     if (sfxSounds.resetSound)
     {

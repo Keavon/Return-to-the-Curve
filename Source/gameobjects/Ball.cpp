@@ -113,17 +113,14 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 
 void Ball::onHardCollision(float impactVel, Collision &collision)
 {
-    if (impactVel > 5)
+    if (impactVel > 4.0)
     {
+        soundEngine->impact(impactVel);
+
         int numSparks = ((int)impactVel - 5) / 3;
         for (int i = 0; i < (int)impactVel; i++)
         {
             sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
         }
-    }
-
-    if (impactVel > 10)
-    {
-        soundEngine->impact();
     }
 }

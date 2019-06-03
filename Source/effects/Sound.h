@@ -42,7 +42,7 @@ public:
     Sound();
     ~Sound();
 
-    void impact();
+    void impact(float impactVal);
     void reset();
     void win();
     void playPauseMusic();
