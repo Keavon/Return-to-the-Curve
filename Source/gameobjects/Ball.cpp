@@ -40,6 +40,9 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     jumpForce = 150;
 
     frozen = false;
+
+    JUMP_TIME = 0.0f;
+    JUMP_FLAG = 0;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -50,7 +53,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
 
     for (auto collision : collider->pendingCollisions)
     {
@@ -81,11 +85,15 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (normForce != vec3(0))
-        {
-            vec3 normForceDir = normalize(normForce);
-            impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-        }
+        //jump key check gets the current time
+        JUMP_TIME = glfwGetTime();
+    }
+
+    //if the last jump time was in the past 0.25 seconds, do a jump.
+    if ((normForce != vec3(0)) && ((glfwGetTime() - JUMP_TIME) < 0.25))
+    {
+        vec3 normForceDir = normalize(normForce);
+        impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
     }
 
     // calculate forces
@@ -101,16 +109,14 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
         orientation = q * orientation;
     }
-
-
 }
 
 void Ball::onHardCollision(float impactVel, Collision &collision)
 {
     if (impactVel > 5)
     {
-        int numSparks = ((int) impactVel - 5) / 3;
-        for (int i = 0; i < (int) impactVel; i++)
+        int numSparks = ((int)impactVel - 5) / 3;
+        for (int i = 0; i < (int)impactVel; i++)
         {
             sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
         }

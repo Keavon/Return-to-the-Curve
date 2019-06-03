@@ -22,4 +22,7 @@ public:
     float moveForce;
     float jumpForce;
     bool frozen;
+
+    float JUMP_TIME;
+    int JUMP_FLAG;
 };
