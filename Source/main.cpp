@@ -36,12 +36,14 @@
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
+#include "effects/ParticleSpark.h"
+
 #include "engine/SceneManager.h"
 #include "engine/ModelManager.h"
 #include "engine/TextureManager.h"
 #include "engine/SkyboxManager.h"
 #include "engine/ShaderManager.h"
-#include "effects/ParticleSpark.h"
+#include "engine/EmitterManager.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -59,7 +61,6 @@ shared_ptr<Sound> soundEngine;
 
 class Application : public EventCallbacks
 {
-
 public:
     WindowManager *windowManager = nullptr;
     SceneManager sceneManager = SceneManager();
@@ -67,6 +68,7 @@ public:
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
     ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
     SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
+    EmitterManager emitterManager = EmitterManager();
     shared_ptr<Octree> octree;
 
     // Game Info Globals
@@ -94,10 +96,6 @@ public:
     vec3 gameLight = vec3(300, 150, 250);
     vec3 gameLightColor = vec3(250000, 250000, 250000);
 
-    // Effects
-    shared_ptr<ParticleEmitter> sparkEmitter;
-    shared_ptr<ParticleEmitter> fireworkEmitter;
-
     // Camera
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
@@ -122,8 +120,6 @@ public:
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         GLSL::checkVersion();
 
-        // Set background color.
-        glClearColor(.12f, .34f, .56f, 1.0f);
         // Enable z-buffer test.
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -132,7 +128,6 @@ public:
         camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
 
-        sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
         #if PLAY_MUSIC
         soundEngine->music();
@@ -144,29 +139,6 @@ public:
     //=================================================
     // SHADERS
     //=================================================
-    void initShader(shared_ptr<Program> &program, string file, vector<string> attributes, vector<string> uniforms)
-    {
-        // Shader for textured models
-        program = make_shared<Program>();
-        program->setVerbose(true);
-        program->setShaderNames(RESOURCE_DIRECTORY + "/shaders/" + file + ".vert.glsl", RESOURCE_DIRECTORY + "/shaders/" + file + ".frag.glsl");
-        if (!program->init())
-        {
-            cerr << "Failed to compile " << file << " shader" << endl;
-            exit(1);
-        }
-
-        for (int i = 0; i < attributes.size(); i++)
-        {
-            program->addAttribute(attributes[i]);
-        }
-
-        for (int i = 0; i < uniforms.size(); i++)
-        {
-            program->addUniform(uniforms[i]);
-        }
-    }
-
     void initShaders()
     {
         vector<string> pbrUniforms = { "P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
@@ -293,7 +265,7 @@ public:
     {
         // Marble
         gameObjects.marble = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
-        gameObjects.marble->init(windowManager, sparkEmitter);
+        gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
         octree->insert(gameObjects.marble);
 
         // Enemy 1
@@ -322,15 +294,13 @@ public:
 
         // Goal functionality
         gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
-        gameObjects.goal->init(fireworkEmitter, &START_TIME);
+        gameObjects.goal->init(emitterManager.get("fireworks"), &START_TIME);
         octree->insert(gameObjects.goal);
     }
 
     void initEffects() {
-        sparkEmitter = make_shared<ParticleEmitter>(100);
-        sparkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"));
-        fireworkEmitter = make_shared<ParticleEmitter>(100);
-        fireworkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"));
+        emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
+        emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
     }
 
     void initFBOQuad()
@@ -530,8 +500,9 @@ public:
         particle->bind();
         setProjectionMatrix(particle);
         setView(particle);
-        sparkEmitter->draw(particle);
-        fireworkEmitter->draw(particle);
+        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list()) {
+            emitter->draw(particle);
+        }
         particle->unbind();
     }
 
@@ -600,8 +571,8 @@ public:
         gameObjects.enemy1->update(dt);
         gameObjects.enemy2->update(dt);
 
-        sparkEmitter->update(dt);
-        fireworkEmitter->update(dt);
+        emitterManager.get("sparks")->update(dt);
+        emitterManager.get("fireworks")->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         octree->markInView(viewFrustum);

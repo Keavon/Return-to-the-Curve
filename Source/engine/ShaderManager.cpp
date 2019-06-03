@@ -32,7 +32,7 @@ shared_ptr<Program> initShader(string relativePath, string file, vector<string> 
 
 shared_ptr<Program> ShaderManager::get(string programFile) {
     if (!(CONTAINS(loadedPrograms, programFile))) {
-        cerr << "Program has not been loaded yet and it's being requested from the ShaderManager without the necessary parameters to load it now" << endl;
+        cerr << "Shader program has not been loaded yet and it's being requested from the ShaderManager without the necessary parameters to load it now" << endl;
     }
 
     return loadedPrograms[programFile];

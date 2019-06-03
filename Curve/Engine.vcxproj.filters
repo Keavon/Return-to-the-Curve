@@ -205,6 +205,9 @@
     <ClCompile Include="..\Source\engine\SkyboxManager.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\EmitterManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -414,6 +417,9 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\SkyboxManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\EmitterManager.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>
