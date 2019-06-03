@@ -43,8 +43,9 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 2 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 3 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define RESOURCE_DIRECTORY string("../Resources")
+#define START_WITH_MUSIC_PLAYING true
 
 using namespace std;
 using namespace glm;
@@ -69,7 +70,10 @@ public:
 
     // Shadow Globals
     int SHADOWS = 1;
-    int SHADOW_AA = 3;
+    int SHADOW_AA = 1; 
+    // Don't change SHADOW_AA here,
+    // it will be over written by SHADOW_QUALITY preset choice.
+    // It can be changed in game with the 'Y' key.
     int DEBUG_LIGHT = 0;
     int GEOM_DEBUG = 1;
     GLuint SHADOW_SIZE = 0;
@@ -161,7 +165,7 @@ public:
         camera->init();
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
-        soundEngine = make_shared<Sound>();
+        
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -334,22 +338,27 @@ public:
             break;
         case 1:
             SHADOWS = 1;
+            SHADOW_AA = 1;
             SHADOW_SIZE = 512;
             break;
         case 2:
             SHADOWS = 1;
+            SHADOW_AA = 2;
             SHADOW_SIZE = 1024;
             break;
         case 3:
             SHADOWS = 1;
+            SHADOW_AA = 3;
             SHADOW_SIZE = 2048;
             break;
         case 4:
             SHADOWS = 1;
+            SHADOW_AA = 4;
             SHADOW_SIZE = 4096;
             break;
         default:
             SHADOWS = 1;
+            SHADOW_AA = 2;
             SHADOW_SIZE = 1024;
             break;
         }
@@ -399,6 +408,14 @@ public:
     //=================================================
     // Sounds
     //=================================================
+    void initSound()
+    {
+        soundEngine = make_shared<Sound>();
+        if (START_WITH_MUSIC_PLAYING)
+        {
+            soundEngine->playPauseMusic();
+        }
+    }
 
     //=================================================
     // GEOMETRY
@@ -987,6 +1004,7 @@ int main(int argc, char **argv)
     application->initShaders();
     application->initTextures();
     application->initGeom();
+    application->initSound();
 
     application->START_TIME = glfwGetTime();
 
