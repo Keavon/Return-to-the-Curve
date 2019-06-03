@@ -955,6 +955,11 @@ public:
         }
     }
 
+    void updateAudio()
+    {
+        soundEngine->updateMusic();
+    }
+
     void resizeCallback(GLFWwindow *window, int width, int height)
     {
         glViewport(0, 0, width, height);
@@ -989,6 +994,7 @@ int main(int argc, char **argv)
     const double dt = 0.02;
     double currentTime = application->START_TIME;
     double accumulator = 0;
+    double audioAccumulator = 0;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -999,12 +1005,19 @@ int main(int argc, char **argv)
         currentTime = newTime;
 
         accumulator += frameTime;
+        audioAccumulator += frameTime;
 
         while (accumulator >= dt)
         {
             application->update(dt);
             accumulator -= dt;
             t += dt;
+        }
+
+        if (audioAccumulator >= 1.0)
+        {
+            application->updateAudio();
+            audioAccumulator = 0;
         }
 
         application->render();

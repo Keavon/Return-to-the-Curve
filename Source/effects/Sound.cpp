@@ -26,13 +26,13 @@ Sound::Sound()
         musicSource->setDefaultVolume(0.25f);
         musicSources.push_back(musicSource);
 
-        irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i-1], false, true);
+        irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i - 1], false, true);
         musicSounds.push_back(musicSound);
 
         completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
         cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
     }
-    currentTrack = 0;
+    currentTrack = 4;
 }
 
 Sound::~Sound()
@@ -87,6 +87,15 @@ void Sound::playPauseMusic()
 void Sound::nextTrackMusic()
 {
     musicSounds[currentTrack]->setIsPaused(true);
-    currentTrack = (currentTrack + 1 % NUMBER_OF_MUSIC_TRACKS);
+    currentTrack = (currentTrack + 1) % NUMBER_OF_MUSIC_TRACKS;
     musicSounds[currentTrack]->setIsPaused(false);
+}
+
+void Sound::updateMusic()
+{
+    if (musicSounds[currentTrack]->isFinished())
+    {
+        musicSounds[currentTrack] = sfxEngine->play2D(musicSources[currentTrack], false, true);
+        nextTrackMusic();
+    }
 }

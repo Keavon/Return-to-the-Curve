@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
-#include<vector>
+#include <vector>
 #include <irrKlang.h>
 
 #define NUMBER_OF_MUSIC_TRACKS 5
@@ -47,6 +47,7 @@ public:
     void win();
     void playPauseMusic();
     void nextTrackMusic();
+    void updateMusic();
 };
 
 extern std::shared_ptr<Sound> soundEngine;
