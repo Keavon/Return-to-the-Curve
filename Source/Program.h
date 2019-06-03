@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <glad/glad.h>
 
@@ -27,6 +28,8 @@ public:
 
 	void addAttribute(const std::string &name);
 	void addUniform(const std::string &name);
+    bool hasAttribute(std::string attribute);
+    bool hasUniform(std::string uniform);
 	GLint getAttribute(const std::string &name) const;
 	GLint getUniform(const std::string &name) const;
 

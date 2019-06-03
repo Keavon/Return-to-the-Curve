@@ -1,0 +1,96 @@
+--- # Level 1
+scene:
+    name: Hop Scotch and a Jump
+    skybox: desert_hilltop
+    light:
+        location: [300, 150, 250]
+        color: [1, 1, 1]
+        intensity: 250000
+    deathBelow: -10
+    marble:
+        location: [0, 0, 0]
+        rotation: [0, 3.14159, 0]
+        scale: [1, 1, 1]
+        material: lava
+        lookDirection: 0
+track:
+    -   prefab: pillar_hexagon
+        location: [-5, 2, 0]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [-2, 2, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [0, 2, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [2, 3, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [2, 1, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [4, 2, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [6, 3, 0]
+    -   prefab: trap_diamond
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+        location: [6, 1, 0]
+    -   prefab: pillar_hexagon
+        location: [9, 2, 0]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [11, 2, 0.5]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [13, 2, 1]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [14, 3.7, 1.5]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [13, 5.4, 2]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [11, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: platform_square
+        location: [8.45, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [2.9, 1, 1]
+    -   prefab: platform_square
+        location: [5.5, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [1, 0.5, 1]
+    -   prefab: platform_square
+        location: [3.5, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [1, 0.25, 1]
+    -   prefab: platform_square
+        location: [1.5, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [1, 0.5, 1]
+    -   prefab: platform_square
+        location: [-1.45, 5.4, 2.5]
+        rotation: [0, 0, 0]
+        scale: [2.9, 1, 1]
+    -   prefab: pillar_hexagon
+        location: [-4, 5.4, 3]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]

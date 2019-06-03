@@ -10,8 +10,7 @@
 using namespace glm;
 using namespace std;
 
-Box::Box(vec3 position, quat orientation, shared_ptr<Shape> model) :
-    PhysicsObject(position, orientation, model, make_shared<ColliderMesh>(model))
+Box::Box(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model) : PhysicsObject(position, orientation, scale, model, make_shared<ColliderMesh>(model))
 {
     mass = 0;
     invMass = 0;

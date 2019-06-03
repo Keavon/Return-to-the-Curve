@@ -22,12 +22,25 @@ bool inRange(float n, float low, float high)
     return low <= n && n <= high;
 }
 
-PhysicsObject::PhysicsObject(vec3 position, quat orientation,
-                             shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, model), collider(collider),
-                                                                                       netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
-                                                                                       normForce(0), friction(0), elasticity(0), speed(0)
+PhysicsObject::PhysicsObject(vec3 position, shared_ptr<Shape> model, shared_ptr<Collider> collider) : PhysicsObject::PhysicsObject(position, quat(1, 0, 0, 0), vec3(1, 1, 1), model, collider) {}
+
+PhysicsObject::PhysicsObject(vec3 position, quat orientation, shared_ptr<Shape> model, shared_ptr<Collider> collider) : PhysicsObject::PhysicsObject(position, orientation, vec3(1, 1, 1), model, collider) {}
+
+PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, scale, model)
 {
+    this->collider = collider;
+    this->netForce = vec3(0, 0, 0);
+    this->impulse = vec3(0, 0, 0);
+    this->acceleration = vec3(0, 0, 0);
+    this->velocity = vec3(0, 0, 0);
+    this->mass = 0;
+    this->invMass = 0;
+    this->normForce = vec3(0, 0, 0);
+    this->friction = 0;
+    this->elasticity = 0;
+    this->speed = 0;
 }
+
 void PhysicsObject::update(float dt)
 {
     normForce = vec3(0);

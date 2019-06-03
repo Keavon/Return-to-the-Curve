@@ -11,8 +11,7 @@ using namespace glm;
 
 
 Blower::Blower(vec3 position, quat orientation, shared_ptr<Shape> model, float radius, float length) :
-    PhysicsObject(position, orientation, model, make_shared<TriggerCylinder>(radius, length)),
-    radius(radius), length(length)
+    PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<TriggerCylinder>(radius, length)), radius(radius), length(length)
 {
 
 }

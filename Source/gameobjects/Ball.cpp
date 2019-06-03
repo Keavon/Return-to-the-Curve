@@ -21,8 +21,7 @@
 using namespace glm;
 using namespace std;
 
-Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
-                                                                                     radius(radius)
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;
     material = 0;

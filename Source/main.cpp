@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 
+#include <cmath>
 #include <math.h>
 #include <iostream>
 #include <iomanip>
@@ -35,6 +36,9 @@
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
+#include "engine/SceneManager.h"
+#include "engine/ModelManager.h"
+#include "engine/TextureManager.h"
 #include "effects/ParticleSpark.h"
 
 // value_ptr for glm
@@ -42,7 +46,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define PLAY_MUSIC false
 #define RESOURCE_DIRECTORY string("../Resources")
@@ -57,6 +60,10 @@ class Application : public EventCallbacks
 
 public:
     WindowManager *windowManager = nullptr;
+    SceneManager sceneManager = SceneManager();
+    ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
+    TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
+    shared_ptr<Octree> octree;
 
     // Game Info Globals
     bool editMode = false;
@@ -64,7 +71,8 @@ public:
     bool MOVING = false;
     bool MOUSE_DOWN = false;
     int SCORE = 0;
-    int CURRENT_SKIN = 0;
+    vector<string> marbleSkins = { "brown_rock.png", "seaside_rocks.png", "coal_matte_tiles.png", "marble_tiles.png" };
+    int currentSkin = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
     vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
 
@@ -93,19 +101,6 @@ public:
         shared_ptr<Program> particle;
     } programs;
 
-    struct
-    {
-        shared_ptr<Shape> cube;
-        shared_ptr<Shape> roboHead;
-        shared_ptr<Shape> roboLeg;
-        shared_ptr<Shape> roboFoot;
-        shared_ptr<Shape> boxModel;
-        shared_ptr<Shape> plane;
-        shared_ptr<Shape> billboard;
-        shared_ptr<Shape> goalModel;
-        shared_ptr<Shape> sphere;
-    } shapes;
-
     // Effects
     shared_ptr<ParticleEmitter> sparkEmitter;
     shared_ptr<ParticleEmitter> fireworkEmitter;
@@ -116,34 +111,19 @@ public:
 
     struct
     {
-        shared_ptr<Ball> ball;
+        shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
         shared_ptr<Box> goalObject;
-        shared_ptr<Octree> octree;
     } gameObjects;
     vector<shared_ptr<PhysicsObject>> boxes;
 
-    // BillBoard for rendering a texture to screen. (like the shadow map)
+    // BillBoard for rendering a texture to screen (like the shadow map)
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
 
-    struct
-    {
-        shared_ptr<Skybox> skybox;
-        shared_ptr<Texture> crateAlbedo;
-        shared_ptr<Texture> crateRoughness;
-        shared_ptr<Texture> crateMetallic;
-        shared_ptr<Texture> crateAO;
-        shared_ptr<Texture> panelAlbedo;
-        shared_ptr<Texture> panelRoughness;
-        shared_ptr<Texture> panelMetallic;
-        shared_ptr<Texture> panelAO;
-        shared_ptr<Texture> spark;
-        shared_ptr<Texture> firework;
-    } textures;
-    vector<shared_ptr<Texture>> marbleTextures;
+    shared_ptr<Skybox> skybox;
 
     void init()
     {
@@ -225,7 +205,7 @@ public:
         initShader(
             programs.depth,
             "depth",
-            {"vertPos", "vertNor", "vertTex"},
+            {"vertPos"},
             {"LP", "LV", "M"});
 
         initShader(
@@ -237,13 +217,13 @@ public:
         initShader(
             programs.depthDebug,
             "depth_debug",
-            {"vertPos", "vertNor", "vertTex"},
+            {"vertPos"},
             {"LP", "LV", "M"});
 
         initShader(
             programs.particle,
             "particle",
-            {"vertPos", "vertNor", "vertTex"},
+            {"vertPos", "vertTex"},
             {"P", "V", "M", "pColor", "alphaTexture"});
     }
 
@@ -252,62 +232,37 @@ public:
     //=================================================
     void initTextures()
     {
-        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, textures.crateAO, "marble_tiles", "png");
-        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, textures.panelAO, "panel", "png");
+        bindMaterialPBR("pbr/marble_tiles.png", false);
+        bindMaterialPBR("pbr/coal_matte_tiles.png", false);
+        bindMaterialPBR("pbr/brown_rock.png", false);
 
-        initMarbleTexture();
         initSkyBox();
         initParticleTexture();
         initShadow();
     }
 
-    void initTexture(shared_ptr<Texture> &texture, string filePath, int textureUnit = 0)
-    {
-        texture = make_shared<Texture>();
-        texture->setFilename(RESOURCE_DIRECTORY + "/textures/" + filePath);
-        texture->init();
-        texture->setUnit(textureUnit);
-        texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    }
+    void bindMaterialPBR(string fileName, bool bind = true) {
+        int extensionDotIndex = fileName.find_last_of(".");
+        string beforeExtension = fileName.substr(0, extensionDotIndex);
+        string dotAndExtension = fileName.substr(extensionDotIndex);
 
-    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, shared_ptr<Texture> &ao, string fileName, string fileExt)
-    {
-        initTexture(albedo, "pbr/" + fileName + "_albedo." + fileExt, 1);
-        initTexture(roughness, "pbr/" + fileName + "_roughness." + fileExt, 2);
-        initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
-        initTexture(ao, "pbr/" + fileName + "_ao." + fileExt, 4);
+        shared_ptr<Texture> albedo = textureManager.get(beforeExtension + "_albedo" + dotAndExtension, 1);
+        shared_ptr<Texture> roughness = textureManager.get(beforeExtension + "_roughness" + dotAndExtension, 2);
+        shared_ptr<Texture> metallic = textureManager.get(beforeExtension + "_metallic" + dotAndExtension, 3);
+        shared_ptr<Texture> ao = textureManager.get(beforeExtension + "_ao" + dotAndExtension, 4);
+
+        if (bind) {
+            albedo->bind(programs.pbr->getUniform("albedoMap"));
+            roughness->bind(programs.pbr->getUniform("roughnessMap"));
+            metallic->bind(programs.pbr->getUniform("metallicMap"));
+            ao->bind(programs.pbr->getUniform("aoMap"));
+        }
     }
 
     void initParticleTexture()
     {
-        initTexture(textures.spark, "particle/star_07.png", 1);
-        initTexture(textures.firework, "particle/scorch_02.png", 1);
-    }
-
-    void initMarbleTexture()
-    {
-        // loops over the number of skin textures, initializing them and adding them to a vector
-        string textureBaseFolder, textureNumber, textureExtension, textureName;
-        double completion = 0;
-        for (int i = 1; i < NUMBER_OF_MARBLE_SKINS + 1; i++)
-        {
-            textureBaseFolder = "/textures/marble/albedo/";
-            textureNumber = to_string(i);
-            textureExtension = ".jpg";
-
-            textureName = textureBaseFolder + textureNumber + textureExtension;
-            completion = ((float)i * 100 / (float)NUMBER_OF_MARBLE_SKINS);
-            cout << setprecision(3) << "Loading Textures: " << completion << "% complete." << endl;
-
-            shared_ptr<Texture> marbleTexture = make_shared<Texture>();
-            marbleTexture->setFilename(RESOURCE_DIRECTORY + textureName);
-            marbleTexture->init();
-            marbleTexture->setUnit(1);
-            marbleTexture->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
-
-            marbleTextures.push_back(marbleTexture);
-        }
-        cout << "Loading Textures: complete." << endl;
+        textureManager.get("particle/star_07.png", 1);
+        textureManager.get("particle/scorch_02.png", 1);
     }
 
     void initSkyBox()
@@ -319,48 +274,24 @@ public:
             skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
         }
 
-        textures.skybox = make_shared<Skybox>();
-        textures.skybox->setFilenames(skyboxFilenames);
-        textures.skybox->init();
-        textures.skybox->setUnit(1);
-        textures.skybox->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+        skybox = make_shared<Skybox>();
+        skybox->setFilenames(skyboxFilenames);
+        skybox->init();
+        skybox->setUnit(1);
+        skybox->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
     void initShadow()
     {
-        switch (SHADOW_QUALITY)
-        {
-        case 0:
-            SHADOWS = 0;
-            SHADOW_AA = 1;
-            SHADOW_SIZE = 256;
-            break;
-        case 1:
-            SHADOWS = 1;
-            SHADOW_SIZE = 512;
-            break;
-        case 2:
-            SHADOWS = 1;
-            SHADOW_SIZE = 1024;
-            break;
-        case 3:
-            SHADOWS = 1;
-            SHADOW_SIZE = 2048;
-            break;
-        case 4:
-            SHADOWS = 1;
-            SHADOW_SIZE = 4096;
-            break;
-        default:
-            SHADOWS = 1;
-            SHADOW_SIZE = 1024;
-            break;
-        }
-        /* set up the FBO for the light's depth */
-        // generate the FBO for the shadow depth
+        // Calculate shadow quality
+        if (SHADOW_QUALITY == 0) SHADOW_AA = 1;
+        SHADOWS = !!SHADOW_QUALITY;
+        SHADOW_SIZE = 256 * (int)pow(2, SHADOW_QUALITY);
+
+        // Generate the FBO for the shadow depth
         glGenFramebuffers(1, &depthMapFBO);
 
-        // generate the texture
+        // Generate the texture
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -370,7 +301,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        // bind with framebuffer's depth buffer
+        // Bind with framebuffer's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
@@ -378,27 +309,6 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void setTextureMaterial(int i)
-    {
-        // pulled these out of the switch since they were all identical
-
-        textures.crateAlbedo->bind(programs.pbr->getUniform("albedoMap"));
-        textures.crateRoughness->bind(programs.pbr->getUniform("roughnessMap"));
-        textures.crateMetallic->bind(programs.pbr->getUniform("metallicMap"));
-
-        switch (i)
-        {
-        case 0:
-            // marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        case 1:
-            marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        case 2:
-            // marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        }
-    }
     //=================================================
     // Sounds
     //=================================================
@@ -408,96 +318,88 @@ public:
     //=================================================
     void initGeom()
     {
+        initOctree();
+        initEffects();
+        initFBOQuad();
         loadModels();
         loadLevel();
-        initEffects();
         initGameObjects();
     }
 
-    void loadModel(shared_ptr<Shape> &shape, string file, bool resize = false, bool findEdges = false)
-    {
-        shape = make_shared<Shape>();
-        shape->loadMesh(RESOURCE_DIRECTORY + "/models/" + file);
-        if (resize)
-            shape->resize();
-        shape->measure();
-        if (findEdges)
-            shape->findEdges();
-        shape->init();
+    void initOctree() {
+        octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
+        octree->init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
 
     void loadModels()
     {
-        initQuad();
-
-        loadModel(shapes.cube, "cube.obj", true);
-        loadModel(shapes.boxModel, "box.obj", false, true);
-        loadModel(shapes.plane, "plane.obj");
-        loadModel(shapes.roboHead, "Robot/RobotHead.obj", true);
-        loadModel(shapes.roboLeg, "Robot/RobotLeg.obj", true);
-        loadModel(shapes.roboFoot, "Robot/RobotFoot.obj", true);
-        loadModel(shapes.billboard, "billboard.obj", true);
-        loadModel(shapes.goalModel, "goal.obj", true);
-        loadModel(shapes.sphere, "quadSphere.obj", true);
+        modelManager.get("cube.obj", false, true);
+        modelManager.get("Robot/RobotHead.obj", true);
+        modelManager.get("Robot/RobotLeg.obj", true);
+        modelManager.get("Robot/RobotFoot.obj", true);
+        modelManager.get("billboard.obj", true);
+        modelManager.get("goal.obj", true);
+        modelManager.get("quadSphere.obj", true);
     }
 
     void loadLevel() {
-        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-1.yaml");
 
+        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
         vec3 transform;
         while (inLevel >> transform.x) {
             inLevel >> transform.y >> transform.z;
-            auto box = make_shared<Box>(vec3(transform.x * 8, transform.y, transform.z * 6), normalize(quat(0, 0, 0, 0)), shapes.boxModel);
+            shared_ptr<Box> box = make_shared<Box>(vec3(transform.x * 8, transform.y, transform.z * 6), quat(1, 0, 0, 0), vec3(8, 2, 6), modelManager.get("cube.obj"));
             boxes.push_back(box);
         }
-    }
-
-    void initEffects()
-    {
-        sparkEmitter = make_shared<ParticleEmitter>(100);
-        sparkEmitter->init(shapes.billboard, textures.spark);
-        fireworkEmitter = make_shared<ParticleEmitter>(100);
-        fireworkEmitter->init(shapes.billboard, textures.firework);
+        octree->insert(boxes);
     }
 
     void initGameObjects()
     {
-        gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
-        gameObjects.ball->init(windowManager, sparkEmitter);
-        // Control points for enemy's bezier curve path
+        // Marble
+        gameObjects.marble = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
+        gameObjects.marble->init(windowManager, sparkEmitter);
+        octree->insert(gameObjects.marble);
+
+        // Enemy 1
         vector<glm::vec3> enemyPath = {
             vec3{95.0, 2.0, 7.0},
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
+        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.5);
         gameObjects.enemy1->init(windowManager);
+        octree->insert(gameObjects.enemy1);
+
+        // Enemy 2
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
             vec3{115.0, 20.0, 55.0},
             vec3{105.0, 5.0, 55.0},
             vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
+        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.5);
         gameObjects.enemy2->init(windowManager);
+        octree->insert(gameObjects.enemy2);
 
-        gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
-        gameObjects.goalObject->scale = vec3(4);
+        // Goal model
+        gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), vec3(4, 4, 4), modelManager.get("goal.obj"));
+        octree->insert(gameObjects.goalObject);
 
+        // Goal functionality
         gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
         gameObjects.goal->init(fireworkEmitter, &START_TIME);
-
-        // Need to add each physics object to the octree
-        gameObjects.octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
-        gameObjects.octree->init(shapes.billboard, shapes.cube);
-        gameObjects.octree->insert(gameObjects.goal);
-        gameObjects.octree->insert(gameObjects.goalObject);
-        gameObjects.octree->insert(gameObjects.ball);
-        gameObjects.octree->insert(boxes);
-        gameObjects.octree->insert(gameObjects.enemy1);
-        gameObjects.octree->insert(gameObjects.enemy2);
+        octree->insert(gameObjects.goal);
     }
 
-    void initQuad()
+    void initEffects() {
+        sparkEmitter = make_shared<ParticleEmitter>(100);
+        sparkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particle/star_07.png"));
+        fireworkEmitter = make_shared<ParticleEmitter>(100);
+        fireworkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particle/scorch_02.png"));
+    }
+
+    void initFBOQuad()
     {
         /* set up a quad for rendering a framebuffer */
 
@@ -506,25 +408,13 @@ public:
         glBindVertexArray(quad_VertexArrayID);
 
         static const GLfloat g_quad_vertex_buffer_data[] = {
-            -1.0f,
-            -1.0f,
-            0.0f,
-            1.0f,
-            -1.0f,
-            0.0f,
-            -1.0f,
-            1.0f,
-            0.0f,
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
 
-            -1.0f,
-            1.0f,
-            0.0f,
-            1.0f,
-            -1.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-            0.0f,
+            -1.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
         };
 
         glGenBuffers(1, &quad_vertexbuffer);
@@ -543,72 +433,47 @@ public:
 
         mat4 LS;
 
-        if (SHADOW_QUALITY)
-        {
-            createShadowMap(&LS);
-        }
+        if (SHADOW_QUALITY) createShadowMap(&LS);
 
         glViewport(0, 0, width, height); // frame width and height
         // Clear framebuffer.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (DEBUG_LIGHT)
-        {
-            drawDepthMap();
-        }
-        else
-        {
-            renderPlayerView(&LS);
-        }
+        if (DEBUG_LIGHT) drawDepthMap();
+        else renderPlayerView(&LS);
     }
 
     void drawScene(shared_ptr<Program> shader)
     {
-        // Draw textured models
-        if (shader == programs.pbr)
-        {
-            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
-            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
-            glUniform1i(shader->getUniform("shadows"), SHADOWS);
-        }
-
-        // Create the matrix stacks
+        // Create the model transformation matrix stack
         auto M = make_shared<MatrixStack>();
-
-        // Model identity
         M->pushMatrix();
         M->loadIdentity();
 
         if (shader == programs.pbr)
         {
+            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
+            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
+            glUniform1i(shader->getUniform("shadows"), SHADOWS);
+
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
         }
 
-        // Draw plane
-        // if (shader == programs.pbr)
-        // {
-        //     setTextureMaterial(0);
-        // }
-        // M->pushMatrix();
-        // glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        // shapes.plane->draw(shader);
-        // M->popMatrix();
+        // Draw marble
+        if (shader == programs.pbr) bindMaterialPBR("pbr/" + marbleSkins[currentSkin]);
+        gameObjects.marble->draw(shader, M);
 
-        // Draw ball
-        if (shader == programs.pbr)
-        {
-            setTextureMaterial(1);
-        }
-        gameObjects.ball->draw(shader, M);
+        // Draw finish
+        if (shader == programs.pbr) bindMaterialPBR("pbr/painted_metal.png");
         gameObjects.goalObject->draw(shader, M);
+
+        // Draw enemies
+        if (shader == programs.pbr) bindMaterialPBR("pbr/rusted_metal.jpg");
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == programs.pbr)
-        {
-            setTextureMaterial(2);
-        }
+        if (shader == programs.pbr) bindMaterialPBR("pbr/marble_tiles.png");
         for (auto box : boxes)
         {
             box->draw(shader, M);
@@ -678,10 +543,10 @@ public:
         setProjectionMatrix(programs.sky);
         setView(programs.sky);
 
-        textures.skybox->bind(programs.sky->getUniform("Texture0"));
+        skybox->bind(programs.sky->getUniform("Texture0"));
         glDepthMask(GL_FALSE);
         glDisable(GL_CULL_FACE);
-        shapes.cube->draw(programs.sky);
+        modelManager.get("cube.obj")->draw(programs.sky);
         glEnable(GL_CULL_FACE);
         glDepthMask(GL_TRUE);
 
@@ -713,7 +578,7 @@ public:
 
         programs.pbr->unbind();
 
-        if (gameObjects.octree->debug)
+        if (octree->debug)
         {
             drawOctree();
         }
@@ -731,13 +596,13 @@ public:
         programs.circle->bind();
         setProjectionMatrix(programs.circle);
         setView(programs.circle);
-        gameObjects.octree->drawDebugBoundingSpheres(programs.circle);
+        octree->drawDebugBoundingSpheres(programs.circle);
         programs.circle->unbind();
 
         programs.cubeOutline->bind();
         setProjectionMatrix(programs.cubeOutline);
         setView(programs.cubeOutline);
-        gameObjects.octree->drawDebugOctants(programs.cubeOutline);
+        octree->drawDebugOctants(programs.cubeOutline);
         programs.cubeOutline->unbind();
     }
 
@@ -748,41 +613,41 @@ public:
     {
         soundEngine->reset();
 
-        gameObjects.ball->position = START_POSITION;
-        gameObjects.ball->velocity = vec3(0);
+        gameObjects.marble->position = START_POSITION;
+        gameObjects.marble->velocity = vec3(0);
         START_TIME = glfwGetTime();
         gameObjects.goal->reset();
     }
 
     void update(float dt)
     {
-        gameObjects.octree->update();
+        octree->update();
 
-        if (gameObjects.ball->position.y < -25.0)
+        if (gameObjects.marble->position.y < -25.0)
         {
             resetPlayer();
         }
 
-        auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
+        auto boxesToCheck = octree->query(gameObjects.marble);
         for (auto box : boxesToCheck)
         {
-            box->checkCollision(gameObjects.ball.get());
+            box->checkCollision(gameObjects.marble.get());
         }
 
         for (auto box : boxes)
         {
             box->update(dt);
         }
-        //TODO:: Do Collision checks between ball and Enemy
+        //TODO:: Do Collision checks between marble and Enemy
         /*
-        auto enemiesToCheck = gameObjects.octree->query(ball);
+        auto enemiesToCheck = octree->query(marble);
         for (auto enemies : enemiesToCheck) {
             
         }*/
 
         gameObjects.goalObject->update(dt);
-        gameObjects.ball->update(dt, camera->dolly, camera->strafe);
-        camera->update(dt, gameObjects.ball);
+        gameObjects.marble->update(dt, camera->dolly, camera->strafe);
+        camera->update(dt, gameObjects.marble);
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt);
         gameObjects.enemy2->update(dt);
@@ -791,7 +656,7 @@ public:
         fireworkEmitter->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
-        gameObjects.octree->markInView(viewFrustum);
+        octree->markInView(viewFrustum);
     }
 
     void setLight(shared_ptr<Program> prog)
@@ -848,7 +713,8 @@ public:
         //skin switching key call back
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
-            CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
+            currentSkin++;
+            currentSkin %= marbleSkins.size();
         }
         // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
         // {
@@ -884,15 +750,15 @@ public:
         {
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
-            gameObjects.ball->frozen = editMode;
+            gameObjects.marble->frozen = editMode;
             if (editMode) {
                 camera->saveMarbleView();
-                gameObjects.ball->playPosition = gameObjects.ball->position;
-                gameObjects.ball->position = gameObjects.ball->startPosition;
+                gameObjects.marble->playPosition = gameObjects.marble->position;
+                gameObjects.marble->position = gameObjects.marble->startPosition;
             }
             else {
                 camera->restoreMarbleView();
-                gameObjects.ball->position = gameObjects.ball->playPosition;
+                gameObjects.marble->position = gameObjects.marble->playPosition;
             }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
@@ -901,7 +767,7 @@ public:
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
-            gameObjects.octree->debug = !gameObjects.octree->debug;
+            octree->debug = !octree->debug;
         }
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
@@ -936,7 +802,7 @@ public:
             MOUSE_DOWN = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
-            cout << "" << gameObjects.ball->position.x << ", " << gameObjects.ball->position.y << ", " << gameObjects.ball->position.z << endl;
+            cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
             MOVING = true;
         }
 
