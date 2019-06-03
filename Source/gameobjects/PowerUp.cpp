@@ -29,7 +29,7 @@ void PowerUp::update(float dt)
         {
             cout << "Collide with ball" << endl;
             destroyed = true;
-            
+            collidable = false;
         }
     }
     //cout << "Destroyed: " << destroyed << endl;
@@ -37,4 +37,5 @@ void PowerUp::update(float dt)
 
 void PowerUp::init(){
     destroyed = false;
+    activatable = true;
 }

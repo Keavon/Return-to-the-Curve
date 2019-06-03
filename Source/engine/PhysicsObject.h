@@ -34,4 +34,5 @@ public:
     glm::vec3 netForce; // net forces acting on ball, calculated each frame
     glm::vec3 normForce;
     glm::vec3 impulse;
+    bool collidable;
 };

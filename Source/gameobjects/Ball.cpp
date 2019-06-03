@@ -38,6 +38,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     friction = 0.25;
 
     jumpForce = 150;
+    hasPowerUp = false;
+    powerUpReady = false;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -56,13 +58,21 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         }
         if (dynamic_cast<PowerUp *>(collision.other) != NULL)
         {
-            //hasPowerUp = true;
+            if (storedPowerUp.size() < 2){
+                storedPowerUp.push_back(dynamic_cast<PowerUp *>(collision.other) );
+            }
+            else
+            {
+                storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
+            }
+            cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
+            cout << "Stored size: " << storedPowerUp.size() << endl;
+            hasPowerUp = true;
         }
     }
 
-    PhysicsObject::update(dt);
-
-    vec3 direction = vec3(0);
+    PhysicsObject::update(dt); 
+    glm::vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
     {
         direction += vec3(dolly.x, 0.0f, dolly.z);
@@ -85,6 +95,21 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         {
             vec3 normForceDir = normalize(normForce);
             impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+        }
+        if (powerUpReady){
+            if (activePowerUp->powerUpType == 0 && activePowerUp->activatable){
+                cout << "Used Jump powerUp" << endl;
+                jumpForce = 150;
+                activePowerUp->activatable = false;
+                prepNextPowerUp();
+            }
+        }
+    }
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_P) == GLFW_PRESS)
+    {
+        if (hasPowerUp){
+            if (storedPowerUp[0]->activatable)
+                activatePowerUp();
         }
     }
 
@@ -119,5 +144,33 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
     if (impactVel > 10)
     {
         soundEngine->impact();
+    }
+}
+
+void Ball::activatePowerUp() 
+{
+    activePowerUp = storedPowerUp[0];
+    cout << "Power up ready" << endl;
+    cout << "Power up Type: "<< activePowerUp->powerUpType << endl;
+    if (activePowerUp->powerUpType == 0){
+        jumpForce = 500;
+        powerUpReady = true;
+    }
+    else {
+        activePowerUp->activatable = false;
+        prepNextPowerUp();
+    }
+}
+
+void Ball::prepNextPowerUp()
+{
+    powerUpReady = false;
+    if (storedPowerUp.size() > 1) 
+    {
+        storedPowerUp.at(0) = storedPowerUp.at(1);
+        storedPowerUp.pop_back();
+    }
+    else {
+        hasPowerUp = false;
     }
 }

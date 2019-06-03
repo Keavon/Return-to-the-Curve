@@ -27,6 +27,7 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation,
                                                                                        netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
                                                                                        normForce(0), friction(0), elasticity(0), speed(0)
 {
+    collidable = true;
 }
 void PhysicsObject::update(float dt)
 {

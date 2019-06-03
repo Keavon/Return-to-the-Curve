@@ -782,7 +782,10 @@ public:
         auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
         for (auto box : boxesToCheck)
         {
-            box->checkCollision(gameObjects.ball.get());
+            if (box->collidable)
+            {
+                box->checkCollision(gameObjects.ball.get());
+            }
         }
 
         for (auto box : boxes)

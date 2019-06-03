@@ -13,7 +13,8 @@ public:
 
     float radius;
     float length;
-    int powerUpType;
+    int powerUpType; // 0- Jump Height 1- Burst of acceleration  3- 
     glm::vec3 force;
     bool destroyed;
+    bool activatable;
 };
