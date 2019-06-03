@@ -199,6 +199,9 @@
     <ClCompile Include="..\Source\engine\TextureManager.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\ShaderManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -402,6 +405,9 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\TextureManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ShaderManager.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>

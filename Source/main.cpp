@@ -39,6 +39,7 @@
 #include "engine/SceneManager.h"
 #include "engine/ModelManager.h"
 #include "engine/TextureManager.h"
+#include "engine/ShaderManager.h"
 #include "effects/ParticleSpark.h"
 
 // value_ptr for glm
@@ -63,6 +64,7 @@ public:
     SceneManager sceneManager = SceneManager();
     ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
+    ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
     shared_ptr<Octree> octree;
 
     // Game Info Globals
@@ -89,18 +91,6 @@ public:
     // Light Position Globals
     vec3 gameLight = vec3(300, 150, 250);
     vec3 gameLightColor = vec3(250000, 250000, 250000);
-
-    struct
-    {
-        shared_ptr<Program> pbr;
-        shared_ptr<Program> sky;
-        shared_ptr<Program> circle;
-        shared_ptr<Program> cubeOutline;
-        shared_ptr<Program> depth;
-        shared_ptr<Program> depthDebug;
-        shared_ptr<Program> debug;
-        shared_ptr<Program> particle;
-    } programs;
 
     // Effects
     shared_ptr<ParticleEmitter> sparkEmitter;
@@ -179,53 +169,15 @@ public:
 
     void initShaders()
     {
-        initShader(
-            programs.sky,
-            "sky",
-            {"vertPos"},
-            {"P", "V", "Texture0"});
-
-        initShader(
-            programs.pbr,
-            "pbr",
-            {"vertPos", "vertNor", "vertTex"},
-            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"});
-
-        initShader(
-            programs.circle,
-            "circle",
-            {"vertPos"},
-            {"P", "V", "M", "radius"});
-
-        initShader(
-            programs.cubeOutline,
-            "cube_outline",
-            {"vertPos"},
-            {"P", "V", "M", "edge"});
-
-        initShader(
-            programs.depth,
-            "depth",
-            {"vertPos"},
-            {"LP", "LV", "M"});
-
-        initShader(
-            programs.debug,
-            "pass",
-            {"vertPos"},
-            {"texBuf"});
-
-        initShader(
-            programs.depthDebug,
-            "depth_debug",
-            {"vertPos"},
-            {"LP", "LV", "M"});
-
-        initShader(
-            programs.particle,
-            "particle",
-            {"vertPos", "vertTex"},
-            {"P", "V", "M", "pColor", "alphaTexture"});
+        vector<string> pbrUniforms = { "P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
+        shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
+        shaderManager.get("sky", {"vertPos"}, {"P", "V", "Texture0"});
+        shaderManager.get("circle", {"vertPos"}, {"P", "V", "M", "radius"});
+        shaderManager.get("cube_outline", {"vertPos"}, {"P", "V", "M", "edge"});
+        shaderManager.get("depth", {"vertPos"}, {"LP", "LV", "M"});
+        shaderManager.get("pass", {"vertPos"}, {"texBuf"});
+        shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
+        shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
     }
 
     //=================================================
@@ -249,10 +201,12 @@ public:
         shared_ptr<Texture> ao = textureManager.get("materials/" + materialName + "/ao." + extension, 4);
 
         if (bind) {
-            albedo->bind(programs.pbr->getUniform("albedoMap"));
-            roughness->bind(programs.pbr->getUniform("roughnessMap"));
-            metallic->bind(programs.pbr->getUniform("metallicMap"));
-            ao->bind(programs.pbr->getUniform("aoMap"));
+            shared_ptr<Program> pbr = shaderManager.get("pbr");
+
+            albedo->bind(pbr->getUniform("albedoMap"));
+            roughness->bind(pbr->getUniform("roughnessMap"));
+            metallic->bind(pbr->getUniform("metallicMap"));
+            ao->bind(pbr->getUniform("aoMap"));
         }
     }
 
@@ -447,7 +401,9 @@ public:
         M->pushMatrix();
         M->loadIdentity();
 
-        if (shader == programs.pbr)
+        shared_ptr<Program> pbr = shaderManager.get("pbr");
+
+        if (shader == pbr)
         {
             glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
             glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
@@ -457,20 +413,20 @@ public:
         }
 
         // Draw marble
-        if (shader == programs.pbr) bindMaterialPBR(marbleSkins[currentSkin], marbleSkinExtensions[currentSkin]);
+        if (shader == pbr) bindMaterialPBR(marbleSkins[currentSkin], marbleSkinExtensions[currentSkin]);
         gameObjects.marble->draw(shader, M);
 
         // Draw finish
-        if (shader == programs.pbr) bindMaterialPBR("painted_metal", "png");
+        if (shader == pbr) bindMaterialPBR("painted_metal", "png");
         gameObjects.goalObject->draw(shader, M);
 
         // Draw enemies
-        if (shader == programs.pbr) bindMaterialPBR("rusted_metal", "jpg");
+        if (shader == pbr) bindMaterialPBR("rusted_metal", "jpg");
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == programs.pbr) bindMaterialPBR("marble_tiles", "png");
+        if (shader == pbr) bindMaterialPBR("marble_tiles", "png");
         for (auto box : boxes)
         {
             box->draw(shader, M);
@@ -488,16 +444,15 @@ public:
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
 
-        // set up shadow shader
-        // render scene
-        programs.depth->bind();
+        shared_ptr<Program> depth = shaderManager.get("depth");
+
+        depth->bind();
         // TODO you will need to fix these
-        mat4 LP = SetOrthoMatrix(programs.depth);
-        mat4 LV = SetLightView(programs.depth, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+        mat4 LP = SetOrthoMatrix(depth);
+        mat4 LV = SetLightView(depth, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
-        // SetLightView(programs.depth, gameLight, g_lookAt, vec3(0, 1, 0));
-        drawScene(programs.depth);
-        programs.depth->unbind();
+        drawScene(depth);
+        depth->unbind();
         glCullFace(GL_BACK);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -511,43 +466,49 @@ public:
         // light perspective
         if (GEOM_DEBUG)
         {
-            programs.depthDebug->bind();
+            shared_ptr<Program> depthDebug = shaderManager.get("depth_debug");
+
+            depthDebug->bind();
             // render scene from light's point of view
-            SetOrthoMatrix(programs.depthDebug);
-            SetLightView(programs.depthDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
-            drawScene(programs.depthDebug);
-            programs.depthDebug->unbind();
+            SetOrthoMatrix(depthDebug);
+            SetLightView(depthDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+            drawScene(depthDebug);
+            depthDebug->unbind();
         }
         else
         {
+            shared_ptr<Program> debug = shaderManager.get("debug");
+
             // actually draw the light depth map
-            programs.debug->bind();
+            debug->bind();
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            glUniform1i(programs.debug->getUniform("texBuf"), 0);
+            glUniform1i(debug->getUniform("texBuf"), 0);
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glDisableVertexAttribArray(0);
-            programs.debug->unbind();
+            debug->unbind();
         }
     }
 
     void drawSkyBox()
     {
-        programs.sky->bind();
-        setProjectionMatrix(programs.sky);
-        setView(programs.sky);
+        shared_ptr<Program> sky = shaderManager.get("sky");
 
-        skybox->bind(programs.sky->getUniform("Texture0"));
+        sky->bind();
+        setProjectionMatrix(sky);
+        setView(sky);
+
+        skybox->bind(sky->getUniform("Texture0"));
         glDepthMask(GL_FALSE);
         glDisable(GL_CULL_FACE);
-        modelManager.get("cube.obj")->draw(programs.sky);
+        modelManager.get("cube.obj")->draw(sky);
         glEnable(GL_CULL_FACE);
         glDepthMask(GL_TRUE);
 
-        programs.sky->unbind();
+        sky->unbind();
     }
 
     void sendShadowMap()
@@ -555,52 +516,59 @@ public:
         // Also set up light depth map
         glActiveTexture(GL_TEXTURE30);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glUniform1i(programs.pbr->getUniform("shadowDepth"), 0);
+        glUniform1i(shaderManager.get("pbr")->getUniform("shadowDepth"), 0);
     }
 
     void renderPlayerView(mat4 *LS)
     {
         drawSkyBox();
 
-        programs.pbr->bind();
+        shared_ptr<Program> pbr = shaderManager.get("pbr");
 
-        setLight(programs.pbr);
-        setProjectionMatrix(programs.pbr);
-        setView(programs.pbr);
+        pbr->bind();
+
+        setLight(pbr);
+        setProjectionMatrix(pbr);
+        setView(pbr);
 
         sendShadowMap();
 
-        glUniformMatrix4fv(programs.pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
-        drawScene(programs.pbr);
+        glUniformMatrix4fv(pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
+        drawScene(pbr);
 
-        programs.pbr->unbind();
+        pbr->unbind();
 
         if (octree->debug)
         {
             drawOctree();
         }
 
-        programs.particle->bind();
-        setProjectionMatrix(programs.particle);
-        setView(programs.particle);
-        sparkEmitter->draw(programs.particle);
-        fireworkEmitter->draw(programs.particle);
-        programs.particle->unbind();
+        shared_ptr<Program> particle = shaderManager.get("particle");
+        particle->bind();
+        setProjectionMatrix(particle);
+        setView(particle);
+        sparkEmitter->draw(particle);
+        fireworkEmitter->draw(particle);
+        particle->unbind();
     }
 
     void drawOctree()
     {
-        programs.circle->bind();
-        setProjectionMatrix(programs.circle);
-        setView(programs.circle);
-        octree->drawDebugBoundingSpheres(programs.circle);
-        programs.circle->unbind();
+        shared_ptr<Program> circle = shaderManager.get("circle");
 
-        programs.cubeOutline->bind();
-        setProjectionMatrix(programs.cubeOutline);
-        setView(programs.cubeOutline);
-        octree->drawDebugOctants(programs.cubeOutline);
-        programs.cubeOutline->unbind();
+        circle->bind();
+        setProjectionMatrix(circle);
+        setView(circle);
+        octree->drawDebugBoundingSpheres(circle);
+        circle->unbind();
+
+        shared_ptr<Program> cubeOutline = shaderManager.get("cube_outline");
+
+        cubeOutline->bind();
+        setProjectionMatrix(cubeOutline);
+        setView(cubeOutline);
+        octree->drawDebugOctants(cubeOutline);
+        cubeOutline->unbind();
     }
 
     //=================================================

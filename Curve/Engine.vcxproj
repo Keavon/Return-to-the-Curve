@@ -161,6 +161,7 @@
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
     <ClCompile Include="..\Source\engine\PrefabManager.cpp" />
     <ClCompile Include="..\Source\engine\SceneManager.cpp" />
+    <ClCompile Include="..\Source\engine\ShaderManager.cpp" />
     <ClCompile Include="..\Source\engine\TextureManager.cpp" />
     <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
     <ClInclude Include="..\Source\engine\PrefabManager.h" />
     <ClInclude Include="..\Source\engine\SceneManager.h" />
+    <ClInclude Include="..\Source\engine\ShaderManager.h" />
     <ClInclude Include="..\Source\engine\TextureManager.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
