@@ -44,7 +44,7 @@
 #define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY 3 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define RESOURCE_DIRECTORY string("../Resources")
-#define START_WITH_MUSIC_PLAYING true
+#define START_WITH_MUSIC_PLAYING false
 
 using namespace std;
 using namespace glm;
@@ -991,8 +991,8 @@ int main(int argc, char **argv)
     // and GL context, etc.
 
     WindowManager *windowManager = new WindowManager();
-    // windowManager->init(1280, 720);
-    windowManager->init(1920, 1080);
+    windowManager->init(1280, 720);
+    // windowManager->init(1920, 1080);
     // windowManager->init(2560, 1440);
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
