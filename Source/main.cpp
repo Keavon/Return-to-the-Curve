@@ -71,7 +71,8 @@ public:
     bool MOVING = false;
     bool MOUSE_DOWN = false;
     int SCORE = 0;
-    vector<string> marbleSkins = { "brown_rock.png", "seaside_rocks.png", "coal_matte_tiles.png", "marble_tiles.png" };
+    vector<string> marbleSkins = { "brown_rock", "seaside_rocks", "coal_matte_tiles", "marble_tiles" };
+    vector<string> marbleSkinExtensions = { "png", "png", "png", "png" };
     int currentSkin = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
     vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
@@ -232,24 +233,20 @@ public:
     //=================================================
     void initTextures()
     {
-        bindMaterialPBR("pbr/marble_tiles.png", false);
-        bindMaterialPBR("pbr/coal_matte_tiles.png", false);
-        bindMaterialPBR("pbr/brown_rock.png", false);
+        bindMaterialPBR("marble_tiles", "png", false);
+        bindMaterialPBR("coal_matte_tiles", "png", false);
+        bindMaterialPBR("brown_rock", "png", false);
 
         initSkyBox();
         initParticleTexture();
         initShadow();
     }
 
-    void bindMaterialPBR(string fileName, bool bind = true) {
-        int extensionDotIndex = fileName.find_last_of(".");
-        string beforeExtension = fileName.substr(0, extensionDotIndex);
-        string dotAndExtension = fileName.substr(extensionDotIndex);
-
-        shared_ptr<Texture> albedo = textureManager.get(beforeExtension + "_albedo" + dotAndExtension, 1);
-        shared_ptr<Texture> roughness = textureManager.get(beforeExtension + "_roughness" + dotAndExtension, 2);
-        shared_ptr<Texture> metallic = textureManager.get(beforeExtension + "_metallic" + dotAndExtension, 3);
-        shared_ptr<Texture> ao = textureManager.get(beforeExtension + "_ao" + dotAndExtension, 4);
+    void bindMaterialPBR(string materialName, string extension, bool bind = true) {
+        shared_ptr<Texture> albedo = textureManager.get("materials/" + materialName + "/albedo." + extension, 1);
+        shared_ptr<Texture> roughness = textureManager.get("materials/" + materialName + "/roughness." + extension, 2);
+        shared_ptr<Texture> metallic = textureManager.get("materials/" + materialName + "/metallic." + extension, 3);
+        shared_ptr<Texture> ao = textureManager.get("materials/" + materialName + "/ao." + extension, 4);
 
         if (bind) {
             albedo->bind(programs.pbr->getUniform("albedoMap"));
@@ -261,8 +258,8 @@ public:
 
     void initParticleTexture()
     {
-        textureManager.get("particle/star_07.png", 1);
-        textureManager.get("particle/scorch_02.png", 1);
+        textureManager.get("particles/star_07.png", 1);
+        textureManager.get("particles/scorch_02.png", 1);
     }
 
     void initSkyBox()
@@ -394,9 +391,9 @@ public:
 
     void initEffects() {
         sparkEmitter = make_shared<ParticleEmitter>(100);
-        sparkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particle/star_07.png"));
+        sparkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"));
         fireworkEmitter = make_shared<ParticleEmitter>(100);
-        fireworkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particle/scorch_02.png"));
+        fireworkEmitter->init(modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"));
     }
 
     void initFBOQuad()
@@ -460,20 +457,20 @@ public:
         }
 
         // Draw marble
-        if (shader == programs.pbr) bindMaterialPBR("pbr/" + marbleSkins[currentSkin]);
+        if (shader == programs.pbr) bindMaterialPBR(marbleSkins[currentSkin], marbleSkinExtensions[currentSkin]);
         gameObjects.marble->draw(shader, M);
 
         // Draw finish
-        if (shader == programs.pbr) bindMaterialPBR("pbr/painted_metal.png");
+        if (shader == programs.pbr) bindMaterialPBR("painted_metal", "png");
         gameObjects.goalObject->draw(shader, M);
 
         // Draw enemies
-        if (shader == programs.pbr) bindMaterialPBR("pbr/rusted_metal.jpg");
+        if (shader == programs.pbr) bindMaterialPBR("rusted_metal", "jpg");
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == programs.pbr) bindMaterialPBR("pbr/marble_tiles.png");
+        if (shader == programs.pbr) bindMaterialPBR("marble_tiles", "png");
         for (auto box : boxes)
         {
             box->draw(shader, M);
