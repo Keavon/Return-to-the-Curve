@@ -43,8 +43,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
-#define PLAY_MUSIC false
+#define SHADOW_QUALITY 2 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
@@ -70,7 +69,7 @@ public:
 
     // Shadow Globals
     int SHADOWS = 1;
-    int SHADOW_AA = 4;
+    int SHADOW_AA = 3;
     int DEBUG_LIGHT = 0;
     int GEOM_DEBUG = 1;
     GLuint SHADOW_SIZE = 0;
@@ -163,12 +162,10 @@ public:
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
-        #if PLAY_MUSIC
-        soundEngine->music();
-        #endif
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+    }
 
     //=================================================
     // SHADERS
@@ -852,10 +849,14 @@ public:
         {
             CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
         }
-        // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
-        // {
-            
-        // }
+        else if (key == GLFW_KEY_P && action == GLFW_PRESS)
+        {
+            soundEngine->playPauseMusic();
+        }
+        else if (key == GLFW_KEY_L && action == GLFW_PRESS)
+        {
+            soundEngine->nextTrackMusic();
+        }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
             SHADOW_AA = (SHADOW_AA + 1) % 9;
@@ -888,8 +889,10 @@ public:
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
             gameObjects.ball->frozen = editMode;
 
-            if (editMode) camera->saveMarbleView();
-            else camera->restoreMarbleView();
+            if (editMode)
+                camera->saveMarbleView();
+            else
+                camera->restoreMarbleView();
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {

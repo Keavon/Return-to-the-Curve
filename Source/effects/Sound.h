@@ -2,15 +2,21 @@
 
 #include <cstdlib>
 #include <string>
+#include <iostream>
+#include <iomanip>
 #include <memory>
+#include<vector>
 #include <irrKlang.h>
 
 #define NUMBER_OF_MUSIC_TRACKS 5
+
+using namespace std;
 
 class Sound
 {
 public:
     // Sound
+    int currentTrack;
     irrklang::ISoundEngine *sfxEngine;
 
     struct
@@ -27,8 +33,8 @@ public:
         irrklang::ISound *winSound;
     } sfxSounds;
 
-    // vector<irrklang::ISoundSource *> musicSources;
-    // vector<irrklang::ISound *> musicSounds;
+    vector<irrklang::ISoundSource *> musicSources;
+    vector<irrklang::ISound *> musicSounds;
 
     irrklang::ISoundSource *musicSource;
     irrklang::ISound *musicSound;
@@ -39,7 +45,8 @@ public:
     void impact();
     void reset();
     void win();
-    void music();
+    void playPauseMusic();
+    void nextTrackMusic();
 };
 
 extern std::shared_ptr<Sound> soundEngine;
