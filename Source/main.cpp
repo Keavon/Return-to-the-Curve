@@ -39,6 +39,7 @@
 #include "engine/SceneManager.h"
 #include "engine/ModelManager.h"
 #include "engine/TextureManager.h"
+#include "engine/SkyboxManager.h"
 #include "engine/ShaderManager.h"
 #include "effects/ParticleSpark.h"
 
@@ -65,6 +66,7 @@ public:
     ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
     ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
+    SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
     shared_ptr<Octree> octree;
 
     // Game Info Globals
@@ -113,8 +115,6 @@ public:
     // BillBoard for rendering a texture to screen (like the shadow map)
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
-
-    shared_ptr<Skybox> skybox;
 
     void init()
     {
@@ -188,8 +188,7 @@ public:
         bindMaterialPBR("marble_tiles", "png", false);
         bindMaterialPBR("coal_matte_tiles", "png", false);
         bindMaterialPBR("brown_rock", "png", false);
-
-        initSkyBox();
+        skyboxManager.get("desert_hill", 1);
         initParticleTexture();
         initShadow();
     }
@@ -214,22 +213,6 @@ public:
     {
         textureManager.get("particles/star_07.png", 1);
         textureManager.get("particles/scorch_02.png", 1);
-    }
-
-    void initSkyBox()
-    {
-        // Load skybox
-        string skyboxFilenames[] = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
-        for (int i = 0; i < 6; i++)
-        {
-            skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
-        }
-
-        skybox = make_shared<Skybox>();
-        skybox->setFilenames(skyboxFilenames);
-        skybox->init();
-        skybox->setUnit(1);
-        skybox->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     }
 
     void initShadow()
@@ -493,7 +476,7 @@ public:
         }
     }
 
-    void drawSkyBox()
+    void drawSkybox()
     {
         shared_ptr<Program> sky = shaderManager.get("sky");
 
@@ -501,7 +484,7 @@ public:
         setProjectionMatrix(sky);
         setView(sky);
 
-        skybox->bind(sky->getUniform("Texture0"));
+        skyboxManager.get("desert_hill", 1)->bind(sky->getUniform("Texture0"));
         glDepthMask(GL_FALSE);
         glDisable(GL_CULL_FACE);
         modelManager.get("cube.obj")->draw(sky);
@@ -521,7 +504,7 @@ public:
 
     void renderPlayerView(mat4 *LS)
     {
-        drawSkyBox();
+        drawSkybox();
 
         shared_ptr<Program> pbr = shaderManager.get("pbr");
 

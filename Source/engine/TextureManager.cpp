@@ -21,8 +21,7 @@ shared_ptr<Texture> loadTexture(string relativePath, string file, int textureUni
 shared_ptr<Texture> TextureManager::get(string textureFile, int textureUnit, GLenum wrapX, GLenum wrapY)
 {
     if (!(CONTAINS(loadedTextures, textureFile))) {
-        shared_ptr<Texture> texture = loadTexture(relativePath, textureFile, textureUnit, wrapX, wrapY);
-        loadedTextures[textureFile] = texture;
+        loadedTextures[textureFile] = loadTexture(relativePath, textureFile, textureUnit, wrapX, wrapY);
     }
 
     return loadedTextures[textureFile];

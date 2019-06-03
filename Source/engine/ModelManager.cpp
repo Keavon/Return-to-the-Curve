@@ -22,8 +22,7 @@ shared_ptr<Shape> loadShape(string relativePath, string file, bool resize, bool 
 shared_ptr<Shape> ModelManager::get(string modelFile, bool resize, bool findEdges)
 {
     if (!(CONTAINS(loadedModels, modelFile))) {
-        shared_ptr<Shape> shape = loadShape(relativePath, modelFile, resize, findEdges);
-        loadedModels[modelFile] = shape;
+        loadedModels[modelFile] = loadShape(relativePath, modelFile, resize, findEdges);
     }
 
     return loadedModels[modelFile];

@@ -7,10 +7,9 @@ using namespace glm;
 
 Prefab PrefabManager::get(string prefabFile)
 {
-    if (CONTAINS(loadedPrefabs, prefabFile)) {
-        return loadedPrefabs[prefabFile];
-    }
-    else {
+    if (!(CONTAINS(loadedPrefabs, prefabFile))) {
         YAML::Node file = YAML::LoadFile(prefabFile);
     }
+    
+    return loadedPrefabs[prefabFile];
 }

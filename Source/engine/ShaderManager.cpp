@@ -40,8 +40,7 @@ shared_ptr<Program> ShaderManager::get(string programFile) {
 
 shared_ptr<Program> ShaderManager::get(string programFile, vector<string> attributes, vector<string> uniforms) {
     if (!(CONTAINS(loadedPrograms, programFile))) {
-        shared_ptr<Program> program = initShader(relativePath, programFile, attributes, uniforms);
-        loadedPrograms[programFile] = program;
+        loadedPrograms[programFile] = initShader(relativePath, programFile, attributes, uniforms);
     }
 
     return loadedPrograms[programFile];
