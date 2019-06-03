@@ -122,3 +122,23 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
         soundEngine->impact();
     }
 }
+
+void Ball::addSkin(std::shared_ptr<Material> newSkin)
+{
+    marbleSkins.push_back(newSkin);
+}
+
+void Ball::setSkin(int skinIndex)
+{
+    currentSkin = skinIndex;
+}
+
+void Ball::nextSkin()
+{
+    currentSkin++;
+    currentSkin %= marbleSkins.size();
+}
+
+shared_ptr<Material> Ball::getSkinMaterial() {
+    return marbleSkins[currentSkin];
+}

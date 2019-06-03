@@ -2,6 +2,7 @@
 
 #include "../engine/PhysicsObject.h"
 #include "../engine/ParticleEmitter.h"
+#include "../engine/Material.h"
 #include "../Shape.h"
 #include "../WindowManager.h"
 #include <memory>
@@ -15,6 +16,10 @@ public:
     void init(WindowManager *windowManager, std::shared_ptr<ParticleEmitter> sparkEmitter);
     void update(float dt, glm::vec3 dolly, glm::vec3 strafe);
     virtual void onHardCollision(float impactVel, Collision &collision);
+    void addSkin(std::shared_ptr<Material> newSkin);
+    void setSkin(int skinIndex);
+    void nextSkin();
+    std::shared_ptr<Material> getSkinMaterial();
 
 	WindowManager *windowManager;
     std::shared_ptr<ParticleEmitter> sparkEmitter;
@@ -24,4 +29,6 @@ public:
     bool frozen;
     glm::vec3 startPosition;
     glm::vec3 playPosition;
+    int currentSkin = 0;
+    std::vector<std::shared_ptr<Material>> marbleSkins;
 };

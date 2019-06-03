@@ -43,6 +43,7 @@
 #include "engine/TextureManager.h"
 #include "engine/SkyboxManager.h"
 #include "engine/ShaderManager.h"
+#include "engine/MaterialManager.h"
 #include "engine/EmitterManager.h"
 
 // value_ptr for glm
@@ -66,20 +67,18 @@ public:
     SceneManager sceneManager = SceneManager();
     ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
-    ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
     SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
+    ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
+    MaterialManager materialManager = MaterialManager();
     EmitterManager emitterManager = EmitterManager();
     shared_ptr<Octree> octree;
 
     // Game Info Globals
     bool editMode = false;
-    float START_TIME = 0.0f;
+    float startTime = 0.0f;
     bool MOVING = false;
     bool MOUSE_DOWN = false;
     int SCORE = 0;
-    vector<string> marbleSkins = { "brown_rock", "seaside_rocks", "coal_matte_tiles", "marble_tiles" };
-    vector<string> marbleSkinExtensions = { "png", "png", "png", "png" };
-    int currentSkin = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
     vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
 
@@ -114,7 +113,10 @@ public:
     GLuint quad_VertexArrayID;
     GLuint quad_vertexbuffer;
 
-    void init()
+    /*
+     * Loading
+    */
+    void loadCanvas()
     {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -127,22 +129,26 @@ public:
         // Initialize camera
         camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
         camera->init();
+    }
 
+    void loadSounds()
+    {
         soundEngine = make_shared<Sound>();
+
         #if PLAY_MUSIC
-        soundEngine->music();
+            soundEngine->music();
         #endif
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+    }
 
-    //=================================================
-    // SHADERS
-    //=================================================
-    void initShaders()
+    void loadShaders()
     {
         vector<string> pbrUniforms = { "P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
-        shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
+        shared_ptr<Program> pbr = shaderManager.get("pbr", { "vertPos", "vertNor", "vertTex" }, pbrUniforms);
+        materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
+
         shaderManager.get("sky", {"vertPos"}, {"P", "V", "Texture0"});
         shaderManager.get("circle", {"vertPos"}, {"P", "V", "M", "radius"});
         shaderManager.get("cube_outline", {"vertPos"}, {"P", "V", "M", "edge"});
@@ -152,42 +158,28 @@ public:
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
     }
 
-    //=================================================
-    // TEXTURES
-    //=================================================
-    void initTextures()
+    void loadMaterials()
     {
-        bindMaterialPBR("marble_tiles", "png", false);
-        bindMaterialPBR("coal_matte_tiles", "png", false);
-        bindMaterialPBR("brown_rock", "png", false);
+        materialManager.get("marble_tiles", "png");
+        materialManager.get("coal_matte_tiles", "png");
+        materialManager.get("brown_rock", "png");
+        materialManager.get("seaside_rocks", "png");
+        materialManager.get("coal_matte_tiles", "png");
+        materialManager.get("marble_tiles", "png");
+    }
+
+    void loadSkybox()
+    {
         skyboxManager.get("desert_hill", 1);
-        initParticleTexture();
-        initShadow();
     }
 
-    void bindMaterialPBR(string materialName, string extension, bool bind = true) {
-        shared_ptr<Texture> albedo = textureManager.get("materials/" + materialName + "/albedo." + extension, 1);
-        shared_ptr<Texture> roughness = textureManager.get("materials/" + materialName + "/roughness." + extension, 2);
-        shared_ptr<Texture> metallic = textureManager.get("materials/" + materialName + "/metallic." + extension, 3);
-        shared_ptr<Texture> ao = textureManager.get("materials/" + materialName + "/ao." + extension, 4);
-
-        if (bind) {
-            shared_ptr<Program> pbr = shaderManager.get("pbr");
-
-            albedo->bind(pbr->getUniform("albedoMap"));
-            roughness->bind(pbr->getUniform("roughnessMap"));
-            metallic->bind(pbr->getUniform("metallicMap"));
-            ao->bind(pbr->getUniform("aoMap"));
-        }
-    }
-
-    void initParticleTexture()
+    void loadParticleTextures()
     {
         textureManager.get("particles/star_07.png", 1);
         textureManager.get("particles/scorch_02.png", 1);
     }
 
-    void initShadow()
+    void loadShadows()
     {
         // Calculate shadow quality
         if (SHADOW_QUALITY == 0) SHADOW_AA = 1;
@@ -215,26 +207,33 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    //=================================================
-    // Sounds
-    //=================================================
-
-    //=================================================
-    // GEOMETRY
-    //=================================================
-    void initGeom()
-    {
-        initOctree();
-        initEffects();
-        initFBOQuad();
-        loadModels();
-        loadLevel();
-        initGameObjects();
-    }
-
-    void initOctree() {
+    void loadOctree() {
         octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
         octree->init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
+    }
+
+    void loadEffects() {
+        emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
+        emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
+    }
+
+    void loadFBOQuad() {
+        glGenVertexArrays(1, &quad_VertexArrayID);
+        glBindVertexArray(quad_VertexArrayID);
+
+        static const GLfloat g_quad_vertex_buffer_data[] = {
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+
+            -1.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+        };
+
+        glGenBuffers(1, &quad_vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
     }
 
     void loadModels()
@@ -261,12 +260,16 @@ public:
         octree->insert(boxes);
     }
 
-    void initGameObjects()
+    void loadGameObjects()
     {
         // Marble
         gameObjects.marble = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
         gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
         octree->insert(gameObjects.marble);
+        gameObjects.marble->addSkin(materialManager.get("brown_rock", "png"));
+        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "png"));
+        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
+        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "png"));
 
         // Enemy 1
         vector<glm::vec3> enemyPath = {
@@ -294,53 +297,25 @@ public:
 
         // Goal functionality
         gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
-        gameObjects.goal->init(emitterManager.get("fireworks"), &START_TIME);
+        gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         octree->insert(gameObjects.goal);
     }
 
-    void initEffects() {
-        emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
-        emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
-    }
-
-    void initFBOQuad()
-    {
-        /* set up a quad for rendering a framebuffer */
-
-        // now set up a simple quad for rendering FBO
-        glGenVertexArrays(1, &quad_VertexArrayID);
-        glBindVertexArray(quad_VertexArrayID);
-
-        static const GLfloat g_quad_vertex_buffer_data[] = {
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f,
-
-            -1.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f,
-        };
-
-        glGenBuffers(1, &quad_vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
-    }
-
-    //=================================================
-    // RENDERERING
-
+    /*
+     * Rendering
+     */
     void render()
     {
         // Get current frame buffer size.
-        int width, height;
+        int width;
+        int height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
         mat4 LS;
 
-        if (SHADOW_QUALITY) createShadowMap(&LS);
+        if (SHADOW_QUALITY) drawShadowMap(&LS);
 
-        glViewport(0, 0, width, height); // frame width and height
-        // Clear framebuffer.
+        glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (DEBUG_LIGHT) drawDepthMap();
@@ -366,20 +341,20 @@ public:
         }
 
         // Draw marble
-        if (shader == pbr) bindMaterialPBR(marbleSkins[currentSkin], marbleSkinExtensions[currentSkin]);
+        if (shader == pbr) gameObjects.marble->getSkinMaterial()->bind();
         gameObjects.marble->draw(shader, M);
 
         // Draw finish
-        if (shader == pbr) bindMaterialPBR("painted_metal", "png");
+        if (shader == pbr) materialManager.get("painted_metal", "png")->bind();
         gameObjects.goalObject->draw(shader, M);
 
         // Draw enemies
-        if (shader == pbr) bindMaterialPBR("rusted_metal", "jpg");
+        if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == pbr) bindMaterialPBR("marble_tiles", "png");
+        if (shader == pbr) materialManager.get("marble_tiles", "png")->bind();
         for (auto box : boxes)
         {
             box->draw(shader, M);
@@ -389,7 +364,7 @@ public:
         M->popMatrix();
     }
 
-    void createShadowMap(mat4 *LS)
+    void drawShadowMap(mat4 *LS)
     {
         // set up light's depth map
         glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
@@ -464,50 +439,7 @@ public:
         sky->unbind();
     }
 
-    void sendShadowMap()
-    {
-        // Also set up light depth map
-        glActiveTexture(GL_TEXTURE30);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        glUniform1i(shaderManager.get("pbr")->getUniform("shadowDepth"), 0);
-    }
-
-    void renderPlayerView(mat4 *LS)
-    {
-        drawSkybox();
-
-        shared_ptr<Program> pbr = shaderManager.get("pbr");
-
-        pbr->bind();
-
-        setLight(pbr);
-        setProjectionMatrix(pbr);
-        setView(pbr);
-
-        sendShadowMap();
-
-        glUniformMatrix4fv(pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
-        drawScene(pbr);
-
-        pbr->unbind();
-
-        if (octree->debug)
-        {
-            drawOctree();
-        }
-
-        shared_ptr<Program> particle = shaderManager.get("particle");
-        particle->bind();
-        setProjectionMatrix(particle);
-        setView(particle);
-        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list()) {
-            emitter->draw(particle);
-        }
-        particle->unbind();
-    }
-
-    void drawOctree()
-    {
+    void drawOctree() {
         shared_ptr<Program> circle = shaderManager.get("circle");
 
         circle->bind();
@@ -525,16 +457,50 @@ public:
         cubeOutline->unbind();
     }
 
-    //=================================================
-    // GENERAL HELPERS
+    void renderPlayerView(mat4 *LS)
+    {
+        drawSkybox();
 
+        shared_ptr<Program> pbr = shaderManager.get("pbr");
+        pbr->bind();
+
+        setLight(pbr);
+        setProjectionMatrix(pbr);
+        setView(pbr);
+
+        // Send shadow map
+        glActiveTexture(GL_TEXTURE30);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glUniform1i(shaderManager.get("pbr")->getUniform("shadowDepth"), 0);
+
+        glUniformMatrix4fv(pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
+
+        drawScene(pbr);
+
+        pbr->unbind();
+
+        if (octree->debug) drawOctree();
+
+        shared_ptr<Program> particle = shaderManager.get("particle");
+        particle->bind();
+        setProjectionMatrix(particle);
+        setView(particle);
+        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list()) {
+            emitter->draw(particle);
+        }
+        particle->unbind();
+    }
+
+    /*
+     * General
+     */
     void resetPlayer()
     {
         soundEngine->reset();
 
         gameObjects.marble->position = START_POSITION;
         gameObjects.marble->velocity = vec3(0);
-        START_TIME = glfwGetTime();
+        startTime = glfwGetTime();
         gameObjects.goal->reset();
     }
 
@@ -627,18 +593,15 @@ public:
         return Cam;
     }
 
+    /*
+     * User input
+     */
     void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
-        //skin switching key call back
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
-            currentSkin++;
-            currentSkin %= marbleSkins.size();
+            gameObjects.marble->nextSkin();
         }
-        // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
-        // {
-            
-        // }
         else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         {
             SHADOW_AA = (SHADOW_AA + 1) % 9;
@@ -761,19 +724,26 @@ int main(int argc, char **argv)
     windowManager->setEventCallbacks(application);
     application->windowManager = windowManager;
 
-    // This is the code that will likely change program to program as you
-    // may need to initialize or set up different data and state
+    // Load game assets
+    application->loadCanvas();
+    application->loadSounds();
+    application->loadShaders();
+    application->loadMaterials();
+    application->loadSkybox();
+    application->loadParticleTextures();
+    application->loadShadows();
+    application->loadOctree();
+    application->loadEffects();
+    application->loadFBOQuad();
+    application->loadModels();
+    application->loadLevel();
+    application->loadGameObjects();
 
-    application->init();
-    application->initShaders();
-    application->initTextures();
-    application->initGeom();
-
-    application->START_TIME = glfwGetTime();
+    application->startTime = glfwGetTime();
 
     double t = 0;
     const double dt = 0.02;
-    double currentTime = application->START_TIME;
+    double currentTime = application->startTime;
     double accumulator = 0;
 
     // Loop until the user closes the window.
