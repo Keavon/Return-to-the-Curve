@@ -40,6 +40,8 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     jumpForce = 150;
     hasPowerUp = false;
     powerUpReady = false;
+
+    frozen = false;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -50,6 +52,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
+    if (frozen) return;
+
     for (auto collision : collider->pendingCollisions)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)

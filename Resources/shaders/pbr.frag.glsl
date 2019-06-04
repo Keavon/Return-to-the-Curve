@@ -122,7 +122,7 @@ void main() {
 	vec3 albedo = texture(albedoMap, TexCoords).rgb;
 	albedo = vec3(pow(albedo.r, 2.2), pow(albedo.g, 2.2), pow(albedo.b, 2.2));
 	float metallic = texture(metallicMap, TexCoords).r;
-	float roughness = texture(roughnessMap, TexCoords).r * 0.99 + 0.01;
+	float roughness = texture(roughnessMap, TexCoords).r * 0.98 + 0.01;
 	float ao = texture(aoMap, TexCoords).r;
 
 	vec3 N = normalize(Normal);

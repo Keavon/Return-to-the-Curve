@@ -28,4 +28,5 @@ public:
     std::vector<PowerUp *> storedPowerUp;
     bool hasPowerUp;
     bool powerUpReady;
+    bool frozen;
 };

@@ -37,6 +37,7 @@ public:
     std::vector<glm::vec3> sentryIdlePath;
     std::vector<glm::vec3> sentryFollowPath;
     std::vector<glm::vec3> sentryPathHome;
+    std::vector<glm::vec3> defaultPath;
 	std::shared_ptr<Shape> legModel;
 	std::shared_ptr<Shape> footModel;
 	//GameObject uleg1, uleg2, uleg3, uleg4, lleg1, lleg2, lleg3, lleg4, foot1, foot2, foot3, foot4;

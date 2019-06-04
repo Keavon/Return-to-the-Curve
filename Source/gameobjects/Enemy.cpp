@@ -23,10 +23,10 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
 		sentry = true;
 		ballInRange = false;
 		sentryIdlePath = {
-			enemyPath[0],
-			vec3(enemyPath[0].x + 2.0, enemyPath[0].y, enemyPath[0].z),
-			vec3(enemyPath[0].x + 4.0, enemyPath[0].y, enemyPath[0].z),
-			vec3(enemyPath[0].x + 6.0, enemyPath[0].y, enemyPath[0].z)
+			vec3(enemyPath[0].x, enemyPath[0].y + 3, enemyPath[0].z),
+			vec3(enemyPath[0].x + 2.0, enemyPath[0].y + 3, enemyPath[0].z),
+			vec3(enemyPath[0].x + 4.0, enemyPath[0].y + 3, enemyPath[0].z),
+			vec3(enemyPath[0].x + 6.0, enemyPath[0].y + 3, enemyPath[0].z)
 		};
 		curvePath = new Pathing(sentryIdlePath);
 		sentryHome = sentryIdlePath[0];
@@ -36,7 +36,10 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
 		sentry = false;
 		ballInRange = false;
 		state = 3;
-		curvePath = new Pathing(enemyPath);
+		for (glm::vec3 pathVect : enemyPath){
+			defaultPath.push_back(vec3(pathVect.x, pathVect.y + 3, pathVect.z));
+		}
+		curvePath = new Pathing(defaultPath);
 	}
     speed = 0;
     material = 0;
@@ -170,7 +173,7 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		M2 = M;
 		scale = vec3(2, 2, 2);;
 		M->pushMatrix();
-		M->translate(position);
+		M->translate(position - vec3(0, 2.5, 0));
 		M->translate(vec3(0, (3.5 + sin(t * 4) / 3.0f), 0));
 		M->rotate(orientation);
 		M->scale(scale);

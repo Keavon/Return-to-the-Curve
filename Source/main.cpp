@@ -45,7 +45,7 @@
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
 #define SHADOW_QUALITY -1 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
-
+#define PLAY_MUSIC false
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
@@ -60,10 +60,10 @@ public:
     WindowManager *windowManager = nullptr;
 
     // Game Info Globals
+    bool editMode = false;
     float START_TIME = 0.0f;
     bool MOVING = false;
     bool MOUSE_DOWN = false;
-    bool SHOW_CURSOR = false;
     int SCORE = 0;
     int CURRENT_SKIN = 0;
     vec3 START_POSITION = vec3(120, 3, 7);
@@ -167,7 +167,9 @@ public:
 
         sparkEmitter = make_shared<ParticleEmitter>(100);
         soundEngine = make_shared<Sound>();
+        #if PLAY_MUSIC
         soundEngine->music();
+        #endif
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
@@ -462,18 +464,18 @@ public:
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy1->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
             vec3{115.0, 20.0, 55.0},
             vec3{105.0, 5.0, 55.0},
             vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy2->init(windowManager);
 
         enemyPath = { vec3{65.0, 7.0, 32.0} };
-        gameObjects.enemy3 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1);
+        gameObjects.enemy3 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
         gameObjects.enemy3->init(windowManager);
 
         gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), shapes.spring, 1, 1);
@@ -598,14 +600,14 @@ public:
         }
 
         // Draw plane
-        if (shader == programs.pbr)
-        {
-            setTextureMaterial(0);
-        }
-        M->pushMatrix();
-        glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        shapes.plane->draw(shader);
-        M->popMatrix();
+        // if (shader == programs.pbr)
+        // {
+        //     setTextureMaterial(0);
+        // }
+        // M->pushMatrix();
+        // glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+        // shapes.plane->draw(shader);
+        // M->popMatrix();
 
         // Draw ball
         if (shader == programs.pbr)
@@ -800,7 +802,7 @@ public:
         }*/
 
         gameObjects.goalObject->update(dt);
-        gameObjects.ball->update(dt, camera->getDolly(), camera->getStrafe());
+        gameObjects.ball->update(dt, camera->dolly, camera->strafe);
         camera->update(dt, gameObjects.ball);
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt, gameObjects.ball->position);
@@ -904,13 +906,12 @@ public:
         }
         else if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
         {
-            camera->flying = !camera->flying;
+            editMode = !editMode;
+            camera->cameraMode = editMode ? Camera::edit : Camera::marble;
+            gameObjects.ball->frozen = editMode;
 
-            SHOW_CURSOR = !SHOW_CURSOR;
-            if (SHOW_CURSOR)
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            else
-                glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            if (editMode) camera->saveMarbleView();
+            else camera->restoreMarbleView();
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
@@ -924,14 +925,14 @@ public:
         {
             resetPlayer();
         }
-        else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        {
-            camera->previewLvl = !camera->previewLvl;
-            if (camera->previewLvl)
-            {
-                camera->startLvlPreview(CENTER_LVL_POSITION);
-            }
-        }
+        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        //{
+        //    camera->previewLvl = !camera->previewLvl;
+        //    if (camera->previewLvl)
+        //    {
+        //        camera->startLvlPreview(CENTER_LVL_POSITION);
+        //    }
+        //}
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
@@ -965,11 +966,11 @@ public:
 
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         {
-            camera->angleLocked = false;
+            camera->freeViewing = true;
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
         {
-            camera->angleLocked = true;
+            camera->freeViewing = false;
         }
     }
 
