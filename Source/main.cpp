@@ -109,9 +109,9 @@ public:
     } gameObjects;
     vector<shared_ptr<PhysicsObject>> boxes;
 
-    // BillBoard for rendering a texture to screen (like the shadow map)
-    GLuint quad_VertexArrayID;
-    GLuint quad_vertexbuffer;
+    // Billboard for rendering a texture to screen (like the shadow map)
+    GLuint fboQuadVertexArrayID;
+    GLuint fboQuadVertexBuffer;
 
     /*
      * Loading
@@ -218,8 +218,8 @@ public:
     }
 
     void loadFBOQuad() {
-        glGenVertexArrays(1, &quad_VertexArrayID);
-        glBindVertexArray(quad_VertexArrayID);
+        glGenVertexArrays(1, &fboQuadVertexArrayID);
+        glBindVertexArray(fboQuadVertexArrayID);
 
         static const GLfloat g_quad_vertex_buffer_data[] = {
             -1.0f, -1.0f, 0.0f,
@@ -231,8 +231,8 @@ public:
             1.0f, 1.0f, 0.0f,
         };
 
-        glGenBuffers(1, &quad_vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+        glGenBuffers(1, &fboQuadVertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, fboQuadVertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
     }
 
@@ -413,7 +413,7 @@ public:
             glBindTexture(GL_TEXTURE_2D, depthMap);
             glUniform1i(debug->getUniform("texBuf"), 0);
             glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, fboQuadVertexBuffer);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glDisableVertexAttribArray(0);
