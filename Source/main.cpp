@@ -617,7 +617,7 @@ public:
 
         // Cleanup
         M->popMatrix();
-		gameObjects.ball->drawPers(shader, M);
+		// gameObjects.ball->drawPers(shader, M);
     }
 
     void createShadowMap(mat4 *LS)
