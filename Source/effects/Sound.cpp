@@ -44,7 +44,7 @@ void Sound::impact(float impactVal)
 {
     if (!sfxSounds.impactSound)
     {
-        float soundScale = min(1.0f, max(0.0f, ((impactVal * 2.0f)/50.0f)));
+        float soundScale = min(1.0f, max(0.0f, ((impactVal * 2.0f)/100.0f)));
 
         sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, false, true);
         sfxSounds.impactSound->setVolume(soundScale);

@@ -42,7 +42,7 @@
 
 // number of skin textures to load and swap through
 #define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 3 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
+#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define RESOURCE_DIRECTORY string("../Resources")
 #define START_WITH_MUSIC_PLAYING false
 

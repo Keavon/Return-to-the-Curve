@@ -31,18 +31,18 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     acceleration = vec3(0);
     velocity = vec3(0);
 
-    mass = 5;
+    mass = 3;
     invMass = 1 / mass;
     elasticity = 0.5;
 
     friction = 0.25;
 
-    jumpForce = 150;
+    jumpForce = 100;
 
     frozen = false;
 
     JUMP_TIME = 0.0f;
-    JUMP_FLAG = 0;
+    LAND_TIME = 0.0f;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -53,6 +53,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
+    vec3 normForceDir = vec3(0.0f);
+
     if (frozen)
         return;
 
@@ -60,7 +62,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
-            impulse -= collision.normal * 300.0f;
+            impulse -= collision.normal * 500.0f;
         }
     }
 
@@ -83,18 +85,35 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         direction += vec3(strafe.x, 0.0f, strafe.z);
     }
+
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        //jump key check gets the current time
         JUMP_TIME = glfwGetTime();
     }
-
-    //if the last jump time was in the past 0.25 seconds, do a jump.
     if ((normForce != vec3(0)) && ((glfwGetTime() - JUMP_TIME) < 0.25))
     {
         vec3 normForceDir = normalize(normForce);
         impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
     }
+
+    // if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
+    // {
+    //     JUMP_TIME = glfwGetTime();
+    //     if ((JUMP_TIME - LAND_TIME) < 0.125f)
+    //     {
+    //         normForceDir = normalize(normForce);
+    //         impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+    //     }
+    // }
+    // if (normForce != vec3(0))
+    // {
+    //     LAND_TIME = glfwGetTime();
+    //     if ((LAND_TIME - JUMP_TIME) < 0.125f)
+    //     {
+    //         normForceDir = normalize(normForce);
+    //         impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+    //     }
+    // }
 
     // calculate forces
     if (direction != vec3(0))

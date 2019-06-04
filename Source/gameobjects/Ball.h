@@ -24,5 +24,5 @@ public:
     bool frozen;
 
     float JUMP_TIME;
-    int JUMP_FLAG;
+    float LAND_TIME;
 };
