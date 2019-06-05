@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Instance.h"
+#include "Prefab.h"
 
 using namespace std;
 using namespace glm;

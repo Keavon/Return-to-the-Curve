@@ -3,7 +3,8 @@
 #include "Shape.h"
 #include "Material.h"
 #include "PhysicsObject.h"
-#include "Prefab.h"
+
+class Prefab;
 
 class Instance {
 public:
