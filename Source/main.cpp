@@ -486,7 +486,7 @@ public:
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
         gameObjects.goalObject->scale = vec3(4);
 
-        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.75f);
+        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50);
         gameObjects.goal->init(fireworkEmitter, &START_TIME);
 
         // Need to add each physics object to the octree
@@ -763,7 +763,7 @@ public:
     void resetPlayer()
     {
         soundEngine->reset();
-
+        gameObjects.ball->frozen = 0;
         gameObjects.ball->position = START_POSITION;
         gameObjects.ball->velocity = vec3(0);
         START_TIME = glfwGetTime();

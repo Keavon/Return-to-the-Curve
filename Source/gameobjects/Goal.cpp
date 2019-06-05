@@ -34,6 +34,7 @@ void Goal::update(float dt)
             {
                 didWin = true;
                 onWin();
+                dynamic_cast<Ball *>(collision.other)->frozen = 1;
             }
         }
     }
