@@ -108,15 +108,19 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     vec3 normForceDir = vec3(0.0f);
     if (normForce != vec3(0))
     {
+        // Just landed, or continuing to contact ground, THERFORE a jump is allowed.
         LAND_TIME = currentTime;
         CAN_JUMP = 1;
         LAST_NORMAL_FORCE = normForce;
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     {
+        // User pressed space, THERFORE they want to jump.
         JUMP_TIME = currentTime;
         WANTS_JUMP = 1;
     }
+
+    // Any of the three timers expire?
     if (WANTS_JUMP && (currentTime - JUMP_TIME) >= 0.125)
     {
         WANTS_JUMP = 0;
@@ -129,6 +133,8 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         JUST_JUMPED = 0;
     }
+
+    // Can we? Do we want to? Have we not recently?
     if (CAN_JUMP && WANTS_JUMP && !JUST_JUMPED)
     {
         normForceDir = normalize(LAST_NORMAL_FORCE);

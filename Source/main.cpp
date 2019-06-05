@@ -473,7 +473,7 @@ public:
             vec3{100.0, 2.0, 15.0},
             vec3{110.0, 2.0, -1.0},
             vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
+        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.75f);
         gameObjects.enemy1->init(windowManager);
         enemyPath = {
             vec3{125.0, 8.0, 55.0},
@@ -486,7 +486,7 @@ public:
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
         gameObjects.goalObject->scale = vec3(4);
 
-        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
+        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.75f);
         gameObjects.goal->init(fireworkEmitter, &START_TIME);
 
         // Need to add each physics object to the octree
