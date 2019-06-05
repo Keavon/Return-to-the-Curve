@@ -8,10 +8,9 @@ class Prefab;
 
 class Instance {
 public:
-    std::shared_ptr<Prefab> definition;
-    std::shared_ptr<Shape> model;
+    Prefab& definition;
     std::shared_ptr<Material> material;
     std::shared_ptr<PhysicsObject> physicsObject;
 
-    Instance(std::shared_ptr<Prefab> definition);
+    Instance(Prefab& definition);
 };

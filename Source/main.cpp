@@ -255,11 +255,11 @@ public:
         vec3 transform;
         while (inLevel >> transform.x) {
             inLevel >> transform.y >> transform.z;
-            //vec3 position = vec3(transform.x * 8, transform.y, transform.z * 6);
             shared_ptr<Instance> instance = prefabManager.get("box_8x2x6")->getNewInstance();
-            //shared_ptr<PhysicsObject> box = make_shared<PhysicsObject>(position, quat(1, 0, 0, 0), vec3(8, 2, 6), modelManager.get("cube.obj"));
-            //box->elasticity = 0.5;
-            //shared_ptr<Prefab> entity = make_shared<Prefab>(box, materialManager.get("marble_tiles", "png"));
+            instance->physicsObject->position = vec3(transform.x * 8, transform.y, transform.z * 6);
+            instance->physicsObject->orientation = quat(1, 0, 0, 0);
+            instance->physicsObject->scale = vec3(8, 2, 6);
+            instance->physicsObject->elasticity = 0.5;
             sceneManager.scene.push_back(instance);
             octree->insert(instance->physicsObject);
         }
@@ -358,12 +358,11 @@ public:
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
 
-        // Draw Boxes
-        //if (shader == pbr) materialManager.get("marble_tiles", "png")->bind();
-        for (shared_ptr<Instance> box : sceneManager.scene)
+        // Draw scene instances
+        for (shared_ptr<Instance> instance : sceneManager.scene)
         {
-            if (shader == pbr) box->material->bind();
-            box->physicsObject->draw(shader, M);
+            if (shader == pbr) instance->material->bind();
+            instance->physicsObject->draw(shader, M);
         }
 
         // Cleanup
@@ -519,22 +518,20 @@ public:
             resetPlayer();
         }
 
-        auto boxesToCheck = octree->query(gameObjects.marble);
-        for (auto box : boxesToCheck)
+        vector<shared_ptr<PhysicsObject>> instancesToCheck = octree->query(gameObjects.marble);
+        for (shared_ptr <PhysicsObject> instance : instancesToCheck)
         {
-            box->checkCollision(gameObjects.marble.get());
+            instance->checkCollision(gameObjects.marble.get());
         }
 
-        for (auto box : sceneManager.scene)
+        for (shared_ptr<Instance> instance : sceneManager.scene)
         {
-            box->physicsObject->update(dt);
+            instance->physicsObject->update(dt);
         }
-        //TODO:: Do Collision checks between marble and Enemy
-        /*
-        auto enemiesToCheck = octree->query(marble);
-        for (auto enemies : enemiesToCheck) {
-            
-        }*/
+
+        // TODO:: Do Collision checks between marble and Enemy
+        //auto enemiesToCheck = octree->query(marble);
+        //for (auto enemies : enemiesToCheck) {}
 
         gameObjects.goalObject->update(dt);
         gameObjects.marble->update(dt, camera->dolly, camera->strafe);

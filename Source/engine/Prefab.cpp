@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Prefab.h"
 
 using namespace std;
@@ -13,5 +11,5 @@ Prefab::Prefab(shared_ptr<Shape> model, shared_ptr<Material> material)
 
 shared_ptr<Instance> Prefab::getNewInstance()
 {
-    return make_shared<Instance>(this);
+    return make_shared<Instance>(*this);
 }
