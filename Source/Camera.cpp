@@ -174,7 +174,7 @@ void Camera::init() {
     eye = vec3(0, this->height, 0);
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
-    pitch = radians(30.0);
+    pitch = radians(20.0);
     yaw = 10;
     distToBall = 15;
     cameraPath = new Pathing();
