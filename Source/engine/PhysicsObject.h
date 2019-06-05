@@ -14,24 +14,37 @@
 
 class PhysicsObject : public GameObject
 {
+private:
+    // Physical properties
+    float mass;
+    float friction;
+    float elasticity;
+
+protected:
+    float invMass;
+    float speed;
+    glm::vec3 velocity;
+    glm::vec3 acceleration;
+    std::shared_ptr<Collider> collider;
+    glm::vec3 impulse;
+    glm::vec3 normForce;
+    glm::vec3 netForce; // net forces acting on ball, calculated each frame
+
 public:
-    PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider);
 	PhysicsObject();
+    PhysicsObject(glm::vec3 position, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
+    PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
+    PhysicsObject(glm::vec3 position, glm::quat orientation, glm::vec3 scale, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
     void resolveCollision(float dt);
     void checkCollision(PhysicsObject *other);
     void update(float dt);
     virtual void onHardCollision(float impactVel, Collision &collision);
     float getRadius(); // get radius of bounding sphere
-
-    float friction;
-    float elasticity;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
-    float speed;
-    float mass;
-    float invMass;
-    std::shared_ptr<Collider> collider;
-    glm::vec3 netForce; // net forces acting on ball, calculated each frame
-    glm::vec3 normForce;
-    glm::vec3 impulse;
+    void applyImpulse(glm::vec3 impulse);
+    void setMass(float mass);
+    void setFriction(float friction);
+    void setElasticity(float elasticity);
+    void setVelocity(glm::vec3 velocity);
+    glm::vec3 getCenterPos();
+    glm::vec3 getVelocity();
 };

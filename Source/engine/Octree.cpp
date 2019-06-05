@@ -68,7 +68,7 @@ void OctNode::insert(shared_ptr<PhysicsObject> object)
         {
             for (int i = 0; i < 8; i++)
             {
-                if (boxContainsSphere(octant[i]->imin, octant[i]->imax, element->position, element->getRadius()))
+                if (boxContainsSphere(octant[i]->imin, octant[i]->imax, element->getCenterPos(), element->getRadius()))
                 {
                     moved.push_back(element);
                     octant[i]->insert(element);
@@ -87,7 +87,7 @@ void OctNode::insert(shared_ptr<PhysicsObject> object)
     // Recursive insert
     for (int i = 0; i < 8; i++)
     {
-        if (boxContainsSphere(octant[i]->imin, octant[i]->imax, object->position, object->getRadius()))
+        if (boxContainsSphere(octant[i]->imin, octant[i]->imax, object->getCenterPos(), object->getRadius()))
         {
             octant[i]->insert(object);
             return;
@@ -113,7 +113,7 @@ void OctNode::update()
 
     for (auto object : elements)
     {
-        if (object->velocity != vec3(0))
+        if (object->getVelocity() != vec3(0))
         {
             moved.push_back(object);
         }
@@ -132,7 +132,7 @@ void OctNode::update()
         while (current->parent != NULL)
         {
             current->numObjects--;
-            if (boxContainsSphere(current->imin, current->imax, object->position, object->getRadius()))
+            if (boxContainsSphere(current->imin, current->imax, object->getCenterPos(), object->getRadius()))
             {
                 break;
             }
@@ -165,6 +165,8 @@ void OctNode::update()
 }
 
 
+Octree::Octree() {}
+
 Octree::Octree(vec3 min, vec3 max) : imin(min), imax(max), debug(false)
 {
 }
@@ -174,7 +176,7 @@ vector<shared_ptr<PhysicsObject>> Octree::query(shared_ptr<PhysicsObject> object
     vector<shared_ptr<PhysicsObject>> hits;
     stack<shared_ptr<OctNode>> nodes;
 
-    if (root != nullptr && boxContainsSphere(root->imin, root->imax, object->position, object->getRadius()))
+    if (root != nullptr)
     {
         nodes.push(root);
     }
@@ -186,7 +188,7 @@ vector<shared_ptr<PhysicsObject>> Octree::query(shared_ptr<PhysicsObject> object
         for (int i = 0; i < 8; i++)
         {
             if (node->octant[i] != nullptr &&
-                boxContainsSphere(node->octant[i]->imin, node->octant[i]->imax, object->position, object->getRadius()))
+                boxContainsSphere(node->octant[i]->imin, node->octant[i]->imax, object->getCenterPos(), object->getRadius()))
             {
                 nodes.push(node->octant[i]);
             }
@@ -236,7 +238,7 @@ void Octree::markInView(Frustum &viewFrustum)
     auto hits = query(viewFrustum);
     for (auto object : hits)
     {
-        if (viewFrustum.checkSphere(object->position, object->getRadius()))
+        if (viewFrustum.checkSphere(object->getCenterPos(), object->getRadius()))
         {
             object->inView = true;
         }
@@ -256,7 +258,7 @@ void Octree::drawDebugBoundingSpheres(shared_ptr<Program> prog)
     for (auto object : objects)
     {
         M->pushMatrix();
-            M->translate(object->position);
+            M->translate(object->getCenterPos());
             M->scale(object->getRadius());
             glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
             glUniform1f(prog->getUniform("radius"), object->getRadius());

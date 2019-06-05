@@ -21,8 +21,7 @@
 using namespace glm;
 using namespace std;
 
-Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
-                                                                                     radius(radius)
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;
     material = 0;
@@ -30,12 +29,6 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     moveForce = 200;
     acceleration = vec3(0);
     velocity = vec3(0);
-
-    mass = 3;
-    invMass = 1 / mass;
-    elasticity = 0.5;
-
-    friction = 0.25;
 
     jumpForce = 100;
 
@@ -50,6 +43,14 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
 
     JUMPED_AT_TIME = 0.0f;
     JUST_JUMPED = 0;
+    this->startPosition = position;
+    this->moveForce = 200;
+    this->jumpForce = 150;
+    this->frozen = false;
+
+    setMass(5);
+    setElasticity(0.5);
+    setFriction(0.25);
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -68,7 +69,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
-            impulse -= collision.normal * 400.0f;
+            applyImpulse(-collision.normal * 300.0f);
         }
     }
 
@@ -92,15 +93,6 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         direction += vec3(strafe.x, 0.0f, strafe.z);
     }
 
-    // if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
-    // {
-    //     JUMP_TIME = glfwGetTime();
-    // }
-    // if ((normForce != vec3(0)) && ((glfwGetTime() - JUMP_TIME) < 0.25))
-    // {
-    //     vec3 normForceDir = normalize(normForce);
-    //     impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-    // }
     //===============================================================================
     //Determine Jump
     //===============================================================================
@@ -138,7 +130,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     if (CAN_JUMP && WANTS_JUMP && !JUST_JUMPED)
     {
         normForceDir = normalize(LAST_NORMAL_FORCE);
-        impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+        applyImpulse(normForceDir * dot(vec3(0, jumpForce, 0), normForceDir));
         CAN_JUMP = 0;
         WANTS_JUMP = 0;
         JUST_JUMPED = 1;
@@ -173,4 +165,25 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
             sparkEmitter->addParticle(make_shared<ParticleSpark>(collision.pos, impactVel, collision.normal));
         }
     }
+}
+
+void Ball::addSkin(std::shared_ptr<Material> newSkin)
+{
+    marbleSkins.push_back(newSkin);
+}
+
+void Ball::setSkin(int skinIndex)
+{
+    currentSkin = skinIndex;
+}
+
+void Ball::nextSkin()
+{
+    currentSkin++;
+    currentSkin %= marbleSkins.size();
+}
+
+shared_ptr<Material> Ball::getSkinMaterial()
+{
+    return marbleSkins[currentSkin];
 }

@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++0x -O2  -rdynamic CMakeFiles/read.dir/read.cpp.o  -o read ../libyaml-cpp.a 

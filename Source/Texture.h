@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __Texture__
-#define __Texture__
 
 #include <glad/glad.h>
 #include <string>
@@ -26,5 +24,3 @@ private:
 	GLint unit;
 	
 };
-
-#endif

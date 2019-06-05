@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++0x -O2  -rdynamic CMakeFiles/sandbox.dir/sandbox.cpp.o  -o sandbox ../libyaml-cpp.a 
