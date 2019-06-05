@@ -22,6 +22,7 @@ public:
     void update(float dt);
     virtual void onHardCollision(float impactVel, Collision &collision);
     float getRadius(); // get radius of bounding sphere
+    glm::vec3 getCenterPos();
 
     float friction;
     float elasticity;

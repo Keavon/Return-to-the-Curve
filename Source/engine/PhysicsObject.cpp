@@ -158,9 +158,29 @@ float PhysicsObject::getRadius()
     {
         return 0;
     }
+    else if (scale == vec3(0))
+    {
+        return collider->bbox.radius;
+    }
     else
     {
         return (std::max)({scale.x, scale.y, scale.z}) * collider->bbox.radius;
+    }
+}
+
+vec3 PhysicsObject::getCenterPos()
+{
+    if (collider == NULL || collider->bbox.center == vec3(0))
+    {
+        return position;
+    }
+    else if (orientation == quat(1, 0, 0, 0))
+    {
+        return position + collider->bbox.center * scale;
+    }
+    else
+    {
+        return position + vec3(mat4_cast(orientation) * vec4(collider->bbox.center * scale, 1));
     }
 }
 
