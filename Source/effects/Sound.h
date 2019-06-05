@@ -24,6 +24,7 @@ public:
         irrklang::ISoundSource *resetSoundSource;
         irrklang::ISoundSource *impactSoundSource;
         irrklang::ISoundSource *winSoundSource;
+        irrklang::ISoundSource *superBounceSoundSource;
     } sfxSources;
 
     struct
@@ -31,13 +32,11 @@ public:
         irrklang::ISound *resetSound;
         irrklang::ISound *impactSound;
         irrklang::ISound *winSound;
+        irrklang::ISound *superBounceSound;
     } sfxSounds;
 
     vector<irrklang::ISoundSource *> musicSources;
     vector<irrklang::ISound *> musicSounds;
-
-    irrklang::ISoundSource *musicSource;
-    irrklang::ISound *musicSound;
 
     Sound();
     ~Sound();
@@ -45,6 +44,7 @@ public:
     void impact(float impactVal);
     void reset();
     void win();
+    void superBounce();
     void playPauseMusic();
     void nextTrackMusic();
     void updateMusic();

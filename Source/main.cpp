@@ -923,6 +923,10 @@ public:
         {
             resetPlayer();
         }
+        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+        {   // just a test since super bounce has no trigger yet
+            soundEngine->superBounce();
+        }
         //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
         //{
         //    camera->previewLvl = !camera->previewLvl;

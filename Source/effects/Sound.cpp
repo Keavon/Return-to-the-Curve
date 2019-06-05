@@ -7,14 +7,12 @@ Sound::Sound()
     sfxSources.impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav", irrklang::ESM_NO_STREAMING, true);
     sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav", irrklang::ESM_NO_STREAMING, true);
     sfxSources.winSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_win.wav", irrklang::ESM_NO_STREAMING, true);
-
-    // musicSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/music/1.wav", irrklang::ESM_NO_STREAMING, true);
+    sfxSources.superBounceSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_super_bounce.wav", irrklang::ESM_NO_STREAMING, true);
 
     sfxSounds.impactSound = 0;
     sfxSounds.resetSound = 0;
     sfxSounds.winSound = 0;
-
-    musicSound = 0;
+    sfxSounds.superBounceSound = 0;
 
     // loops over the number of tracks, initializing them and adding them to a vector
     double completion = 0.0;
@@ -44,7 +42,7 @@ void Sound::impact(float impactVal)
 {
     if (!sfxSounds.impactSound)
     {
-        float soundScale = min(1.0f, max(0.0f, ((impactVal * 2.0f)/100.0f)));
+        float soundScale = min(1.0f, max(0.0f, ((impactVal * 2.0f) / 100.0f)));
 
         sfxSounds.impactSound = sfxEngine->play2D(sfxSources.impactSoundSource, false, true);
         sfxSounds.impactSound->setVolume(soundScale);
@@ -69,6 +67,21 @@ void Sound::reset()
     {
         sfxSounds.resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
         sfxSounds.resetSound = 0;
+    }
+}
+
+void Sound::superBounce()
+{
+    if (!sfxSounds.superBounceSound)
+    {
+        sfxSounds.superBounceSound = sfxEngine->play2D(sfxSources.superBounceSoundSource, false, true);
+        sfxSounds.superBounceSound->setVolume(0.4f);
+        sfxSounds.superBounceSound->setIsPaused(false);
+    }
+    if (sfxSounds.superBounceSound)
+    {
+        sfxSounds.superBounceSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+        sfxSounds.superBounceSound = 0;
     }
 }
 
