@@ -84,6 +84,11 @@ else()
 
   # OSX
   if(APPLE)
+    include_directories(${CMAKE_SOURCE_DIR}/yaml-cpp/include)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/yaml-cpp)
+    target_link_libraries(${CMAKE_PROJECT_NAME} yaml-cpp)
+    
+    include_directories(${CMAKE_SOURCE_DIR}/Source)
     target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
     target_link_libraries(${CMAKE_PROJECT_NAME} ${IRRKLANG_BIN_DIR}/macosx-gcc/libirrklang.dylib)
     add_custom_command (TARGET ${CMAKE_PROJECT_NAME}
