@@ -10,14 +10,9 @@ using namespace std;
 using namespace glm;
 
 
-<<<<<<< HEAD
-Blower::Blower(vec3 position, quat orientation, shared_ptr<Shape> model, float radius, float length) :
-    PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<TriggerCylinder>(radius, length)), radius(radius), length(length)
-=======
 Blower::Blower(vec3 position, quat orientation, float radius, float length) :
     PhysicsObject(position, orientation, nullptr, make_shared<TriggerCylinder>(radius, length)),
     radius(radius), length(length)
->>>>>>> fan
 {
     force = 100;
 }
