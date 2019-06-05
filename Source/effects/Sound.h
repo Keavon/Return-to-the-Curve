@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <irrKlang.h>
+#include <algorithm>
 
 #define NUMBER_OF_MUSIC_TRACKS 5
 
