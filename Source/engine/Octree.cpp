@@ -113,7 +113,7 @@ void OctNode::update()
 
     for (auto object : elements)
     {
-        if (object->velocity != vec3(0))
+        if (object->getVelocity() != vec3(0))
         {
             moved.push_back(object);
         }

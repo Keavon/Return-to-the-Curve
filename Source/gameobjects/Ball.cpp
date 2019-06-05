@@ -21,26 +21,16 @@
 using namespace glm;
 using namespace std;
 
-Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius)
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
-    speed = 0;
-    material = 0;
+    this->startPosition = position;
+    this->moveForce = 200;
+    this->jumpForce = 150;
+    this->frozen = false;
 
-    moveForce = 200;
-    acceleration = vec3(0);
-    velocity = vec3(0);
-
-    mass = 5;
-    invMass = 1 / mass;
-    elasticity = 0.5;
-
-    friction = 0.25;
-
-    jumpForce = 150;
-
-    frozen = false;
-
-    startPosition = position;
+    setMass(5);
+    setElasticity(0.5);
+    setFriction(0.25);
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -57,7 +47,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
-            impulse -= collision.normal * 300.0f;
+            applyImpulse(-collision.normal * 300.0f);
         }
     }
 
@@ -85,7 +75,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         if (normForce != vec3(0))
         {
             vec3 normForceDir = normalize(normForce);
-            impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+            applyImpulse(normForceDir * dot(vec3(0, jumpForce, 0), normForceDir));
         }
     }
 

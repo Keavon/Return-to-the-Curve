@@ -1,10 +1,4 @@
 #include "Blower.h"
-#include "../engine/TriggerSphere.h"
-#include "Ball.h"
-
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
 
 using namespace std;
 using namespace glm;
@@ -21,7 +15,7 @@ void Blower::update(float dt)
 {
     for (auto collision : collider->pendingCollisions)
     {
-        collision.other->impulse += vec3(mat4_cast(orientation) * vec4(0, 1, 0, 0)) * force;
+        collision.other->applyImpulse(vec3(mat4_cast(orientation) * vec4(0, 1, 0, 0)) * force);
     }
     collider->pendingCollisions.clear();
 }

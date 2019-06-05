@@ -18,7 +18,7 @@ shared_ptr<Prefab> PrefabManager::get(string prefabFile)
         YAML::Node file = YAML::LoadFile(relativePath + prefabFile + ".yaml");
 
         shared_ptr<Shape> model = modelManager->get(file["model"].as<string>());
-        shared_ptr<Material> material = materialManager->get(file["material"]["name"].as<string>(), file["material"]["extension"].as<string>());
+        shared_ptr<Material> material = materialManager->get(file["material"][0].as<string>(), file["material"][1].as<string>());
         
         shared_ptr<Prefab> prefab = make_shared<Prefab>(model, material);
         loadedPrefabs[prefabFile] = prefab;

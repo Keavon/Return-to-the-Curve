@@ -259,7 +259,7 @@ public:
             instance->physicsObject->position = vec3(transform.x * 8, transform.y, transform.z * 6);
             instance->physicsObject->orientation = quat(1, 0, 0, 0);
             instance->physicsObject->scale = vec3(8, 2, 6);
-            instance->physicsObject->elasticity = 0.5;
+            instance->physicsObject->setElasticity(0.5);
             sceneManager.scene.push_back(instance);
             octree->insert(instance->physicsObject);
         }
@@ -504,7 +504,7 @@ public:
         soundEngine->reset();
 
         gameObjects.marble->position = START_POSITION;
-        gameObjects.marble->velocity = vec3(0);
+        gameObjects.marble->setVelocity(vec3(0, 0, 0));
         startTime = glfwGetTime();
         gameObjects.goal->reset();
     }

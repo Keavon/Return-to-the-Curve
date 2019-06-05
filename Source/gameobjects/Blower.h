@@ -1,8 +1,12 @@
 #pragma once
 
 #include "../engine/PhysicsObject.h"
-#include <memory>
+#include "../engine/TriggerSphere.h"
+#include "Ball.h"
+
 #include <glm/glm.hpp>
+#include <memory>
+#include <iostream>
 
 class Blower : public PhysicsObject
 {

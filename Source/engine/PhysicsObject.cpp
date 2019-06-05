@@ -204,3 +204,35 @@ void PhysicsObject::onHardCollision(float impactVel, Collision &collision)
 {
 
 }
+
+void PhysicsObject::applyImpulse(vec3 impulse)
+{
+    this->impulse += impulse;
+}
+
+void PhysicsObject::setMass(float mass)
+{
+    this->mass = mass;
+    if (mass == 0) this->invMass = 0;
+    else this->invMass = 1.0 / mass;
+}
+
+void PhysicsObject::setFriction(float friction)
+{
+    this->friction = friction;
+}
+
+void PhysicsObject::setElasticity(float elasticity)
+{
+    this->elasticity = elasticity;
+}
+
+void PhysicsObject::setVelocity(vec3 velocity)
+{
+    this->velocity = velocity;
+}
+
+vec3 PhysicsObject::getVelocity()
+{
+    return this->velocity;
+}

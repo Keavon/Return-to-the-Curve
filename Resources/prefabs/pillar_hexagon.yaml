@@ -1,3 +1,5 @@
 ---
 model: ball.obj
 material: brown_rock
+physics:
+    elasticity: 0.5
