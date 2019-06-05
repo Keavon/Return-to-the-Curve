@@ -24,5 +24,12 @@ public:
     bool frozen;
 
     float JUMP_TIME;
+    int WANTS_JUMP;
+
     float LAND_TIME;
+    int CAN_JUMP;
+    glm::vec3 LAST_NORMAL_FORCE;
+
+    float JUMPED_AT_TIME;
+    int JUST_JUMPED;
 };

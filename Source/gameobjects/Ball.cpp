@@ -42,7 +42,14 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     frozen = false;
 
     JUMP_TIME = 0.0f;
+    WANTS_JUMP = 0;
+
     LAND_TIME = 0.0f;
+    CAN_JUMP = 0;
+    LAST_NORMAL_FORCE = vec3(1.0f);
+
+    JUMPED_AT_TIME = 0.0f;
+    JUST_JUMPED = 0;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -53,7 +60,6 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 {
-    vec3 normForceDir = vec3(0.0f);
 
     if (frozen)
         return;
@@ -62,7 +68,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
-            impulse -= collision.normal * 500.0f;
+            impulse -= collision.normal * 400.0f;
         }
     }
 
@@ -86,34 +92,53 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         direction += vec3(strafe.x, 0.0f, strafe.z);
     }
 
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        JUMP_TIME = glfwGetTime();
-    }
-    if ((normForce != vec3(0)) && ((glfwGetTime() - JUMP_TIME) < 0.25))
-    {
-        vec3 normForceDir = normalize(normForce);
-        impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-    }
-
     // if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
     // {
     //     JUMP_TIME = glfwGetTime();
-    //     if ((JUMP_TIME - LAND_TIME) < 0.125f)
-    //     {
-    //         normForceDir = normalize(normForce);
-    //         impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-    //     }
     // }
-    // if (normForce != vec3(0))
+    // if ((normForce != vec3(0)) && ((glfwGetTime() - JUMP_TIME) < 0.25))
     // {
-    //     LAND_TIME = glfwGetTime();
-    //     if ((LAND_TIME - JUMP_TIME) < 0.125f)
-    //     {
-    //         normForceDir = normalize(normForce);
-    //         impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
-    //     }
+    //     vec3 normForceDir = normalize(normForce);
+    //     impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
     // }
+    //===============================================================================
+    //Determine Jump
+    //===============================================================================
+    float currentTime = glfwGetTime();
+    vec3 normForceDir = vec3(0.0f);
+    if (normForce != vec3(0))
+    {
+        LAND_TIME = currentTime;
+        CAN_JUMP = 1;
+        LAST_NORMAL_FORCE = normForce;
+    }
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        JUMP_TIME = currentTime;
+        WANTS_JUMP = 1;
+    }
+    if (WANTS_JUMP && (currentTime - JUMP_TIME) >= 0.125)
+    {
+        WANTS_JUMP = 0;
+    }
+    if (CAN_JUMP && (currentTime - LAND_TIME) >= 0.125)
+    {
+        CAN_JUMP = 0;
+    }
+    if (JUST_JUMPED && (currentTime - JUMPED_AT_TIME) >= 0.25)
+    {
+        JUST_JUMPED = 0;
+    }
+    if (CAN_JUMP && WANTS_JUMP && !JUST_JUMPED)
+    {
+        normForceDir = normalize(LAST_NORMAL_FORCE);
+        impulse += normForceDir * dot(vec3(0, jumpForce, 0), normForceDir);
+        CAN_JUMP = 0;
+        WANTS_JUMP = 0;
+        JUST_JUMPED = 1;
+        JUMPED_AT_TIME = currentTime;
+    }
+    //===============================================================================
 
     // calculate forces
     if (direction != vec3(0))
