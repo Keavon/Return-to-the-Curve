@@ -28,7 +28,9 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, shared_ptr<Shape> 
 
 PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, scale, model)
 {
-    this->collider = collider;
+    if (collider != nullptr) this->collider = collider;
+    else this->collider = make_shared<ColliderMesh>(model);
+
     this->netForce = vec3(0, 0, 0);
     this->impulse = vec3(0, 0, 0);
     this->acceleration = vec3(0, 0, 0);

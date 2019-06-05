@@ -10,6 +10,7 @@ using namespace glm;
 void SceneManager::load(string sceneFile)
 {
     YAML::Node file = YAML::LoadFile(sceneFile);
+
     printf("Scene Name: %s\n", file["scene"]["name"].as<string>().c_str());
 
     //vec3 transform;

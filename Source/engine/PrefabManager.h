@@ -5,14 +5,20 @@
 #include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
 
-class Prefab {
-public:
-};
+#include "MaterialManager.h"
+#include "ModelManager.h"
+#include "Shape.h"
+#include "Prefab.h"
 
 class PrefabManager
 {
 public:
-    Prefab get(std::string prefabFile);
+    std::shared_ptr<MaterialManager> materialManager;
+    std::shared_ptr<ModelManager> modelManager;
+    std::map<std::string, std::shared_ptr<Prefab>> loadedPrefabs;
+    std::string relativePath;
 
-    std::map<std::string, Prefab> loadedPrefabs;
+    PrefabManager(std::string relativePath, std::shared_ptr<ModelManager> modelManager, std::shared_ptr<MaterialManager> materialManager);
+
+    std::shared_ptr<Prefab> get(std::string prefabFile);
 };

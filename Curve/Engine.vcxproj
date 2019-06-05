@@ -156,12 +156,14 @@
     <ClCompile Include="..\Source\engine\EmitterManager.cpp" />
     <ClCompile Include="..\Source\engine\Frustum.cpp" />
     <ClCompile Include="..\Source\engine\GameObject.cpp" />
+    <ClCompile Include="..\Source\engine\Instance.cpp" />
     <ClCompile Include="..\Source\engine\Material.cpp" />
     <ClCompile Include="..\Source\engine\MaterialManager.cpp" />
     <ClCompile Include="..\Source\engine\ModelManager.cpp" />
     <ClCompile Include="..\Source\engine\Octree.cpp" />
     <ClCompile Include="..\Source\engine\ParticleEmitter.cpp" />
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
+    <ClCompile Include="..\Source\engine\Prefab.cpp" />
     <ClCompile Include="..\Source\engine\PrefabManager.cpp" />
     <ClCompile Include="..\Source\engine\SceneManager.cpp" />
     <ClCompile Include="..\Source\engine\ShaderManager.cpp" />
@@ -171,7 +173,6 @@
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
     <ClCompile Include="..\Source\gameobjects\Ball.cpp" />
     <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
-    <ClCompile Include="..\Source\gameobjects\Box.cpp" />
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
     <ClCompile Include="..\Source\gameobjects\Goal.cpp" />
     <ClCompile Include="..\Source\GLSL.cpp" />
@@ -228,12 +229,14 @@
     <ClInclude Include="..\Source\engine\EmitterManager.h" />
     <ClInclude Include="..\Source\engine\Frustum.h" />
     <ClInclude Include="..\Source\engine\GameObject.h" />
+    <ClInclude Include="..\Source\engine\Instance.h" />
     <ClInclude Include="..\Source\engine\Material.h" />
     <ClInclude Include="..\Source\engine\MaterialManager.h" />
     <ClInclude Include="..\Source\engine\ModelManager.h" />
     <ClInclude Include="..\Source\engine\Octree.h" />
     <ClInclude Include="..\Source\engine\ParticleEmitter.h" />
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
+    <ClInclude Include="..\Source\engine\Prefab.h" />
     <ClInclude Include="..\Source\engine\PrefabManager.h" />
     <ClInclude Include="..\Source\engine\SceneManager.h" />
     <ClInclude Include="..\Source\engine\ShaderManager.h" />
@@ -243,7 +246,6 @@
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
-    <ClInclude Include="..\Source\gameobjects\Box.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />
     <ClInclude Include="..\Source\gameobjects\Goal.h" />
     <ClInclude Include="..\Source\GLSL.h" />

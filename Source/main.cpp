@@ -28,7 +28,6 @@
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
 #include "gameobjects/Ball.h"
-#include "gameobjects/Box.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
@@ -37,6 +36,7 @@
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
 #include "effects/ParticleSpark.h"
+#include "engine/Prefab.h"
 
 #include "engine/SceneManager.h"
 #include "engine/ModelManager.h"
@@ -44,6 +44,7 @@
 #include "engine/SkyboxManager.h"
 #include "engine/ShaderManager.h"
 #include "engine/MaterialManager.h"
+#include "engine/PrefabManager.h"
 #include "engine/EmitterManager.h"
 
 // value_ptr for glm
@@ -71,6 +72,7 @@ public:
     ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
     MaterialManager materialManager = MaterialManager();
     EmitterManager emitterManager = EmitterManager();
+    PrefabManager prefabManager = PrefabManager(RESOURCE_DIRECTORY + "/prefabs/", shared_ptr<ModelManager>(&modelManager), shared_ptr<MaterialManager>(&materialManager));
     shared_ptr<Octree> octree;
 
     // Game Info Globals
@@ -98,16 +100,15 @@ public:
     // Camera
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
-
+    
     struct
     {
         shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
-        shared_ptr<Box> goalObject;
+        shared_ptr<PhysicsObject> goalObject;
     } gameObjects;
-    vector<shared_ptr<PhysicsObject>> boxes;
 
     // Billboard for rendering a texture to screen (like the shadow map)
     GLuint fboQuadVertexArrayID;
@@ -254,10 +255,14 @@ public:
         vec3 transform;
         while (inLevel >> transform.x) {
             inLevel >> transform.y >> transform.z;
-            shared_ptr<Box> box = make_shared<Box>(vec3(transform.x * 8, transform.y, transform.z * 6), quat(1, 0, 0, 0), vec3(8, 2, 6), modelManager.get("cube.obj"));
-            boxes.push_back(box);
+            //vec3 position = vec3(transform.x * 8, transform.y, transform.z * 6);
+            shared_ptr<Instance> instance = prefabManager.get("box_8x2x6")->getNewInstance();
+            //shared_ptr<PhysicsObject> box = make_shared<PhysicsObject>(position, quat(1, 0, 0, 0), vec3(8, 2, 6), modelManager.get("cube.obj"));
+            //box->elasticity = 0.5;
+            //shared_ptr<Prefab> entity = make_shared<Prefab>(box, materialManager.get("marble_tiles", "png"));
+            sceneManager.scene.push_back(instance);
+            octree->insert(instance->physicsObject);
         }
-        octree->insert(boxes);
     }
 
     void loadGameObjects()
@@ -292,7 +297,7 @@ public:
         octree->insert(gameObjects.enemy2);
 
         // Goal model
-        gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), vec3(4, 4, 4), modelManager.get("goal.obj"));
+        gameObjects.goalObject = make_shared<PhysicsObject>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), vec3(4, 4, 4), modelManager.get("goal.obj"));
         octree->insert(gameObjects.goalObject);
 
         // Goal functionality
@@ -354,10 +359,11 @@ public:
         gameObjects.enemy2->draw(shader, M);
 
         // Draw Boxes
-        if (shader == pbr) materialManager.get("marble_tiles", "png")->bind();
-        for (auto box : boxes)
+        //if (shader == pbr) materialManager.get("marble_tiles", "png")->bind();
+        for (shared_ptr<Instance> box : sceneManager.scene)
         {
-            box->draw(shader, M);
+            if (shader == pbr) box->material->bind();
+            box->physicsObject->draw(shader, M);
         }
 
         // Cleanup
@@ -519,9 +525,9 @@ public:
             box->checkCollision(gameObjects.marble.get());
         }
 
-        for (auto box : boxes)
+        for (auto box : sceneManager.scene)
         {
-            box->update(dt);
+            box->physicsObject->update(dt);
         }
         //TODO:: Do Collision checks between marble and Enemy
         /*

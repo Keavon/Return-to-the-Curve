@@ -1,0 +1,7 @@
+---
+model: cube.obj
+material:
+    name: marble_tiles
+    extension: png
+physics:
+    elasticity: 0.5

@@ -67,9 +67,6 @@
     <ClCompile Include="..\Source\gameobjects\Blower.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\gameobjects\Box.cpp">
-      <Filter>Source\gameobjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
@@ -214,6 +211,12 @@
     <ClCompile Include="..\Source\engine\Material.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\Prefab.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Instance.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -312,9 +315,6 @@
       <Filter>Source\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\gameobjects\Blower.h">
-      <Filter>Source\gameobjects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\gameobjects\Box.h">
       <Filter>Source\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\gameobjects\Enemy.h">
@@ -432,6 +432,12 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\Material.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Prefab.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Instance.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>
