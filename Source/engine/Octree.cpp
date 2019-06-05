@@ -165,6 +165,8 @@ void OctNode::update()
 }
 
 
+Octree::Octree() {}
+
 Octree::Octree(vec3 min, vec3 max) : imin(min), imax(max), debug(false)
 {
 }

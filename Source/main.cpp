@@ -24,20 +24,20 @@
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
-#include "engine/Collider.h"
-#include "engine/ColliderSphere.h"
-#include "engine/GameObject.h"
+
+#include "effects/ParticleSpark.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
+#include "engine/Collider.h"
+#include "engine/ColliderSphere.h"
+#include "engine/GameObject.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
-#include "effects/ParticleSpark.h"
 #include "engine/Prefab.h"
-
 #include "engine/SceneManager.h"
 #include "engine/ModelManager.h"
 #include "engine/TextureManager.h"
@@ -64,8 +64,7 @@ shared_ptr<Sound> soundEngine;
 class Application : public EventCallbacks
 {
 public:
-    WindowManager *windowManager = nullptr;
-    SceneManager sceneManager = SceneManager();
+    WindowManager *windowManager = new WindowManager();
     ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
     SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
@@ -73,16 +72,11 @@ public:
     MaterialManager materialManager = MaterialManager();
     EmitterManager emitterManager = EmitterManager();
     PrefabManager prefabManager = PrefabManager(RESOURCE_DIRECTORY + "/prefabs/", shared_ptr<ModelManager>(&modelManager), shared_ptr<MaterialManager>(&materialManager));
-    shared_ptr<Octree> octree;
+    SceneManager sceneManager = SceneManager(shared_ptr<PrefabManager>(&prefabManager));
 
     // Game Info Globals
     bool editMode = false;
     float startTime = 0.0f;
-    bool MOVING = false;
-    bool MOUSE_DOWN = false;
-    int SCORE = 0;
-    vec3 START_POSITION = vec3(120, 3, 7);
-    vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
 
     // Shadow Globals
     int SHADOWS = 1;
@@ -107,7 +101,6 @@ public:
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
-        shared_ptr<PhysicsObject> goalObject;
     } gameObjects;
 
     // Billboard for rendering a texture to screen (like the shadow map)
@@ -117,6 +110,12 @@ public:
     /*
      * Loading
     */
+    void loadWindow()
+    {
+        windowManager->init(1920, 1080);
+        windowManager->setEventCallbacks(this);
+    }
+
     void loadCanvas()
     {
         int width, height;
@@ -128,7 +127,7 @@ public:
         glEnable(GL_CULL_FACE);
 
         // Initialize camera
-        camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
+        camera = make_shared<Camera>(windowManager, vec3(0, 0, 0));
         camera->init();
     }
 
@@ -167,6 +166,8 @@ public:
         materialManager.get("seaside_rocks", "png");
         materialManager.get("coal_matte_tiles", "png");
         materialManager.get("marble_tiles", "png");
+        materialManager.get("rusted_metal", "jpg");
+        materialManager.get("painted_metal", "png");
     }
 
     void loadSkybox()
@@ -209,8 +210,6 @@ public:
     }
 
     void loadOctree() {
-        octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
-        octree->init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
 
     void loadEffects() {
@@ -249,28 +248,15 @@ public:
     }
 
     void loadLevel() {
-        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-1.yaml");
-
-        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
-        vec3 transform;
-        while (inLevel >> transform.x) {
-            inLevel >> transform.y >> transform.z;
-            shared_ptr<Instance> instance = prefabManager.get("box_8x2x6")->getNewInstance();
-            instance->physicsObject->position = vec3(transform.x * 8, transform.y, transform.z * 6);
-            instance->physicsObject->orientation = quat(1, 0, 0, 0);
-            instance->physicsObject->scale = vec3(8, 2, 6);
-            instance->physicsObject->setElasticity(0.5);
-            sceneManager.scene.push_back(instance);
-            octree->insert(instance->physicsObject);
-        }
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-2.yaml");
     }
 
     void loadGameObjects()
     {
         // Marble
-        gameObjects.marble = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
+        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
         gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
-        octree->insert(gameObjects.marble);
+        sceneManager.octree.insert(gameObjects.marble);
         gameObjects.marble->addSkin(materialManager.get("brown_rock", "png"));
         gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "png"));
         gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
@@ -284,7 +270,7 @@ public:
             vec3{115.0, 2.0, 7.0}};
         gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.5);
         gameObjects.enemy1->init(windowManager);
-        octree->insert(gameObjects.enemy1);
+        sceneManager.octree.insert(gameObjects.enemy1);
 
         // Enemy 2
         enemyPath = {
@@ -294,16 +280,12 @@ public:
             vec3{95.0, 8.0, 55.0}};
         gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.5);
         gameObjects.enemy2->init(windowManager);
-        octree->insert(gameObjects.enemy2);
-
-        // Goal model
-        gameObjects.goalObject = make_shared<PhysicsObject>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), vec3(4, 4, 4), modelManager.get("goal.obj"));
-        octree->insert(gameObjects.goalObject);
+        sceneManager.octree.insert(gameObjects.enemy2);
 
         // Goal functionality
-        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
+        gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
-        octree->insert(gameObjects.goal);
+        sceneManager.octree.insert(gameObjects.goal);
     }
 
     /*
@@ -348,10 +330,6 @@ public:
         // Draw marble
         if (shader == pbr) gameObjects.marble->getSkinMaterial()->bind();
         gameObjects.marble->draw(shader, M);
-
-        // Draw finish
-        if (shader == pbr) materialManager.get("painted_metal", "png")->bind();
-        gameObjects.goalObject->draw(shader, M);
 
         // Draw enemies
         if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
@@ -450,7 +428,7 @@ public:
         circle->bind();
         setProjectionMatrix(circle);
         setView(circle);
-        octree->drawDebugBoundingSpheres(circle);
+        sceneManager.octree.drawDebugBoundingSpheres(circle);
         circle->unbind();
 
         shared_ptr<Program> cubeOutline = shaderManager.get("cube_outline");
@@ -458,7 +436,7 @@ public:
         cubeOutline->bind();
         setProjectionMatrix(cubeOutline);
         setView(cubeOutline);
-        octree->drawDebugOctants(cubeOutline);
+        sceneManager.octree.drawDebugOctants(cubeOutline);
         cubeOutline->unbind();
     }
 
@@ -484,7 +462,7 @@ public:
 
         pbr->unbind();
 
-        if (octree->debug) drawOctree();
+        if (sceneManager.octree.debug) drawOctree();
 
         shared_ptr<Program> particle = shaderManager.get("particle");
         particle->bind();
@@ -503,7 +481,7 @@ public:
     {
         soundEngine->reset();
 
-        gameObjects.marble->position = START_POSITION;
+        gameObjects.marble->position = sceneManager.marbleStart;
         gameObjects.marble->setVelocity(vec3(0, 0, 0));
         startTime = glfwGetTime();
         gameObjects.goal->reset();
@@ -511,14 +489,14 @@ public:
 
     void update(float dt)
     {
-        octree->update();
+        sceneManager.octree.update();
 
-        if (gameObjects.marble->position.y < -25.0)
+        if (gameObjects.marble->position.y < sceneManager.deathBelow)
         {
             resetPlayer();
         }
 
-        vector<shared_ptr<PhysicsObject>> instancesToCheck = octree->query(gameObjects.marble);
+        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
         for (shared_ptr <PhysicsObject> instance : instancesToCheck)
         {
             instance->checkCollision(gameObjects.marble.get());
@@ -530,10 +508,9 @@ public:
         }
 
         // TODO:: Do Collision checks between marble and Enemy
-        //auto enemiesToCheck = octree->query(marble);
+        //auto enemiesToCheck = sceneManager.octree.query(marble);
         //for (auto enemies : enemiesToCheck) {}
 
-        gameObjects.goalObject->update(dt);
         gameObjects.marble->update(dt, camera->dolly, camera->strafe);
         camera->update(dt, gameObjects.marble);
         gameObjects.goal->update(dt);
@@ -544,7 +521,7 @@ public:
         emitterManager.get("fireworks")->update(dt);
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
-        octree->markInView(viewFrustum);
+        sceneManager.octree.markInView(viewFrustum);
     }
 
     void setLight(shared_ptr<Program> prog)
@@ -652,7 +629,7 @@ public:
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
-            octree->debug = !octree->debug;
+            sceneManager.octree.debug = !sceneManager.octree.debug;
         }
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
@@ -684,17 +661,13 @@ public:
 
         if (action == GLFW_PRESS)
         {
-            MOUSE_DOWN = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
-            MOVING = true;
         }
 
         if (action == GLFW_RELEASE)
         {
-            MOVING = false;
-            MOUSE_DOWN = false;
         }
 
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
@@ -717,17 +690,8 @@ int main(int argc, char **argv)
 {
     Application *application = new Application();
 
-    // Your main will always include a similar set up to establish your window
-    // and GL context, etc.
-
-    WindowManager *windowManager = new WindowManager();
-    // windowManager->init(1280, 720);
-    windowManager->init(1920, 1080);
-    // windowManager->init(2560, 1440);
-    windowManager->setEventCallbacks(application);
-    application->windowManager = windowManager;
-
-    // Load game assets
+    // Load game
+    application->loadWindow();
     application->loadCanvas();
     application->loadSounds();
     application->loadShaders();
@@ -743,14 +707,13 @@ int main(int argc, char **argv)
     application->loadGameObjects();
 
     application->startTime = glfwGetTime();
-
     double t = 0;
     const double dt = 0.02;
     double currentTime = application->startTime;
     double accumulator = 0;
 
     // Loop until the user closes the window.
-    while (!glfwWindowShouldClose(windowManager->getHandle()))
+    while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
         // Render scene.
         double newTime = glfwGetTime();
@@ -768,13 +731,11 @@ int main(int argc, char **argv)
 
         application->render();
 
-        // Swap front and back buffers.
-        glfwSwapBuffers(windowManager->getHandle());
-        // Poll for and process events.
+        // Swap front and back buffers
+        glfwSwapBuffers(application->windowManager->getHandle());
         glfwPollEvents();
     }
 
-    // Quit program.
-    windowManager->shutdown();
+    application->windowManager->shutdown();
     return 0;
 }

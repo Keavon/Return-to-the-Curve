@@ -11,5 +11,11 @@ Prefab::Prefab(shared_ptr<Shape> model, shared_ptr<Material> material)
 
 shared_ptr<Instance> Prefab::getNewInstance()
 {
-    return make_shared<Instance>(*this);
+    shared_ptr<Instance> instance = make_shared<Instance>(*this);
+
+    if (mass != -1) instance->physicsObject->setMass(mass);
+    if (friction != -1) instance->physicsObject->setFriction(friction);
+    if (elasticity != -1) instance->physicsObject->setElasticity(elasticity);
+
+    return instance;
 }

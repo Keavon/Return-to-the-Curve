@@ -22,6 +22,13 @@ shared_ptr<Prefab> PrefabManager::get(string prefabFile)
         
         shared_ptr<Prefab> prefab = make_shared<Prefab>(model, material);
         loadedPrefabs[prefabFile] = prefab;
+
+        YAML::Node physics = file["physics"];
+        if (physics) {
+            if (physics["mass"]) prefab->mass = physics["mass"].as<float>();
+            if (physics["friction"]) prefab->friction = physics["friction"].as<float>();
+            if (physics["elasticity"]) prefab->elasticity = physics["elasticity"].as<float>();
+        }
     }
     
     return loadedPrefabs[prefabFile];
