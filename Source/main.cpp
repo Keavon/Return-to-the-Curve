@@ -36,6 +36,7 @@
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
 #include "effects/ParticleSpark.h"
+#include "engine/UIObject.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
@@ -91,7 +92,14 @@ public:
         shared_ptr<Program> depthDebug;
         shared_ptr<Program> debug;
         shared_ptr<Program> particle;
+		shared_ptr<Program> ui;
     } programs;
+
+	struct
+	{
+		shared_ptr<UIObject> logo;
+		shared_ptr<UIObject> winMessage;
+	} uis;
 
     struct
     {
@@ -119,6 +127,7 @@ public:
         shared_ptr<Ball> ball;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
+		//shared_ptr<Enemy> billboard;
         shared_ptr<Goal> goal;
         shared_ptr<Box> goalObject;
         shared_ptr<Octree> octree;
@@ -167,8 +176,9 @@ public:
         soundEngine->music();
         #endif
         glEnable(GL_BLEND);
+        glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+     }
 
     //=================================================
     // SHADERS
@@ -245,6 +255,12 @@ public:
             "particle",
             {"vertPos", "vertNor", "vertTex"},
             {"P", "V", "M", "pColor", "alphaTexture"});
+
+		initShader(
+			programs.ui,
+			"ui",
+			{ "vertPos", "vertNor", "vertTex" },
+			{"M"});
     }
 
     //=================================================
@@ -451,6 +467,8 @@ public:
 
     void initGameObjects()
     {
+		//gameObjects.billboard = make_shared<GameObject>(START_POSITION, quat(1, 0, 0, 0), shapes.billboard);
+
         gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
         gameObjects.ball->init(windowManager, sparkEmitter);
         // Control points for enemy's bezier curve path
@@ -484,6 +502,9 @@ public:
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
         gameObjects.octree->insert(gameObjects.enemy2);
+		uis.logo = make_shared<UIObject>(vec3(-4.0f, 3.75f, 0), vec3(0.2f, 0.2f, 0), quat(1, 1, 1, 1), shapes.billboard, RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
+		//uis.winMessage = make_shared<UIObject>(vec3(0, 0, 0), quat(1, 1, 1, 1), shapes.billboard, RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
+
     }
 
     void loadLevel()
@@ -551,6 +572,7 @@ public:
         }
 
         glViewport(0, 0, width, height); // frame width and height
+        glViewport(0, 0, width, height); // frame width and height
         // Clear framebuffer.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -562,6 +584,10 @@ public:
         {
             renderPlayerView(&LS);
         }
+		auto M = make_shared<MatrixStack>();
+		//gameObjects.enemy1->drawPers(programs.ui, M);
+		//shapes.billboard->draw(programs.ui);
+		uis.logo->draw(programs.ui, M);
     }
 
     void drawScene(shared_ptr<Program> shader)
@@ -617,7 +643,6 @@ public:
 
         // Cleanup
         M->popMatrix();
-		// gameObjects.ball->drawPers(shader, M);
     }
 
     void createShadowMap(mat4 *LS)
@@ -700,7 +725,7 @@ public:
 
     void renderPlayerView(mat4 *LS)
     {
-        drawSkyBox();
+		//drawSkyBox();
 
         programs.pbr->bind();
 

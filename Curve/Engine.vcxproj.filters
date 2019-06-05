@@ -95,9 +95,6 @@
     <ClCompile Include="..\Source\engine\Frustum.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\uiobjects\Logo.cpp">
-      <Filter>Source\uiobjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\engine\UIObject.h">
       <Filter>Source\engine</Filter>
     </ClCompile>
@@ -117,9 +114,6 @@
     </Filter>
     <Filter Include="Source\effects">
       <UniqueIdentifier>{c5490b13-a541-4379-b8b3-bbe4dd560873}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\uiobjects">
-      <UniqueIdentifier>{d0f8ce12-8c1b-4333-9ed1-15786f9ddd1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\effects\ParticleFirework.h">
       <Filter>Source\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\uiobjects\Logo.h">
-      <Filter>Source\uiobjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

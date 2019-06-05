@@ -1,5 +1,9 @@
 #include "UIObject.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include "math.h"
+
 #include <memory>
 #include "../Program.h"
 #include "../MatrixStack.h"
@@ -9,20 +13,34 @@
 using namespace std;
 using namespace glm;
 
-UIObject::UIObject(vec3 position, quat orientation, shared_ptr<Shape> model) :
-	position(position), orientation(orientation), model(model), scale(vec3(1)), inView(true)
+UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, string imgName)
 {
+	this->position = position;
+	this->scale = scale;
+	this->orientation = orientation;
+	this->position = position;
+	this->model = model;
+	//model->init();
+	inView = true;
+	img = make_shared<Texture>();
+	img->setFilename(imgName);
+	img->init();
+	img->setUnit(1);
+	img->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
+	//img = imgTemp;
+	cout << "object initialized" << endl;
 }
 
 void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
+	prog->bind();
 	M->pushMatrix();
-	M->scale(vec3(0.125f, 0.5f, 0));
-	M->translate(vec3(0.75f, 0.75f, 0));
+	//M->rotate(quat(0.0f, 1.0f, 0, M_PI_2));
+	M->scale(scale);
+	M->translate(position);
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	M->loadIdentity();
-	glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	model->draw(prog);
 	M->popMatrix();
+	prog->unbind();
 }
