@@ -166,6 +166,7 @@
     <ClCompile Include="..\Source\engine\PhysicsObject.cpp" />
     <ClCompile Include="..\Source\engine\Prefab.cpp" />
     <ClCompile Include="..\Source\engine\PrefabManager.cpp" />
+    <ClCompile Include="..\Source\engine\Preferences.cpp" />
     <ClCompile Include="..\Source\engine\SceneManager.cpp" />
     <ClCompile Include="..\Source\engine\ShaderManager.cpp" />
     <ClCompile Include="..\Source\engine\SkyboxManager.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="..\Source\engine\PhysicsObject.h" />
     <ClInclude Include="..\Source\engine\Prefab.h" />
     <ClInclude Include="..\Source\engine\PrefabManager.h" />
+    <ClInclude Include="..\Source\engine\Preferences.h" />
     <ClInclude Include="..\Source\engine\SceneManager.h" />
     <ClInclude Include="..\Source\engine\ShaderManager.h" />
     <ClInclude Include="..\Source\engine\SkyboxManager.h" />

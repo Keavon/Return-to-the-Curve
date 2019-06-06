@@ -1,0 +1,12 @@
+--- # User preferences
+build:
+    resources: "../Resources"
+window:
+    resolution: [1920, 1080]
+    maximized: false
+    fullscreen: false
+shadows:
+    resolution: 6
+    samples: 3
+sound:
+    music: true

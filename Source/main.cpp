@@ -45,13 +45,13 @@
 #include "engine/MaterialManager.h"
 #include "engine/PrefabManager.h"
 #include "engine/EmitterManager.h"
+#include "engine/Preferences.h"
 
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 // number of skin textures to load and swap through
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
 #define RESOURCE_DIRECTORY string("../Resources")
 #define START_WITH_MUSIC_PLAYING false
 
@@ -63,6 +63,7 @@ shared_ptr<Sound> soundEngine;
 class Application : public EventCallbacks
 {
 public:
+    Preferences preferences = Preferences(RESOURCE_DIRECTORY + "/preferences.yaml");
     WindowManager *windowManager = new WindowManager();
     ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
     TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
@@ -77,15 +78,8 @@ public:
     bool editMode = false;
     float startTime = 0.0f;
 
-    // Shadow Globals
-    int SHADOWS = 1;
-    int SHADOW_AA = 1; 
-    // Don't change SHADOW_AA here,
-    // it will be over written by SHADOW_QUALITY preset choice.
-    // It can be changed in game with the 'Y' key.
-    int DEBUG_LIGHT = 0;
-    int GEOM_DEBUG = 1;
-    GLuint SHADOW_SIZE = 0;
+    bool debugLight = 0;
+    bool debugGeometry = 1;
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
 
@@ -147,7 +141,7 @@ public:
 
     void loadShaders()
     {
-        vector<string> pbrUniforms = { "P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
+        vector<string> pbrUniforms = { "P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
         shared_ptr<Program> pbr = shaderManager.get("pbr", { "vertPos", "vertNor", "vertTex" }, pbrUniforms);
         materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
@@ -185,18 +179,13 @@ public:
 
     void loadShadows()
     {
-        // Calculate shadow quality
-        if (SHADOW_QUALITY == 0) SHADOW_AA = 1;
-        SHADOWS = !!SHADOW_QUALITY;
-        SHADOW_SIZE = 256 * (int)pow(2, SHADOW_QUALITY);
-
         // Generate the FBO for the shadow depth
         glGenFramebuffers(1, &depthMapFBO);
 
         // Generate the texture
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, preferences.shadows.resolution, preferences.shadows.resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -299,12 +288,12 @@ public:
 
         mat4 LS;
 
-        if (SHADOW_QUALITY) drawShadowMap(&LS);
+        if (preferences.shadows.resolution > 0) drawShadowMap(&LS);
 
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (DEBUG_LIGHT) drawDepthMap();
+        if (debugLight) drawDepthMap();
         else renderPlayerView(&LS);
     }
 
@@ -319,9 +308,8 @@ public:
 
         if (shader == pbr)
         {
-            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
-            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
-            glUniform1i(shader->getUniform("shadows"), SHADOWS);
+            glUniform1f(shader->getUniform("shadowResolution"), (float)preferences.shadows.resolution);
+            glUniform1f(shader->getUniform("shadowAA"), (float)preferences.shadows.samples);
 
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
         }
@@ -349,7 +337,7 @@ public:
     void drawShadowMap(mat4 *LS)
     {
         // set up light's depth map
-        glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
+        glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
@@ -372,9 +360,8 @@ public:
     {
         // Code to draw the light depth buffer
 
-        // geometry style debug on light - test transforms, draw geometry from
-        // light perspective
-        if (GEOM_DEBUG)
+        // geometry style debug on light - test transforms, draw geometry from light perspective
+        if (debugGeometry)
         {
             shared_ptr<Program> depthDebug = shaderManager.get("depth_debug");
 
@@ -589,18 +576,6 @@ public:
         {
             soundEngine->nextTrackMusic();
         }
-        else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
-        {
-            SHADOW_AA = (SHADOW_AA + 1) % 9;
-            if (SHADOW_AA == 0)
-            {
-                SHADOW_AA++;
-            }
-        }
-        else if (key == GLFW_KEY_T && action == GLFW_PRESS)
-        {
-            SHADOWS = !SHADOWS;
-        }
         // other call backs
         else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
@@ -632,7 +607,7 @@ public:
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
-            DEBUG_LIGHT = !DEBUG_LIGHT;
+            debugLight = !debugLight;
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
