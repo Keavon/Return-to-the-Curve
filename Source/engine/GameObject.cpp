@@ -24,7 +24,7 @@ GameObject::GameObject(vec3 position, quat orientation, vec3 scale, shared_ptr<S
 
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-    if (model != NULL && inView)
+    if (model != NULL && (inView || !cull))
     {
         M->pushMatrix();
             M->translate(position);
@@ -34,4 +34,11 @@ void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
             model->draw(prog);
         M->popMatrix();
     }
+}
+
+bool GameObject::cull = false;
+
+void GameObject::setCulling(bool cull)
+{
+    GameObject::cull = cull;
 }

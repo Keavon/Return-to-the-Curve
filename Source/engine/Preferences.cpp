@@ -1,5 +1,7 @@
 #include "Preferences.h"
 
+#include <math.h>
+
 using namespace std;
 
 Preferences::Preferences(string prefsFile)

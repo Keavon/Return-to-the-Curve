@@ -9,9 +9,9 @@ out vec4 color;
 void main()
 {
     float thickness = 0.1 / edge;
-    float max = 1 - thickness;
-    float min = -1 + thickness;
-    bool shouldDiscard = 
+    float max = 0.5 - thickness;
+    float min = -0.5 + thickness;
+    bool shouldDiscard =
         ((fragPos.x > max || fragPos.x < min) && fragPos.y < max && fragPos.y > min && fragPos.z < max && fragPos.z > min) ||
         ((fragPos.y > max || fragPos.y < min) && fragPos.x < max && fragPos.x > min && fragPos.z < max && fragPos.z > min) ||
         ((fragPos.z > max || fragPos.z < min) && fragPos.x < max && fragPos.x > min && fragPos.y < max && fragPos.y > min);

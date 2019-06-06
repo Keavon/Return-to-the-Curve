@@ -46,6 +46,7 @@ public:
     void update();
     void insert(std::shared_ptr<PhysicsObject> object);
     void insert(std::vector<std::shared_ptr<PhysicsObject>> object);
+    void fitToObjects();
 
     std::shared_ptr<OctNode> root;
     bool debug;
