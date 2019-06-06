@@ -22,6 +22,7 @@ public:
     void init();
     void calcBezierCurveTarget(float t);
     void calcCircPos(float theta, float radius, char axis, float axisValue);
+    std::vector<glm::vec3> calcLinearPath(glm::vec3 point1, glm::vec3 point2);
 	glm::vec3 getTargetPos();
     // Pathing data
     float t;
