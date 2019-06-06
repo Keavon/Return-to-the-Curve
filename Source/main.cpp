@@ -12,6 +12,8 @@
 #include <ctime>
 #include <string>
 #include <irrKlang.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Camera.h"
 #include "GLSL.h"
@@ -24,6 +26,7 @@
 #include "Skybox.h"
 #include "WindowManager.h"
 
+#include "engine/Time.h"
 #include "effects/ParticleSpark.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Goal.h"
@@ -47,16 +50,12 @@
 #include "engine/EmitterManager.h"
 #include "engine/Preferences.h"
 
-// value_ptr for glm
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-// number of skin textures to load and swap through
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
 using namespace glm;
 
+TimeData Time;
 shared_ptr<Sound> soundEngine;
 
 class Application : public EventCallbacks
@@ -233,7 +232,7 @@ public:
     }
 
     void loadLevel() {
-        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-1.yaml");
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/" + preferences.scenes.list[preferences.scenes.startup] + ".yaml");
     }
 
     void loadGameObjects()
@@ -466,7 +465,7 @@ public:
     }
 
     /*
-     * General
+     * Render loop calls
      */
     void resetPlayer()
     {
@@ -479,43 +478,46 @@ public:
         gameObjects.marble->frozen = 0;
     }
 
-    void update(float dt)
+    void beforePhysics()
+    {
+        gameObjects.marble->update(camera->dolly, camera->strafe);
+        gameObjects.goal->update();
+        gameObjects.enemy1->update();
+        gameObjects.enemy2->update();
+    }
+
+    void physicsTick()
     {
         sceneManager.octree.update();
 
-        if (gameObjects.marble->position.y < sceneManager.deathBelow)
-        {
-            resetPlayer();
-        }
-
         vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
-        for (shared_ptr <PhysicsObject> instance : instancesToCheck)
+        for (shared_ptr<PhysicsObject> object : instancesToCheck)
         {
-            instance->checkCollision(gameObjects.marble.get());
+            object->checkCollision(gameObjects.marble.get());
         }
 
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
-            instance->physicsObject->update(dt);
+            instance->physicsObject->update();
         }
+    }
 
-        // TODO:: Do Collision checks between marble and Enemy
-        //auto enemiesToCheck = sceneManager.octree.query(marble);
-        //for (auto enemies : enemiesToCheck) {}
+    void beforeRender()
+    {
+        if (gameObjects.marble->position.y < sceneManager.deathBelow) resetPlayer();
 
-        gameObjects.marble->update(dt, camera->dolly, camera->strafe);
-        camera->update(dt, gameObjects.marble);
-        gameObjects.goal->update(dt);
-        gameObjects.enemy1->update(dt);
-        gameObjects.enemy2->update(dt);
+        camera->update(gameObjects.marble);
 
-        emitterManager.get("sparks")->update(dt);
-        emitterManager.get("fireworks")->update(dt);
+        emitterManager.get("sparks")->update();
+        emitterManager.get("fireworks")->update();
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         sceneManager.octree.markInView(viewFrustum);
     }
 
+    /*
+     * General
+     */
     void setLight(shared_ptr<Program> prog)
     {
         glUniform3f(prog->getUniform("lightPosition"), gameLight.x, gameLight.y, gameLight.z);
@@ -703,41 +705,39 @@ int main(int argc, char **argv)
     application->loadSounds();
 
     application->startTime = glfwGetTime();
-    double t = 0;
-    const double dt = 0.02;
-    double currentTime = application->startTime;
-    double accumulator = 0;
-    double audioAccumulator = 0;
+
+    float startTimestamp = glfwGetTime();
+    float lastFrameTimestamp = 0;
+    float lastPhysicsTimestamp = 0;
+    float rollingAverageFrameTime = 0;
+    float accumulator = 0;
+    Time.physicsDeltaTime = 0.02;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
-        // Render scene.
-        double newTime = glfwGetTime();
-        double frameTime = newTime - currentTime;
-        currentTime = newTime;
+        float t = glfwGetTime();
+        Time.deltaTime = t - Time.timeSinceStart - startTimestamp;
+        accumulator += Time.deltaTime;
+        Time.timeSinceStart = t - startTimestamp;
 
-        accumulator += frameTime;
-        audioAccumulator += frameTime;
-
-        while (accumulator >= dt)
+        while (accumulator >= Time.physicsDeltaTime)
         {
-            application->update(dt);
-            accumulator -= dt;
-            t += dt;
+            // Call gameobject physics update and ropagate physics
+            application->beforePhysics();
+            application->physicsTick();
+            accumulator -= Time.physicsDeltaTime;
         }
 
-        if (audioAccumulator >= 1.0)
-        {
-            application->updateAudio();
-            audioAccumulator = 0;
-        }
+        rollingAverageFrameTime = rollingAverageFrameTime * (20 - 1) / 20 + (Time.deltaTime / 20);
+        // printf("FPS: %i\n", (int)(1.0 / rollingAverageFrameTime));
 
-        application->render();
-
-        // Swap front and back buffers
-        glfwSwapBuffers(application->windowManager->getHandle());
+        // Get user input, call gameobject update, and render visuals
         glfwPollEvents();
+        application->beforeRender();
+        application->render();
+        glfwSwapBuffers(application->windowManager->getHandle());
+
     }
 
     application->windowManager->shutdown();

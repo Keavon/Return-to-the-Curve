@@ -1,10 +1,15 @@
 --- # User preferences
 window:
-    resolution: [1920, 1080]
-    maximized: true
-    fullscreen: false
+    resolution: [2560, 1440]
+    maximized: false
+    fullscreen: true
 shadows:
     resolution: 6
     samples: 4
 sound:
     music: true
+scenes:
+    startup: 1
+    list:
+        - Level-1
+        - Level-2
