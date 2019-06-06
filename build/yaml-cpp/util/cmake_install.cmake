@@ -1,4 +1,4 @@
-# Install script for directory: /home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/util
+# Install script for directory: /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/util
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

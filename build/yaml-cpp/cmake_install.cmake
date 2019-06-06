@@ -1,4 +1,4 @@
-# Install script for directory: /home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp
+# Install script for directory: /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,17 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/libyaml-cpp.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/libyaml-cpp.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/yaml-cpp" TYPE DIRECTORY FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/include/yaml-cpp/" FILES_MATCHING REGEX "/[^/]*\\.h$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/yaml-cpp" TYPE DIRECTORY FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/include/yaml-cpp/" FILES_MATCHING REGEX "/[^/]*\\.h$")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xdevx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp" TYPE FILE FILES
-    "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp-config.cmake"
-    "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/yaml-cpp-config-version.cmake"
+    "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp-config.cmake"
+    "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/yaml-cpp-config-version.cmake"
     )
 endif()
 
@@ -56,7 +56,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake"
-         "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake")
+         "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp/yaml-cpp-targets-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -65,20 +65,20 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
     endif()
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp" TYPE FILE FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp" TYPE FILE FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp" TYPE FILE FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets-release.cmake")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/yaml-cpp" TYPE FILE FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/Export/lib/cmake/yaml-cpp/yaml-cpp-targets-release.cmake")
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/cmake_install.cmake")
-  include("/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/util/cmake_install.cmake")
+  include("/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/cmake_install.cmake")
+  include("/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/util/cmake_install.cmake")
 
 endif()
 

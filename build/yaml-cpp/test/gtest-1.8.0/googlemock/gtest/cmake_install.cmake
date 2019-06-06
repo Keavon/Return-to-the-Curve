@@ -1,4 +1,4 @@
-# Install script for directory: /home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/test/gtest-1.8.0/googletest
+# Install script for directory: /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/test/gtest-1.8.0/googletest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,14 +38,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/test/gtest-1.8.0/googletest/include/gtest")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/test/gtest-1.8.0/googletest/include/gtest")
 endif()
 

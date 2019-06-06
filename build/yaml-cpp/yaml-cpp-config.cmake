@@ -5,7 +5,7 @@
 
 # Compute paths
 get_filename_component(YAML_CPP_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(YAML_CPP_INCLUDE_DIR "/home/hluengas/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/include")
+set(YAML_CPP_INCLUDE_DIR "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/include")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
 include("${YAML_CPP_CMAKE_DIR}/yaml-cpp-targets.cmake")

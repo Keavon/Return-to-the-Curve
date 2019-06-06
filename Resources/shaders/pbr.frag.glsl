@@ -88,7 +88,7 @@ float TestShadow(vec4 LSfPos) {
 }
 
 float getShadeValue() {
-	if (shadowResolution == 0) return 0;
+	if (shadowResolution == 0) return 0.0f;
 
 	float increment = (1.0f / shadowResolution);
 	float halfIncrement = (increment / 2.0f);
@@ -112,7 +112,7 @@ float getShadeValue() {
 	}
 	shade /= (samples * samples);
 
-	return 1.0 - shade;
+	return 1.0f - shade;
 }
 
 void main() {

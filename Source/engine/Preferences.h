@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cmath>
 #include <yaml-cpp/yaml.h>
 
 class Preferences
