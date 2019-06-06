@@ -29,8 +29,8 @@ void Texture::init()
 	if(!data) {
 		cerr << filename << " not found" << endl;
 	}
-	if(ncomps != 3 && ncomps != 4) {
-		cerr << filename << " must have 3 or 4 components (RGB or RGBA)" << endl;
+	if(ncomps != 1 && ncomps != 3 && ncomps != 4) {
+		cerr << filename << " must have 1, 3, or 4 components (RGB or RGBA)" << endl;
 	}
 	if((w & (w - 1)) != 0 || (h & (h - 1)) != 0) {
 		cerr << filename << " must be a power of 2" << endl;

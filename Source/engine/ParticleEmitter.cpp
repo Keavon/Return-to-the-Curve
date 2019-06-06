@@ -8,9 +8,12 @@
 using namespace std;
 using namespace glm;
 
-ParticleEmitter::ParticleEmitter(int maxParticles) :
-    maxParticles(maxParticles), numActiveParticles(0)
+ParticleEmitter::ParticleEmitter(shared_ptr<Shape> billboard, shared_ptr<Texture> texture, int maxParticles)
 {
+    this->billboard = billboard;
+    this->texture = texture;
+    this->maxParticles = maxParticles;
+    this->numActiveParticles = 0;
 }
 
 void ParticleEmitter::update(float dt)
@@ -24,12 +27,6 @@ void ParticleEmitter::update(float dt)
             p->update(dt);
         }
     }
-}
-
-void ParticleEmitter::init(shared_ptr<Shape> billboard, shared_ptr<Texture> texture)
-{
-    this->billboard = billboard;
-    this->texture = texture;
 }
 
 void ParticleEmitter::draw(shared_ptr<Program> prog)

@@ -9,14 +9,22 @@
 using namespace std;
 using namespace glm;
 
-GameObject::GameObject(vec3 position, quat orientation, shared_ptr<Shape> model) :
-    position(position), orientation(orientation), model(model), scale(vec3(1)), inView(true)
+GameObject::GameObject(vec3 position, shared_ptr<Shape> model) : GameObject::GameObject(position, glm::quat(1, 0, 0, 0), vec3(1, 1, 1), model) {}
+
+GameObject::GameObject(vec3 position, quat orientation, shared_ptr<Shape> model) : GameObject::GameObject(position, orientation, vec3(1, 1, 1), model) {}
+
+GameObject::GameObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model)
 {
+    this->position = position;
+    this->orientation = orientation;
+    this->scale = scale;
+    this->model = model;
+    this->inView = true;
 }
 
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-    if (model != NULL && inView)
+    if (model != NULL && (inView || !cull))
     {
         M->pushMatrix();
             M->translate(position);
@@ -28,17 +36,9 @@ void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
     }
 }
 
-void GameObject::drawPers(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
+bool GameObject::cull = false;
+
+void GameObject::setCulling(bool cull)
 {
-	prog->bind();
-	M->pushMatrix();
-	M->scale(vec3(0.125f, 0.5f, 0));
-	M->translate(vec3(0.75f, 0.75f, 0));
-	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	//M->loadIdentity();
-	//glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	//glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-	model->draw(prog);
-	M->popMatrix();
-	prog->unbind();
+    GameObject::cull = cull;
 }

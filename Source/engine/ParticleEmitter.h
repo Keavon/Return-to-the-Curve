@@ -32,8 +32,7 @@ public:
 class ParticleEmitter
 {
 public:
-    ParticleEmitter(int maxParticles);
-    void init(std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture);
+    ParticleEmitter(std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture, int maxParticles);
     void update(float dt);
     void draw(std::shared_ptr<Program> prog);
     void addParticle(std::shared_ptr<Particle> p);

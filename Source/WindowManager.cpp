@@ -30,7 +30,7 @@ WindowManager::~WindowManager()
 	}
 }
 
-bool WindowManager::init(int const width, int const height)
+bool WindowManager::init(int const width, int const height, bool maximized, bool fullscreen)
 {
 	glfwSetErrorCallback(error_callback);
 
@@ -42,10 +42,10 @@ bool WindowManager::init(int const width, int const height)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+    if (maximized) glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 	// Create a windowed mode window and its OpenGL context.
-	windowHandle = glfwCreateWindow(width, height, "Return To the Curve", nullptr, nullptr);
+	windowHandle = glfwCreateWindow(width, height, "Return To the Curve", fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 	if (!windowHandle)
 	{
 		glfwTerminate();

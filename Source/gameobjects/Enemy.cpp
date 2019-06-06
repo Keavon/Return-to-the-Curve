@@ -13,10 +13,8 @@
 using namespace glm;
 using namespace std;
 
-Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shape> model, 
-	shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius):
-    PhysicsObject(enemyPath[0], orientation, model, make_shared<ColliderSphere>(radius)),
-    radius(radius), legModel(legmodel), footModel(footmodel)
+Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius):
+    PhysicsObject(enemyPath[0], orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
 {
     curvePath = new Pathing(enemyPath);
     speed = 0;
@@ -85,7 +83,7 @@ void Enemy::update(float dt)
 
 void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-	if (!inView)
+	if (!inView && cull)
 	{
 		return;
 	}

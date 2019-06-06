@@ -10,7 +10,7 @@ void main()
 {
     float d = length(fragPos);
     float thickness = 0.1 / radius;
-    if (d < 1 && d > 1 - thickness)
+    if (d < 0.5 && d > 0.5 - thickness)
     {
 	    color = vec4(1, 1, 0, 1);
     }

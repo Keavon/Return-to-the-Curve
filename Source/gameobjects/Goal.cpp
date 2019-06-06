@@ -12,8 +12,8 @@
 using namespace std;
 using namespace glm;
 
-Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<TriggerSphere>(radius)),
-                                                                                     radius(radius), ballInGoal(false), didWin(false)
+Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
+    PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<TriggerSphere>(radius)), radius(radius), ballInGoal(false), didWin(false)
 {
 }
 
@@ -34,6 +34,8 @@ void Goal::update(float dt)
             {
                 didWin = true;
                 onWin();
+                dynamic_cast<Ball *>(collision.other)->frozen = 1;
+                collision.other->position = position + vec3(0, 1, 0);
             }
         }
     }

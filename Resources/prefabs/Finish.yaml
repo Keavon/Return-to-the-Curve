@@ -1,0 +1,5 @@
+---
+model: goal.obj
+material: [painted_metal, png]
+physics:
+    elasticity: 0.5

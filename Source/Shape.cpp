@@ -312,7 +312,7 @@ void Shape::draw(const shared_ptr<Program> prog) const
 	glVertexAttribPointer(h_pos, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	// Bind normal buffer
-	if (norBufID != 0)
+	if (norBufID != 0 && prog->hasAttribute("vertNor"))
 	{
 		h_nor = prog->getAttribute("vertNor");
 		if (h_nor != -1)
@@ -323,7 +323,7 @@ void Shape::draw(const shared_ptr<Program> prog) const
 		}
 	}
 
-	if (texBufID != 0)
+	if (texBufID != 0 && prog->hasAttribute("vertTex"))
 	{
 		// Bind texcoords buffer
 		h_tex = prog->getAttribute("vertTex");

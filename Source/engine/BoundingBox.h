@@ -11,4 +11,5 @@ public:
     glm::vec3 min;
     glm::vec3 max;
     float radius;
+    glm::vec3 center;
 };

@@ -6,6 +6,7 @@
 
 #include "GLSL.h"
 
+#define CONTAINS(map, key) map.find(key) != map.end()
 
 std::string readFileAsString(const std::string &fileName)
 {
@@ -113,6 +114,14 @@ void Program::addAttribute(const std::string &name)
 void Program::addUniform(const std::string &name)
 {
 	uniforms[name] = GLSL::getUniformLocation(pid, name.c_str(), isVerbose());
+}
+
+bool Program::hasAttribute(std::string attribute) {
+    return CONTAINS(attributes, attribute);
+}
+
+bool Program::hasUniform(std::string uniform) {
+    return CONTAINS(uniforms, uniform);
 }
 
 GLint Program::getAttribute(const std::string &name) const
