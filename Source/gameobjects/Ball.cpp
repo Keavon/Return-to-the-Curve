@@ -33,6 +33,9 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     setMass(5);
     setElasticity(0.5);
     setFriction(0.25);
+
+    hasPowerUp = false;
+    powerUpReady = false;
 }
 
 void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
@@ -50,6 +53,21 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
             applyImpulse(-collision.normal * 300.0f);
+        }
+        if (dynamic_cast<PowerUp *>(collision.other) != NULL)
+        {
+            if (storedPowerUp.size() < 2){
+                storedPowerUp.push_back(dynamic_cast<PowerUp *>(collision.other) );
+            }
+            else
+            {
+                storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
+            }
+            //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
+            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : (char*)storedPowerUp[0]->powerUpType);
+            printf("Press 'E' to activate\n");
+            //cout << "Stored size: " << storedPowerUp.size() << endl;
+            hasPowerUp = true;
         }
     }
 
@@ -91,6 +109,23 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
         JUMP_TIME = currentTime;
         WANTS_JUMP = 1;
     }
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
+    {
+        /*printf("Num of power ups stored: %d \n", storedPowerUp.size());
+        for (PowerUp* p : storedPowerUp){
+            printf("Power Up type: %d ", p->powerUpType);
+            printf("Activatable: %s\n", p->activatable ? "true" : "false");
+        }
+        printf("Have Power Up? %s\n",hasPowerUp ? "true" : "false"); */
+        if (hasPowerUp){
+            //printf("storedPowerUp[0]->activatable: %s\n", storedPowerUp[0]->activatable ? "true" : "false");
+            if (storedPowerUp[0]->activatable)
+                activatePowerUp();
+            else {
+                prepNextPowerUp();
+            }
+        }
+    }
 
     // Any of the three timers expire?
     if (WANTS_JUMP && (currentTime - JUMP_TIME) >= 0.125)
@@ -116,6 +151,16 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
         WANTS_JUMP = 0;
         JUST_JUMPED = 1;
         JUMPED_AT_TIME = currentTime;
+
+        if (powerUpReady){
+            if (activePowerUp->powerUpType == 0 && activePowerUp->activatable){
+                soundEngine->superBounce();
+                cout << "Used Super Jump powerUp" << endl;
+                jumpForce = 150;
+                activePowerUp->activatable = false;
+                //prepNextPowerUp();
+            }
+        }
     }
     //===============================================================================
 
@@ -170,4 +215,33 @@ void Ball::nextSkin()
 shared_ptr<Material> Ball::getSkinMaterial()
 {
     return marbleSkins[currentSkin];
+}
+
+void Ball::activatePowerUp() 
+{
+    //TODO: start a timer when activating power ups
+    activePowerUp = storedPowerUp[0];
+    //cout << "Power up Type: "<< activePowerUp->powerUpType << endl;
+    cout << "Power up ready" << endl;
+    if (activePowerUp->powerUpType == 0){
+        printf("Press 'Space' to use Super Jump\n");
+        jumpForce = 500;
+        powerUpReady = true;
+    }
+    else {
+        activePowerUp->activatable = false;
+    }
+}
+
+void Ball::prepNextPowerUp()
+{
+    powerUpReady = false;
+    if (storedPowerUp.size() > 1) 
+    {
+        storedPowerUp[0] = storedPowerUp[1];
+        storedPowerUp.pop_back();
+    }
+    else {
+        hasPowerUp = false;
+    }
 }
