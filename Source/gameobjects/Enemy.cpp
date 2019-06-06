@@ -8,7 +8,24 @@ using namespace std;
 Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius):
     PhysicsObject(enemyPath[0], orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
 {
-    curvePath = new Pathing(enemyPath);
+	if (enemyPath.size() < 2){
+		sentry = true;
+		ballInRange = false;
+		sentryIdlePath = curvePath->calcLinearPath( vec3(enemyPath[0].x, enemyPath[0].y + 3, enemyPath[0].z) , 
+													vec3(enemyPath[0].x + 6.0, enemyPath[0].y + 3, enemyPath[0].z)); 
+		curvePath = new Pathing(sentryIdlePath);
+		sentryHome = sentryIdlePath[0];
+		state = 0;
+	}
+	else {
+		sentry = false;
+		ballInRange = false;
+		state = 3;
+		for (glm::vec3 pathVect : enemyPath){
+			defaultPath.push_back(vec3(pathVect.x, pathVect.y + 3, pathVect.z));
+		}
+		curvePath = new Pathing(defaultPath);
+	}
     speed = 0;
     material = 0;
 
@@ -26,30 +43,58 @@ void Enemy::init(WindowManager *windowManager)
     this->windowManager = windowManager;
 }
 
-void Enemy::update()
+void Enemy::update(vec3 ballPosition)
 {
+	/*
+		TODO:
+		Known issue: Sentry bot would occasionally randomly bug out and dissapper
+		UPDATE - this is due to something causing it's position to be set to NaN
+	*/
     collider->pendingCollisions.clear();
-
+	if (sentry){
+		//cout << "State : " << state << endl;
+		if (distance(sentryHome, ballPosition) < 20){
+			ballInRange = true;
+			//cout<< "Ball In Range" << endl;
+			state = 1;
+		}
+		else{
+			if (ballInRange){
+				sentryPathHome = curvePath->calcLinearPath(position, sentryHome);
+				curvePath = new Pathing(sentryPathHome);
+				state = 2;
+				t = 0.1;
+			}
+			ballInRange = false;
+		}
+	}
+	if (state == 1){ // Follow Player
+		//cout << "Following Player" << endl; 
+		sentryFollowPath = curvePath->calcLinearPath(position, ballPosition);
+		curvePath = new Pathing(sentryFollowPath);
+		t = 0.1;
+	}
     if (pointReached) {
 		curvePath->calcBezierCurveTarget(t);
         targetX = curvePath->getTargetPos().x;
-        targetY = curvePath->getTargetPos().y + 3;
+        targetY = curvePath->getTargetPos().y;
         targetZ = curvePath->getTargetPos().z;
 		if (t < 0){
             forward = true;
-			//printf("Switch to forward\n");
         }
         if (t > 1) {
+			if (state == 2){
+				state = 0;
+				curvePath = new Pathing(sentryIdlePath);
+				t = 0.1;
+			}
             forward = false;
-			//printf("Switch to backward\n");
         }
 		if (forward) {
             t += 0.02;
-            //printf("Incremented t to : %f\n", t);
         }
         else {
             t -= 0.02;
-            //printf("Decremented t to : %f\n", t);
         }
         pointReached = false;
     }
@@ -64,9 +109,7 @@ void Enemy::update()
         //quat q = rotate(, axis);
         //orientation = q * orientation;
         velocity = direction * moveSpeed;
-        //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
         position += velocity * Time.physicsDeltaTime;
-        //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
             < 1.02 ) {

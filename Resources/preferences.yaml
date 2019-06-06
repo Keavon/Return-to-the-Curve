@@ -2,14 +2,14 @@
 window:
     resolution: [2560, 1440]
     maximized: false
-    fullscreen: true
+    fullscreen: false
 shadows:
-    resolution: 6
+    resolution: 2
     samples: 4
 sound:
     music: true
 scenes:
-    startup: 1
+    startup: 0
     list:
         - Level-1
         - Level-2

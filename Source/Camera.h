@@ -56,6 +56,7 @@ public:
 
     //Camera Path Data
     bool pointReached;
+    bool previewLvl;
     float lookAtPathSpeed;
     float pathRadius = 100;
     float pathSpeed;

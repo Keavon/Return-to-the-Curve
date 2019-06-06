@@ -57,6 +57,21 @@ void Pathing::calcCircPos(float theta, float radius, char axis, float axisValue)
     }
 }
 
+std::vector<glm::vec3> Pathing::calcLinearPath(glm::vec3 point1, glm::vec3 point2){
+    vector<vec3> linearPath;
+    linearPath = {
+        point1,
+        vec3(point1.x + ((point2.x - point1.x)/3.0), 
+             point1.y + ((point2.y - point1.y)/3.0), 
+             point1.z + ((point2.z - point1.z)/ 3.0) ),
+        vec3(point1.x + 2.0*((point2.x - point1.x)/3.0), 
+             point1.y + 2.0*((point2.y - point1.y)/3.0), 
+             point1.z + 2.0*((point2.z - point1.z) / 3.0)),
+        point2
+    };
+    return linearPath;
+}
+
 glm::vec3 Pathing::getTargetPos() {
     return targetPos;
 }
