@@ -82,7 +82,7 @@ public:
     GLuint depthMap = 0;
 
     // Light Position Globals
-    vec3 gameLight = vec3(300, 150, 250);
+    vec3 gameLight = vec3(300, 150, -250);
     vec3 gameLightColor = vec3(250000, 250000, 250000);
 
     // Camera
@@ -246,28 +246,30 @@ public:
         gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
         gameObjects.marble->addSkin(materialManager.get("marble_tiles", "png"));
 
-        // Enemy 1
-        vector<glm::vec3> enemyPath = {
-            vec3{95.0, 2.0, 7.0},
-            vec3{100.0, 2.0, 15.0},
-            vec3{110.0, 2.0, -1.0},
-            vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.enemy1->init(windowManager);
-        sceneManager.octree.insert(gameObjects.enemy1);
+        if (preferences.scenes.startup == 0) {
+            // Enemy 1
+            vector<glm::vec3> enemyPath = {
+                vec3{95.0, 2.0, 7.0},
+                vec3{100.0, 2.0, 15.0},
+                vec3{110.0, 2.0, -1.0},
+                vec3{115.0, 2.0, 7.0} };
+            gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy1->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy1);
 
-        // Enemy 2
-        enemyPath = {
-            vec3{125.0, 8.0, 55.0},
-            vec3{115.0, 20.0, 55.0},
-            vec3{105.0, 5.0, 55.0},
-            vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.enemy2->init(windowManager);
-        sceneManager.octree.insert(gameObjects.enemy2);
+            // Enemy 2
+            enemyPath = {
+                vec3{125.0, 8.0, 55.0},
+                vec3{115.0, 20.0, 55.0},
+                vec3{105.0, 5.0, 55.0},
+                vec3{95.0, 8.0, 55.0} };
+            gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy2->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy2);
+        }
 
         // Goal functionality
-        gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
 
@@ -317,9 +319,11 @@ public:
         gameObjects.marble->draw(shader, M);
 
         // Draw enemies
-        if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
-        gameObjects.enemy1->draw(shader, M);
-        gameObjects.enemy2->draw(shader, M);
+        if (preferences.scenes.startup == 0) {
+            if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
+            gameObjects.enemy1->draw(shader, M);
+            gameObjects.enemy2->draw(shader, M);
+        }
 
         // Draw scene instances
         for (shared_ptr<Instance> instance : sceneManager.scene)
@@ -482,8 +486,10 @@ public:
     {
         gameObjects.marble->update(camera->dolly, camera->strafe);
         gameObjects.goal->update();
-        gameObjects.enemy1->update();
-        gameObjects.enemy2->update();
+        if (preferences.scenes.startup == 0) {
+            gameObjects.enemy1->update();
+            gameObjects.enemy2->update();
+        }
     }
 
     void physicsTick()
