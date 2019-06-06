@@ -43,7 +43,7 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared
     this->speed = 0;
 }
 
-void PhysicsObject::update(float dt)
+void PhysicsObject::update()
 {
     normForce = vec3(0);
     netForce.y += GRAVITY * mass;
@@ -152,8 +152,8 @@ void PhysicsObject::update(float dt)
 
     // apply force
     acceleration = netForce * invMass;
-    velocity += acceleration * dt;
-    position += velocity * dt;
+    velocity += acceleration * Time.physicsDeltaTime;
+    position += velocity * Time.physicsDeltaTime;
 
     impulse = vec3(0);
     netForce = vec3(0);

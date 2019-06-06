@@ -7,4 +7,4 @@ shadows:
     resolution: 6
     samples: 3
 sound:
-    music: false
+    music: true

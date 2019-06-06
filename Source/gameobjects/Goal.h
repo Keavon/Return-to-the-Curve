@@ -1,15 +1,23 @@
 #pragma once
 
-#include "../engine/PhysicsObject.h"
-#include "../engine/ParticleEmitter.h"
 #include <memory>
 #include <glm/glm.hpp>
+#include <memory>
+#include <iostream>
+
+#include "../engine/PhysicsObject.h"
+#include "../engine/ParticleEmitter.h"
+#include "../engine/TriggerSphere.h"
+#include "../effects/ParticleFirework.h"
+#include "../effects/Sound.h"
+#include "Ball.h"
+#include "../engine/Time.h"
 
 class Goal : public PhysicsObject
 {
 public:
     Goal(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
-    void update(float dt);
+    void update();
     void init(std::shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime);
     void onWin();
     void reset();

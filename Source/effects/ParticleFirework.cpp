@@ -28,9 +28,9 @@ void ParticleFirework::start()
     respawn = true;
 }
 
-void ParticleFirework::update(float dt)
+void ParticleFirework::update()
 {
-    Particle::update(dt);
+    Particle::update();
 
     color.a = (lifespan - t) / lifespan;
     color.g = t / lifespan;

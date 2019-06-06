@@ -446,5 +446,8 @@
     <ClInclude Include="..\Source\engine\Preferences.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\engine\Time.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

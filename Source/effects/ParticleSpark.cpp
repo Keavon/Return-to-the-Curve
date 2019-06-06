@@ -19,9 +19,9 @@ ParticleSpark::ParticleSpark(vec3 position, float impactVel, vec3 impactNormal) 
     scale = 0.25;
 }
 
-void ParticleSpark::update(float dt)
+void ParticleSpark::update()
 {
-    Particle::update(dt);
+    Particle::update();
 
     scale = (lifespan - t) / lifespan * 0.25;
     color.a = (lifespan - t) / lifespan;

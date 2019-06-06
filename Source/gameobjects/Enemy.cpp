@@ -1,14 +1,4 @@
 #include "Enemy.h"
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <math.h>
-#include "../Shape.h"
-#include "../WindowManager.h"
-#include "../engine/ColliderSphere.h"
-#include "../engine/PhysicsObject.h"
-
-#include <glm/glm.hpp>
-#include <memory>
 
 using namespace glm;
 using namespace std;
@@ -34,7 +24,7 @@ void Enemy::init(WindowManager *windowManager)
     this->windowManager = windowManager;
 }
 
-void Enemy::update(float dt)
+void Enemy::update()
 {
     collider->pendingCollisions.clear();
 
@@ -64,15 +54,16 @@ void Enemy::update(float dt)
         float dX = targetX - position.x;
         float dZ = targetZ - position.z;
         float dY = targetY - position.y;
-        direction = normalize(vec3{dX ,dY ,dZ});
-        velocity.x = velocity.z = 0;
+        direction = normalize(vec3(dX, dY, dZ));
+        velocity.x = 0;
+        velocity.z = 0;
         velocity.y = 0;
         //vec3 axis = vec3{0,1,0};
         //quat q = rotate(, axis);
         //orientation = q * orientation;
         velocity = direction * moveSpeed;
         //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
-        position += velocity * dt;
+        position += velocity * Time.deltaTime;
         //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
