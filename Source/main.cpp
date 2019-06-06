@@ -232,7 +232,7 @@ public:
     }
 
     void loadLevel() {
-        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-1.yaml");
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/" + preferences.scenes.list[preferences.scenes.startup] + ".yaml");
     }
 
     void loadGameObjects()
