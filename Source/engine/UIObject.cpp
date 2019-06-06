@@ -13,6 +13,10 @@
 using namespace std;
 using namespace glm;
 
+//UIObject::UIObject()
+//{
+//}
+
 UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, string imgName)
 {
 	this->position = position;

@@ -157,6 +157,7 @@ public:
         shaderManager.get("pass", {"vertPos"}, {"texBuf"});
         shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
+		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M"});
     }
 
     void loadMaterials()
@@ -285,6 +286,7 @@ public:
 
 	void loadUIObjects() {
 		uiObjects.logo = make_shared<UIObject>(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
+		//UIObject r = UIObject(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
 	}
 
     /*
@@ -714,6 +716,7 @@ int main(int argc, char **argv)
     application->loadModels();
     application->loadLevel();
     application->loadGameObjects();
+	application->loadUIObjects();
     application->loadSounds();
 
     application->startTime = glfwGetTime();

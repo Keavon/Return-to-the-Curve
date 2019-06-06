@@ -1,7 +1,6 @@
 #version 330 core
 out vec4 FragColor;
 in vec3 vertex_pos;
-in vec3 vertex_normal;
 in vec2 vertex_tex;
 
 uniform sampler2D tex;
