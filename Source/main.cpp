@@ -100,6 +100,12 @@ public:
         shared_ptr<Goal> goal;
     } gameObjects;
 
+	struct
+	{
+		shared_ptr<UIObject> logo;
+		shared_ptr<UIObject> winMessage;
+	} uiObjects;
+
     // Billboard for rendering a texture to screen (like the shadow map)
     GLuint fboQuadVertexArrayID;
     GLuint fboQuadVertexBuffer;
@@ -276,6 +282,10 @@ public:
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
+
+	void loadUIObjects() {
+		uiObjects.logo = make_shared<UIObject>(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
+	}
 
     /*
      * Rendering
