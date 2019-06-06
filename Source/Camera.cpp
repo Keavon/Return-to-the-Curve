@@ -33,7 +33,7 @@ void Camera::update(float dt, shared_ptr<Ball> ball) {
 
     if (cameraMode == marble) marbleModeUpdate(ball);
     else if (cameraMode == edit) editModeUpdate(dt);
-    //else if (cameraMode == flythrough) flythroughModeUpdate();
+    else if (cameraMode == flythrough) flythroughModeUpdate();
 }
 
 void Camera::marbleModeUpdate(shared_ptr<Ball> ball) {
@@ -95,67 +95,68 @@ void Camera::editModeUpdate(float dt) {
     }
 }
 
-//void Camera::flythroughModeUpdate() {
-//    // Linear Zoom Out from Marble
-//    if (pathT < 0.02) {
-//        cameraPath->calcCircPos(theta, pathRadius, 'y', 20 * cos(theta));
-//        circStartPos = cameraPath->getTargetPos();
-//        //printf("Circle Start Position: {%f,%f,%f}\n", circStartPos.x, circStartPos.y,circStartPos.z);
-//        pathVect = normalize(vec3{ circStartPos.x - eye.x, circStartPos.y - eye.y, circStartPos.z - eye.z });
-//        pathSpeed = (float)distance(circStartPos, eye) / (1.0 / 0.01);
-//        lookAtVec = normalize(vec3{ levelCenterPoint.x - lookAtPoint.x,
-//                                    levelCenterPoint.y - lookAtPoint.y,
-//                                    levelCenterPoint.z - lookAtPoint.z });
-//        lookAtPathSpeed = (float)distance(levelCenterPoint, lookAtPoint) / ((1.0 - 0.4) / 0.01);
-//    }
-//    if (pathT < 1) {
-//        if (pointReached) {
-//            pathVel = pathVect * pathSpeed;
-//            cameraPathTarget = eye + pathVel;
-//            //printf("Camera Path Target: {%f,%f,%f}\n",cameraPathTarget.x, cameraPathTarget.y,cameraPathTarget.z);
-//            if (pathT > 0.4) {
-//                lookAtPathVel = lookAtVec * lookAtPathSpeed;
-//                lookAtTarget = lookAtPoint + lookAtPathVel;
-//            }
-//            pathT += 0.01;
-//            pointReached = false;
-//        }
-//        pathVel = pathVect * (float)0.5;
-//        eye += pathVel;
-//        if (pathT > 0.4) {
-//            lookAtPathVel = lookAtVec * (float)0.8;
-//            lookAtPoint += lookAtPathVel;
-//        }
-//        if (distance(eye, cameraPathTarget) < 1) {
-//            pointReached = true;
-//        }
-//        //printf("PathT: %f\n", pathT);
-//    }
-//    else {
-//        lookAtPoint = levelCenterPoint;
-//        pathSpeed = 0.5;
-//        if (theta < 6.28) {
-//            if (pointReached) {
-//                theta += 0.02;
-//                cameraPath->calcCircPos(theta, pathRadius, 'y', (20 * cos(theta * 2) + 10));
-//                circNextPos = cameraPath->getTargetPos();
-//                pathVect = normalize(vec3{ circNextPos.x - eye.x,
-//                                            circNextPos.y - eye.y,
-//                                            circNextPos.z - eye.z });
-//                //printf("Theta: %f\nCircNextPos: (%f, %f, %f)\n", theta, circNextPos.x, circNextPos.y, circNextPos.z);
-//                pointReached = false;
-//            }
-//            pathVel = pathVect * pathSpeed;
-//            eye += pathVel;
-//            if (distance(eye, circNextPos) < 0.6) {
-//                pointReached = true;
-//            }
-//        }
-//        else {
-//            previewLvl = false;
-//        }
-//    }
-//}
+//TODO:: Have flyThrough work with a predefined bezierpath, 
+void Camera::flythroughModeUpdate() {
+   // Linear Zoom Out from Marble
+   if (pathT < 0.02) {
+       cameraPath->calcCircPos(theta, pathRadius, 'y', 20 * cos(theta));
+       circStartPos = cameraPath->getTargetPos();
+       //printf("Circle Start Position: {%f,%f,%f}\n", circStartPos.x, circStartPos.y,circStartPos.z);
+       pathVect = normalize(vec3{ circStartPos.x - eye.x, circStartPos.y - eye.y, circStartPos.z - eye.z });
+       pathSpeed = (float)distance(circStartPos, eye) / (1.0 / 0.01);
+       lookAtVec = normalize(vec3{ levelCenterPoint.x - lookAtPoint.x,
+                                   levelCenterPoint.y - lookAtPoint.y,
+                                   levelCenterPoint.z - lookAtPoint.z });
+       lookAtPathSpeed = (float)distance(levelCenterPoint, lookAtPoint) / ((1.0 - 0.4) / 0.01);
+   }
+   if (pathT < 1) {
+       if (pointReached) {
+           pathVel = pathVect * pathSpeed;
+           cameraPathTarget = eye + pathVel;
+           //printf("Camera Path Target: {%f,%f,%f}\n",cameraPathTarget.x, cameraPathTarget.y,cameraPathTarget.z);
+           if (pathT > 0.4) {
+               lookAtPathVel = lookAtVec * lookAtPathSpeed;
+               lookAtTarget = lookAtPoint + lookAtPathVel;
+           }
+           pathT += 0.01;
+           pointReached = false;
+       }
+       pathVel = pathVect * (float)0.5;
+       eye += pathVel;
+       if (pathT > 0.4) {
+           lookAtPathVel = lookAtVec * (float)0.8;
+           lookAtPoint += lookAtPathVel;
+       }
+       if (distance(eye, cameraPathTarget) < 1) {
+           pointReached = true;
+       }
+       //printf("PathT: %f\n", pathT);
+   }
+   else {
+       lookAtPoint = levelCenterPoint;
+       pathSpeed = 0.5;
+       if (theta < 6.28) {
+           if (pointReached) {
+               theta += 0.02;
+               cameraPath->calcCircPos(theta, pathRadius, 'y', (20 * cos(theta * 2) + 10));
+               circNextPos = cameraPath->getTargetPos();
+               pathVect = normalize(vec3{ circNextPos.x - eye.x,
+                                           circNextPos.y - eye.y,
+                                           circNextPos.z - eye.z });
+               //printf("Theta: %f\nCircNextPos: (%f, %f, %f)\n", theta, circNextPos.x, circNextPos.y, circNextPos.z);
+               pointReached = false;
+           }
+           pathVel = pathVect * pathSpeed;
+           eye += pathVel;
+           if (distance(eye, circNextPos) < 0.6) {
+               pointReached = true;
+           }
+       }
+       else {
+           previewLvl = false;
+       }
+   }
+}
 
 void Camera::saveMarbleView() {
     savedPitch = pitch;
@@ -189,5 +190,5 @@ void Camera::startLvlPreview(vec3 lvlCenterPt) {
     pointReached = true;
     cameraStartPos = eye;
     levelCenterPoint = lvlCenterPt;
-    theta = 0;
+    theta = 0; 
 }

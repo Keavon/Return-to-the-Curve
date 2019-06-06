@@ -72,7 +72,7 @@ void Enemy::update(float dt, vec3 ballPosition)
 			printf("State = %d\n", state);
 		}
 		//cout << "State : " << state << endl;
-		if (distance(sentryHome, ballPosition) < 15){
+		if (distance(sentryHome, ballPosition) < 20){
 			ballInRange = true;
 			//cout<< "Ball In Range" << endl;
 			state = 1;

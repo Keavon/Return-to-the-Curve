@@ -121,11 +121,13 @@ public:
         shared_ptr<Ball> ball;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
-        shared_ptr<Enemy> enemy3;
+        shared_ptr<Enemy> sentry1;
+        shared_ptr<Enemy> sentry2;
         shared_ptr<Goal> goal;
         shared_ptr<Box> goalObject;
         shared_ptr<Octree> octree;
         shared_ptr<PowerUp> powerUp1;
+        shared_ptr<PowerUp> powerUp2;
     } gameObjects;
     vector<shared_ptr<PhysicsObject>> boxes;
     
@@ -475,11 +477,19 @@ public:
         gameObjects.enemy2->init(windowManager);
 
         enemyPath = { vec3{65.0, 7.0, 32.0} };
-        gameObjects.enemy3 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
-        gameObjects.enemy3->init(windowManager);
+        gameObjects.sentry1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
+        gameObjects.sentry1->init(windowManager);
+
+        enemyPath = { vec3{90.0, 2.0, 32.0} };
+        gameObjects.sentry2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
+        gameObjects.sentry2->init(windowManager);
 
         gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), shapes.spring, 1, 1);
         gameObjects.powerUp1->init();
+
+        gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), shapes.spring, 1, 1);
+        gameObjects.powerUp2->init();
+
         gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
         gameObjects.goalObject->scale = vec3(4);
 
@@ -495,8 +505,10 @@ public:
         gameObjects.octree->insert(boxes);
         gameObjects.octree->insert(gameObjects.enemy1);
         gameObjects.octree->insert(gameObjects.enemy2);
-        gameObjects.octree->insert(gameObjects.enemy3);
+        gameObjects.octree->insert(gameObjects.sentry1);
+        gameObjects.octree->insert(gameObjects.sentry2);
         gameObjects.octree->insert(gameObjects.powerUp1);
+        gameObjects.octree->insert(gameObjects.powerUp2);
     }
 
     void loadLevel()
@@ -618,9 +630,13 @@ public:
         gameObjects.goalObject->draw(shader, M);
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
-        gameObjects.enemy3->draw(shader, M);
+        gameObjects.sentry1->draw(shader, M);
+        gameObjects.sentry2->draw(shader, M);
         if (!gameObjects.powerUp1->destroyed){
             gameObjects.powerUp1->draw(shader,M);
+        }
+        if (!gameObjects.powerUp2->destroyed){
+            gameObjects.powerUp2->draw(shader,M);
         }
         // Draw Boxes
         if (shader == programs.pbr)
@@ -807,10 +823,16 @@ public:
         gameObjects.goal->update(dt);
         gameObjects.enemy1->update(dt, gameObjects.ball->position);
         gameObjects.enemy2->update(dt, gameObjects.ball->position);
-        gameObjects.enemy3->update(dt, gameObjects.ball->position);
+        gameObjects.sentry1->update(dt, gameObjects.ball->position);
+        gameObjects.sentry2->update(dt, gameObjects.ball->position);
+
         if (!gameObjects.powerUp1->destroyed){
             gameObjects.powerUp1->update(dt);
         }
+        
+        if (!gameObjects.powerUp2->destroyed){
+            gameObjects.powerUp2->update(dt);
+        } 
         sparkEmitter->update(dt);
         fireworkEmitter->update(dt);
 
@@ -924,15 +946,19 @@ public:
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
             resetPlayer();
+            gameObjects.powerUp1->destroyed = false;
+            gameObjects.powerUp2->destroyed = false;
+            gameObjects.powerUp1->collidable = true;
+            gameObjects.powerUp2->collidable = true;
         }
-        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        //{
-        //    camera->previewLvl = !camera->previewLvl;
-        //    if (camera->previewLvl)
-        //    {
-        //        camera->startLvlPreview(CENTER_LVL_POSITION);
-        //    }
-        //}
+        else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        {
+           camera->previewLvl = !camera->previewLvl;
+           if (camera->previewLvl)
+           {
+               camera->startLvlPreview(CENTER_LVL_POSITION);
+           }
+        }
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)

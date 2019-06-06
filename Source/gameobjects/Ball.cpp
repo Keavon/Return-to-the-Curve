@@ -21,8 +21,9 @@
 using namespace glm;
 using namespace std;
 
-Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
-                                                                                     radius(radius)
+Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius): 
+    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), 
+    radius(radius)
 {
     speed = 0;
     material = 0;
@@ -105,13 +106,20 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
                 cout << "Used Jump powerUp" << endl;
                 jumpForce = 150;
                 activePowerUp->activatable = false;
-                prepNextPowerUp();
+                //prepNextPowerUp();
             }
         }
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_P) == GLFW_PRESS)
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
     {
+        printf("Num of power ups stored: %d \n", storedPowerUp.size());
+        for (PowerUp* p : storedPowerUp){
+            printf("Power Up type: %d ", p->powerUpType);
+            printf("Activatable: %s\n", p->activatable ? "true" : "false");
+        }
+        cout << "HasPowerUp: " << hasPowerUp << endl;
         if (hasPowerUp){
+            cout <<  "storedPowerUp[0]->activatable: " << storedPowerUp[0]->activatable << endl;
             if (storedPowerUp[0]->activatable)
                 activatePowerUp();
         }
@@ -153,6 +161,7 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
 
 void Ball::activatePowerUp() 
 {
+    //TODO: start a timer when activating power ups
     activePowerUp = storedPowerUp[0];
     cout << "Power up ready" << endl;
     cout << "Power up Type: "<< activePowerUp->powerUpType << endl;
@@ -162,7 +171,7 @@ void Ball::activatePowerUp()
     }
     else {
         activePowerUp->activatable = false;
-        prepNextPowerUp();
+        //prepNextPowerUp();
     }
 }
 
