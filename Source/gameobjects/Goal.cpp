@@ -35,6 +35,7 @@ void Goal::update(float dt)
                 didWin = true;
                 onWin();
                 dynamic_cast<Ball *>(collision.other)->frozen = 1;
+                collision.other->position = position + vec3(0, 1, 0);
             }
         }
     }
