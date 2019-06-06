@@ -16,13 +16,13 @@ ParticleSpark::ParticleSpark(vec3 position, float impactVel, vec3 impactNormal) 
     rotationSpeed = ((rand() % 628) - 314) * 0.01;
 
     color = vec4(1, 1, 0, 1);
-    scale = 0.25;
+    scale = 0.5;
 }
 
 void ParticleSpark::update(float dt)
 {
     Particle::update(dt);
 
-    scale = (lifespan - t) / lifespan * 0.25;
+    scale = (lifespan - t) / lifespan * 0.5;
     color.a = (lifespan - t) / lifespan;
 }
