@@ -47,4 +47,5 @@ public:
     void setVelocity(glm::vec3 velocity);
     glm::vec3 getCenterPos();
     glm::vec3 getVelocity();
+    bool collidable;
 };

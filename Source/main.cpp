@@ -28,11 +28,10 @@
 #include "gameobjects/Ball.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
+#include "gameobjects/PowerUp.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
-#include "engine/ColliderSphere.h"
-#include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
@@ -95,7 +94,11 @@ public:
         shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
+        shared_ptr<Enemy> sentry1;
+        shared_ptr<Enemy> sentry2;
         shared_ptr<Goal> goal;
+        shared_ptr<PowerUp> powerUp1;
+        shared_ptr<PowerUp> powerUp2;
     } gameObjects;
 
     // Billboard for rendering a texture to screen (like the shadow map)
@@ -230,6 +233,7 @@ public:
         modelManager.get("billboard.obj", true);
         modelManager.get("goal.obj", true);
         modelManager.get("quadSphere.obj", true);
+        modelManager.get("bunny.obj", true);
     }
 
     void loadLevel() {
@@ -271,6 +275,26 @@ public:
         gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
+
+        // Sentry 1
+        enemyPath = { vec3{65.0, 7.0, 32.0} };
+        gameObjects.sentry1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+        gameObjects.sentry1->init(windowManager);
+        sceneManager.octree.insert(gameObjects.sentry1);
+
+        // Sentry 2
+        enemyPath = { vec3{90.0, 2.0, 32.0} };
+        gameObjects.sentry2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+        gameObjects.sentry2->init(windowManager);
+        sceneManager.octree.insert(gameObjects.sentry2);
+
+        //Power Up 1
+        gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
+        gameObjects.powerUp1->init();
+
+        // Power Up 2
+        gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
+        gameObjects.powerUp2->init();
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
@@ -321,6 +345,14 @@ public:
         if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
         gameObjects.enemy1->draw(shader, M);
         gameObjects.enemy2->draw(shader, M);
+        gameObjects.sentry1->draw(shader, M);
+        gameObjects.sentry2->draw(shader, M);
+        if (!gameObjects.powerUp1->destroyed){
+            gameObjects.powerUp1->draw(shader,M);
+        }
+        if (!gameObjects.powerUp2->destroyed){
+            gameObjects.powerUp2->draw(shader,M);
+        }
 
         // Draw scene instances
         for (shared_ptr<Instance> instance : sceneManager.scene)
@@ -491,7 +523,8 @@ public:
         vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
         for (shared_ptr <PhysicsObject> instance : instancesToCheck)
         {
-            instance->checkCollision(gameObjects.marble.get());
+            if (instance->collidable)
+                instance->checkCollision(gameObjects.marble.get());
         }
 
         for (shared_ptr<Instance> instance : sceneManager.scene)
@@ -506,9 +539,18 @@ public:
         gameObjects.marble->update(dt, camera->dolly, camera->strafe);
         camera->update(dt, gameObjects.marble);
         gameObjects.goal->update(dt);
-        gameObjects.enemy1->update(dt);
-        gameObjects.enemy2->update(dt);
+        gameObjects.enemy1->update(dt, gameObjects.marble->position);
+        gameObjects.enemy2->update(dt, gameObjects.marble->position);
+        gameObjects.sentry1->update(dt, gameObjects.marble->position);
+        gameObjects.sentry2->update(dt, gameObjects.marble->position);
 
+        if (!gameObjects.powerUp1->destroyed){
+            gameObjects.powerUp1->update(dt);
+        }
+        
+        if (!gameObjects.powerUp2->destroyed){
+            gameObjects.powerUp2->update(dt);
+        } 
         emitterManager.get("sparks")->update(dt);
         emitterManager.get("fireworks")->update(dt);
 
@@ -622,19 +664,23 @@ public:
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
             resetPlayer();
+            gameObjects.powerUp1->destroyed = false;
+            gameObjects.powerUp2->destroyed = false;
+            gameObjects.powerUp1->collidable = true;
+            gameObjects.powerUp2->collidable = true;
         }
-        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-        {   // just a test since super bounce has no trigger yet
-            soundEngine->superBounce();
-        }
-        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        //{
+        // else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        // {
         //    camera->previewLvl = !camera->previewLvl;
         //    if (camera->previewLvl)
         //    {
         //        camera->startLvlPreview(CENTER_LVL_POSITION);
         //    }
-        //}
+        // }
+        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+        {   // just a test since super bounce has no trigger yet
+            soundEngine->superBounce();
+        }
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)

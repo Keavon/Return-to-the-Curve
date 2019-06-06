@@ -4,7 +4,7 @@ window:
     maximized: true
     fullscreen: false
 shadows:
-    resolution: 6
+    resolution: 2
     samples: 4
 sound:
     music: true

@@ -41,6 +41,7 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared
     this->friction = 0;
     this->elasticity = 0;
     this->speed = 0;
+    collidable = true;
 }
 
 void PhysicsObject::update(float dt)
