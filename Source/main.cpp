@@ -709,36 +709,34 @@ int main(int argc, char **argv)
     float lastFrameTimestamp = 0;
     float lastPhysicsTimestamp = 0;
     float rollingAverageFrameTime = 0;
+    float accumulator = 0;
+    Time.physicsDeltaTime = 0.02;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
-        Time.timeSinceStart = glfwGetTime() - startTimestamp;
+        float t = glfwGetTime();
+        Time.deltaTime = t - Time.timeSinceStart - startTimestamp;
+        accumulator += Time.deltaTime;
+        Time.timeSinceStart = t - startTimestamp;
 
-        if (Time.timeSinceStart - lastPhysicsTimestamp >= 0.02)
+        while (accumulator >= Time.physicsDeltaTime)
         {
-            Time.physicsDeltaTime = Time.timeSinceStart - lastPhysicsTimestamp;
-
-            lastPhysicsTimestamp = glfwGetTime() - startTimestamp;
-
             // Call gameobject physics update and ropagate physics
             application->beforePhysics();
             application->physicsTick();
+            accumulator -= Time.physicsDeltaTime;
         }
-        else
-        {
-            Time.deltaTime = Time.timeSinceStart - lastFrameTimestamp;
-            rollingAverageFrameTime = rollingAverageFrameTime * (20 - 1) / 20 + (Time.deltaTime / 20);
-            printf("FPS: %i\n", (int)(1.0 / rollingAverageFrameTime));
 
-            lastFrameTimestamp = glfwGetTime() - startTimestamp;
+        rollingAverageFrameTime = rollingAverageFrameTime * (20 - 1) / 20 + (Time.deltaTime / 20);
+        printf("FPS: %i\n", (int)(1.0 / rollingAverageFrameTime));
 
-            // Get user input, call gameobject update, and render visuals
-            glfwPollEvents();
-            application->beforeRender();
-            application->render();
-            glfwSwapBuffers(application->windowManager->getHandle());
-        }
+        // Get user input, call gameobject update, and render visuals
+        glfwPollEvents();
+        application->beforeRender();
+        application->render();
+        glfwSwapBuffers(application->windowManager->getHandle());
+
     }
 
     application->windowManager->shutdown();

@@ -1,5 +1,7 @@
 #include "Enemy.h"
 
+#include <iostream>
+
 using namespace glm;
 using namespace std;
 
@@ -63,7 +65,7 @@ void Enemy::update()
         //orientation = q * orientation;
         velocity = direction * moveSpeed;
         //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
-        position += velocity * Time.deltaTime;
+        position += velocity * Time.physicsDeltaTime;
         //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
@@ -82,7 +84,7 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 	shared_ptr<MatrixStack> M2 = M;
 	{
 		static float t = 0;
-		t += 0.01;
+		t += Time.deltaTime / 2;
 		quat r = rotate(quat(1, 0, 0, 0), 90.0f, vec3(1, 0, 0));
 		MatrixStack BaseMat;
 		MatrixStack uLeg1;
