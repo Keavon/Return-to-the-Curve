@@ -243,60 +243,6 @@ src/binary.cpp.s:
 	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/binary.cpp.s
 .PHONY : src/binary.cpp.s
 
-src/contrib/graphbuilder.o: src/contrib/graphbuilder.cpp.o
-
-.PHONY : src/contrib/graphbuilder.o
-
-# target to build an object file
-src/contrib/graphbuilder.cpp.o:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilder.cpp.o
-.PHONY : src/contrib/graphbuilder.cpp.o
-
-src/contrib/graphbuilder.i: src/contrib/graphbuilder.cpp.i
-
-.PHONY : src/contrib/graphbuilder.i
-
-# target to preprocess a source file
-src/contrib/graphbuilder.cpp.i:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilder.cpp.i
-.PHONY : src/contrib/graphbuilder.cpp.i
-
-src/contrib/graphbuilder.s: src/contrib/graphbuilder.cpp.s
-
-.PHONY : src/contrib/graphbuilder.s
-
-# target to generate assembly for a file
-src/contrib/graphbuilder.cpp.s:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilder.cpp.s
-.PHONY : src/contrib/graphbuilder.cpp.s
-
-src/contrib/graphbuilderadapter.o: src/contrib/graphbuilderadapter.cpp.o
-
-.PHONY : src/contrib/graphbuilderadapter.o
-
-# target to build an object file
-src/contrib/graphbuilderadapter.cpp.o:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilderadapter.cpp.o
-.PHONY : src/contrib/graphbuilderadapter.cpp.o
-
-src/contrib/graphbuilderadapter.i: src/contrib/graphbuilderadapter.cpp.i
-
-.PHONY : src/contrib/graphbuilderadapter.i
-
-# target to preprocess a source file
-src/contrib/graphbuilderadapter.cpp.i:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilderadapter.cpp.i
-.PHONY : src/contrib/graphbuilderadapter.cpp.i
-
-src/contrib/graphbuilderadapter.s: src/contrib/graphbuilderadapter.cpp.s
-
-.PHONY : src/contrib/graphbuilderadapter.s
-
-# target to generate assembly for a file
-src/contrib/graphbuilderadapter.cpp.s:
-	cd /home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build && $(MAKE) -f yaml-cpp/CMakeFiles/yaml-cpp.dir/build.make yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilderadapter.cpp.s
-.PHONY : src/contrib/graphbuilderadapter.cpp.s
-
 src/convert.o: src/convert.cpp.o
 
 .PHONY : src/convert.o
@@ -1045,12 +991,6 @@ help:
 	@echo "... src/binary.o"
 	@echo "... src/binary.i"
 	@echo "... src/binary.s"
-	@echo "... src/contrib/graphbuilder.o"
-	@echo "... src/contrib/graphbuilder.i"
-	@echo "... src/contrib/graphbuilder.s"
-	@echo "... src/contrib/graphbuilderadapter.o"
-	@echo "... src/contrib/graphbuilderadapter.i"
-	@echo "... src/contrib/graphbuilderadapter.s"
 	@echo "... src/convert.o"
 	@echo "... src/convert.i"
 	@echo "... src/convert.s"

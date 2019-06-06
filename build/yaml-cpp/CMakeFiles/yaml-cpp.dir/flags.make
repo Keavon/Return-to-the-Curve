@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_FLAGS =  -std=c++0x -O2    -Wall  -Wextra -pedantic -Wno-long-long -std=c++11  -std=c++0x
 
-CXX_DEFINES = 
+CXX_DEFINES = -DYAML_CPP_NO_CONTRIB
 
 CXX_INCLUDES = -I/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/glad/include -I/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/irrKlang/include -I/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/Source -I/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/include -I/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src 
 

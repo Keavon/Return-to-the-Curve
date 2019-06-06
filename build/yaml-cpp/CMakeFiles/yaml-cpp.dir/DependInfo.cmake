@@ -5,8 +5,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/binary.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/binary.cpp.o"
-  "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/contrib/graphbuilder.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilder.cpp.o"
-  "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/contrib/graphbuilderadapter.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/contrib/graphbuilderadapter.cpp.o"
   "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/convert.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/convert.cpp.o"
   "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/directives.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/directives.cpp.o"
   "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/emit.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/emit.cpp.o"
@@ -36,6 +34,11 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/yaml-cpp/src/tag.cpp" "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/CMakeFiles/yaml-cpp.dir/src/tag.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_CXX
+  "YAML_CPP_NO_CONTRIB"
+  )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH

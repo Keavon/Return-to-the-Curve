@@ -75,10 +75,3 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp.pc")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/test/cmake_install.cmake")
-  include("/home/gyatso/Documents/cpe476/CPE-476-Project-Curve/build/yaml-cpp/util/cmake_install.cmake")
-
-endif()
-
