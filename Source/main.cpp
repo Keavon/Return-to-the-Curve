@@ -725,7 +725,7 @@ public:
 
     void renderPlayerView(mat4 *LS)
     {
-		//drawSkyBox();
+		drawSkyBox();
 
         programs.pbr->bind();
 
