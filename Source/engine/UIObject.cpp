@@ -17,31 +17,35 @@ using namespace glm;
 //{
 //}
 
-UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, string imgName, int unit)
+//UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, string imgName, int unit)
+UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, shared_ptr<Texture> img)
 {
 	this->position = position;
 	this->scale = scale;
 	this->orientation = orientation;
 	this->position = position;
 	this->model = model;
+	this->img = img;
 	//model->init();
 	inView = true;
-	img = make_shared<Texture>();
-	img->setFilename(imgName);
-	img->init();
-	img->setUnit(unit);
-	img->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
+	t = 0;
+	//this->img = make_shared<Texture>();
+	//this->img->setFilename(imgName);
+	//this->img->init();
+	//this->img->setUnit(unit);
+	//this->img->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
 	//img = imgTemp;
 	cout << "object initialized" << endl;
 }
 
 void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
+	t += 0.05;
 	prog->bind();
 	M->pushMatrix();
-	//M->rotate(quat(0.0f, 1.0f, 0, M_PI_2));
 	M->translate(position);
 	M->scale(scale);
+	M->rotate(rotate(quat(1, 0, 0, 0), sin(t), vec3(0, 1, 0)));
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	M->loadIdentity();
 	model->draw(prog);

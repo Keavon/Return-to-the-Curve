@@ -4,7 +4,6 @@ in vec3 vertex_pos;
 in vec2 vertex_tex;
 
 uniform sampler2D tex;
-uniform sampler2D tex2;
 uniform float xOffset;
 uniform float yOffset;
 

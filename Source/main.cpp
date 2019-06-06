@@ -287,8 +287,8 @@ public:
     }
 
 	void loadUIObjects() {
-		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png", 1);
-		uiObjects.winMessage = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/YouWin.png", 0);
+		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/Level1.png", 1));
+		//uiObjects.winMessage = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/YouWin.png", 0));
 		//uiObjects.dummy = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/books.png");
 		//UIObject r = UIObject(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
 	}
@@ -315,7 +315,7 @@ public:
 		auto M = make_shared<MatrixStack>();
 		uiObjects.logo->draw(shaderManager.get("ui"), M);
 		if (gameObjects.goal->didWin) {
-			uiObjects.winMessage->draw(shaderManager.get("ui"), M);
+			//uiObjects.winMessage->draw(shaderManager.get("ui"), M);
 		}
     }
 
