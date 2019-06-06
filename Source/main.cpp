@@ -233,7 +233,7 @@ public:
     }
 
     void loadLevel() {
-        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-2.yaml");
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/Level-1.yaml");
     }
 
     void loadGameObjects()
@@ -476,6 +476,7 @@ public:
         gameObjects.marble->setVelocity(vec3(0.0f));
         startTime = glfwGetTime();
         gameObjects.goal->reset();
+        gameObjects.marble->frozen = 0;
     }
 
     void update(float dt)

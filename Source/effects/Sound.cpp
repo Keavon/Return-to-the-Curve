@@ -6,11 +6,13 @@ Sound::Sound()
 
     sfxSources.impactSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_impact.wav", irrklang::ESM_NO_STREAMING, true);
     sfxSources.resetSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_reset.wav", irrklang::ESM_NO_STREAMING, true);
+    sfxSources.jumpSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_jump.wav", irrklang::ESM_NO_STREAMING, true);
     sfxSources.winSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_win.wav", irrklang::ESM_NO_STREAMING, true);
     sfxSources.superBounceSoundSource = sfxEngine->addSoundSourceFromFile("../Resources/sounds/marble_super_bounce.wav", irrklang::ESM_NO_STREAMING, true);
 
     sfxSounds.impactSound = 0;
     sfxSounds.resetSound = 0;
+    sfxSounds.jumpSound = 0;
     sfxSounds.winSound = 0;
     sfxSounds.superBounceSound = 0;
 
@@ -67,6 +69,21 @@ void Sound::reset()
     {
         sfxSounds.resetSound->drop(); // don't forget to release the pointer once it is no longer needed by you
         sfxSounds.resetSound = 0;
+    }
+}
+
+void Sound::jump()
+{
+    if (!sfxSounds.resetSound)
+    {
+        sfxSounds.jumpSound = sfxEngine->play2D(sfxSources.jumpSoundSource, false, true);
+        sfxSounds.jumpSound->setVolume(0.4f);
+        sfxSounds.jumpSound->setIsPaused(false);
+    }
+    if (sfxSounds.jumpSound)
+    {
+        sfxSounds.jumpSound->drop(); // don't forget to release the pointer once it is no longer needed by you
+        sfxSounds.jumpSound = 0;
     }
 }
 

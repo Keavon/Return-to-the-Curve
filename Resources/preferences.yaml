@@ -1,10 +1,10 @@
 --- # User preferences
 window:
     resolution: [1920, 1080]
-    maximized: false
+    maximized: true
     fullscreen: false
 shadows:
     resolution: 6
-    samples: 3
+    samples: 4
 sound:
-    music: false
+    music: true

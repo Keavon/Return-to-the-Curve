@@ -24,6 +24,7 @@ public:
     {
         irrklang::ISoundSource *resetSoundSource;
         irrklang::ISoundSource *impactSoundSource;
+        irrklang::ISoundSource *jumpSoundSource;
         irrklang::ISoundSource *winSoundSource;
         irrklang::ISoundSource *superBounceSoundSource;
     } sfxSources;
@@ -32,6 +33,7 @@ public:
     {
         irrklang::ISound *resetSound;
         irrklang::ISound *impactSound;
+        irrklang::ISound *jumpSound;
         irrklang::ISound *winSound;
         irrklang::ISound *superBounceSound;
     } sfxSounds;
@@ -43,6 +45,7 @@ public:
     ~Sound();
 
     void impact(float impactVal);
+    void jump();
     void reset();
     void win();
     void superBounce();

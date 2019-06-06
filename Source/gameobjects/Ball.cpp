@@ -129,6 +129,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     // Can we? Do we want to? Have we not recently?
     if (CAN_JUMP && WANTS_JUMP && !JUST_JUMPED)
     {
+        soundEngine->jump();
         normForceDir = normalize(LAST_NORMAL_FORCE);
         applyImpulse(normForceDir * dot(vec3(0, jumpForce, 0), normForceDir));
         CAN_JUMP = 0;
