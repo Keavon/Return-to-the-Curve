@@ -20,12 +20,8 @@ Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shap
 	if (enemyPath.size() < 2){
 		sentry = true;
 		ballInRange = false;
-		sentryIdlePath = {
-			vec3(enemyPath[0].x, enemyPath[0].y + 3, enemyPath[0].z),
-			vec3(enemyPath[0].x + 2.0, enemyPath[0].y + 3, enemyPath[0].z),
-			vec3(enemyPath[0].x + 4.0, enemyPath[0].y + 3, enemyPath[0].z),
-			vec3(enemyPath[0].x + 6.0, enemyPath[0].y + 3, enemyPath[0].z)
-		};
+		sentryIdlePath = curvePath->calcLinearPath( vec3(enemyPath[0].x, enemyPath[0].y + 3, enemyPath[0].z) , 
+													vec3(enemyPath[0].x + 6.0, enemyPath[0].y + 3, enemyPath[0].z)); 
 		curvePath = new Pathing(sentryIdlePath);
 		sentryHome = sentryIdlePath[0];
 		state = 0;
@@ -65,10 +61,6 @@ void Enemy::update(float dt, vec3 ballPosition)
 	*/
     collider->pendingCollisions.clear();
 	if (sentry){
-		if (isnan(position.x)) {
-			printf("Sentry Position: (%f, %f, %f)\n", position.x, position.y, position.z);
-			printf("State = %d\n", state);
-		}
 		//cout << "State : " << state << endl;
 		if (distance(sentryHome, ballPosition) < 20){
 			ballInRange = true;
@@ -77,12 +69,7 @@ void Enemy::update(float dt, vec3 ballPosition)
 		}
 		else{
 			if (ballInRange){
-				sentryPathHome = {
-					position,
-					vec3(position.x + ((sentryHome.x - position.x)/3.0), position.y + ((sentryHome.y - position.y)/3.0), position.z + ((sentryHome.z - position.z)/ 3.0)),
-					vec3(position.x + 2.0*((sentryHome.x - position.x)/3.0), position.y + 2.0*((sentryHome.y - position.y)/3.0), position.z + 2.0*((sentryHome.z - position.z) / 3.0)),
-					sentryHome
-				};
+				sentryPathHome = curvePath->calcLinearPath(position, sentryHome);
 				curvePath = new Pathing(sentryPathHome);
 				state = 2;
 				t = 0.1;
@@ -92,12 +79,7 @@ void Enemy::update(float dt, vec3 ballPosition)
 	}
 	if (state == 1){ // Follow Player
 		//cout << "Following Player" << endl; 
-		sentryFollowPath = {
-			position,
-			vec3(position.x + ((ballPosition.x - position.x) / 3.0), position.y + ((ballPosition.y - position.y) / 3.0), position.z + ((ballPosition.z - position.z) / 3.0)),
-			vec3(position.x + 2.0*((ballPosition.x - position.x) / 3.0), position.y + 2.0*((ballPosition.y - position.y) / 3.0), position.z + 2.0*((ballPosition.z - position.z) / 3.0)),
-			ballPosition
-		};
+		sentryFollowPath = curvePath->calcLinearPath(position, ballPosition);
 		curvePath = new Pathing(sentryFollowPath);
 		t = 0.1;
 	}

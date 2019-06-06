@@ -27,7 +27,7 @@ void PowerUp::update(float dt)
     {
         if (dynamic_cast<Ball *>(collision.other) != NULL)
         {
-            cout << "Collide with ball" << endl;
+            //cout << "Collide with ball" << endl;
             destroyed = true;
             collidable = false;
         }

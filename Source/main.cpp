@@ -291,10 +291,13 @@ public:
         //Power Up 1
         gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
         gameObjects.powerUp1->init();
+        sceneManager.octree.insert(gameObjects.powerUp1);
+
 
         // Power Up 2
         gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
         gameObjects.powerUp2->init();
+        sceneManager.octree.insert(gameObjects.powerUp2);
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
