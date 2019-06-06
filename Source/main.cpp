@@ -108,7 +108,7 @@ public:
     */
     void loadWindow()
     {
-        windowManager->init(1920, 1080);
+        windowManager->init(preferences.window.resolutionX, preferences.window.resolutionY, preferences.window.maximized, preferences.window.fullscreen);
         windowManager->setEventCallbacks(this);
     }
 
@@ -131,9 +131,7 @@ public:
     {
         soundEngine = make_shared<Sound>();
 
-        #if PLAY_MUSIC
-            soundEngine->music();
-        #endif
+        if (preferences.sound.music) soundEngine->playPauseMusic();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
