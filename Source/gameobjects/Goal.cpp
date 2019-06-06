@@ -53,4 +53,5 @@ void Goal::reset()
     ballInGoal = false;
     didWin = false;
     fireworkEmitter->stop();
+    collider->pendingCollisions.clear();
 }
