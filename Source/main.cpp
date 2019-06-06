@@ -477,6 +477,14 @@ public:
         gameObjects.goal->reset();
     }
 
+    void beforePhysics()
+    {
+        gameObjects.marble->update(camera->dolly, camera->strafe);
+        gameObjects.goal->update();
+        gameObjects.enemy1->update();
+        gameObjects.enemy2->update();
+    }
+
     void physicsTick()
     {
         sceneManager.octree.update();
@@ -491,11 +499,6 @@ public:
         {
             instance->physicsObject->update();
         }
-
-        gameObjects.marble->update(camera->dolly, camera->strafe);
-        gameObjects.goal->update();
-        gameObjects.enemy1->update();
-        gameObjects.enemy2->update();
     }
 
     void beforeRender()
@@ -701,11 +704,7 @@ int main(int argc, char **argv)
     application->loadSounds();
 
     application->startTime = glfwGetTime();
-    //double t = 0;
-    //const double dt = 0.02;
-    //double currentTime = application->startTime;
-    //double accumulator = 0;
-    //double audioAccumulator = 0;
+
     float startTimestamp = glfwGetTime();
     float lastFrameTimestamp = 0;
     float lastPhysicsTimestamp = 0;
@@ -720,53 +719,27 @@ int main(int argc, char **argv)
         {
             Time.physicsDeltaTime = Time.timeSinceStart - lastPhysicsTimestamp;
 
-            // Propagate physics
-            application->physicsTick();
-
             lastPhysicsTimestamp = glfwGetTime() - startTimestamp;
+
+            // Call gameobject physics update and ropagate physics
+            application->beforePhysics();
+            application->physicsTick();
         }
         else
         {
             Time.deltaTime = Time.timeSinceStart - lastFrameTimestamp;
-            rollingAverageFrameTime = rollingAverageFrameTime * (100 - 1) / 100 + Time.deltaTime / 100;
-            printf("FPS: %i\n", Time.deltaTime, (int)(1.0 / rollingAverageFrameTime));
+            rollingAverageFrameTime = rollingAverageFrameTime * (20 - 1) / 20 + (Time.deltaTime / 20);
+            printf("FPS: %i\n", (int)(1.0 / rollingAverageFrameTime));
+
+            lastFrameTimestamp = glfwGetTime() - startTimestamp;
 
             // Get user input, call gameobject update, and render visuals
             glfwPollEvents();
             application->beforeRender();
             application->render();
             glfwSwapBuffers(application->windowManager->getHandle());
-
-            lastFrameTimestamp = glfwGetTime() - startTimestamp;
         }
     }
-    //    // Render scene.
-    //    double newTime = glfwGetTime();
-    //    double frameTime = newTime - currentTime;
-    //    currentTime = newTime;
-
-    //    accumulator += frameTime;
-    //    audioAccumulator += frameTime;
-
-    //    while (accumulator >= dt)
-    //    {
-    //        application->update(dt);
-    //        accumulator -= dt;
-    //        t += dt;
-    //    }
-
-    //    if (audioAccumulator >= 1.0)
-    //    {
-    //        application->updateAudio();
-    //        audioAccumulator = 0;
-    //    }
-
-    //    application->render();
-
-    //    // Swap front and back buffers
-    //    glfwSwapBuffers(application->windowManager->getHandle());
-    //    glfwPollEvents();
-    //}
 
     application->windowManager->shutdown();
     return 0;
