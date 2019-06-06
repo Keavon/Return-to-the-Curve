@@ -112,10 +112,18 @@ void PhysicsObject::update()
 
             // friction
             vec3 frictionDir = (relVel - proj(relVel, collision.normal));
-            if (frictionDir != vec3(0))
+            float frictionLen = length(frictionDir);
+            if (frictionLen > 0)
             {
-                frictionDir = normalize(frictionDir);
-                netForce += length(localNormForce) * friction * frictionDir;
+                if (frictionLen > 0.1)
+                {
+                    frictionDir = normalize(frictionDir);
+                }
+                vec3 frictionForce = length(localNormForce) * friction * frictionDir;
+                if (!isnan(frictionForce.x))
+                {
+                    netForce += frictionForce;
+                }
             }
 
             // correct position to prevent sinking/jitter
@@ -153,7 +161,18 @@ void PhysicsObject::update()
     // apply force
     acceleration = netForce * invMass;
     velocity += acceleration * Time.physicsDeltaTime;
-    position += velocity * Time.physicsDeltaTime;
+    if (fabs(velocity.x) > 0.01)
+    {
+        position.x += velocity.x * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.y) > 0.01)
+    {
+        position.y += velocity.y * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.z) > 0.01)
+    {
+        position.z += velocity.z * Time.physicsDeltaTime;
+    }
 
     impulse = vec3(0);
     netForce = vec3(0);

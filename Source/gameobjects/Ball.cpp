@@ -125,11 +125,14 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
         netForce += direction * moveForce;
     }
 
-    if (velocity.x != 0 && velocity.y != 0)
+    if (velocity.x != 0 || velocity.z != 0)
     {
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
         quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * Time.physicsDeltaTime, axis);
-        orientation = q * orientation;
+        if (!isnan(q.w))
+        {
+            orientation = q * orientation;
+        }
     }
 }
 
