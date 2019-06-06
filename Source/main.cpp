@@ -53,7 +53,6 @@
 
 // number of skin textures to load and swap through
 #define RESOURCE_DIRECTORY string("../Resources")
-#define START_WITH_MUSIC_PLAYING false
 
 using namespace std;
 using namespace glm;
