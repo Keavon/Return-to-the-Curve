@@ -1,13 +1,18 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
+#include <memory>
+#include <glm/glm.hpp>
+#include <cmath>
+#include <math.h>
+
 #include "../engine/PhysicsObject.h"
 #include "../engine/ColliderSphere.h"
 #include "../Pathing.h"
 #include "../Shape.h"
 #include "../WindowManager.h"
-#include <memory>
-#include <glm/glm.hpp>
-#include <cmath>
+#include "../engine/Time.h"
 
 class Enemy : public PhysicsObject
 {
@@ -15,7 +20,7 @@ public:
 	Enemy(std::vector<glm::vec3> enemyPath, glm::quat orientation, std::shared_ptr<Shape> model, 
 		std::shared_ptr<Shape> legmodel, std::shared_ptr<Shape> footmodel, float radius);
     void init(WindowManager *windowManager);
-    void update(float dt, vec3 ballPosition);
+    void update(vec3 ballPosition);
 	void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M); 
 	MatrixStack setlLeg(MatrixStack uLeg, float offset, float t);
 	MatrixStack setFoot(MatrixStack lLeg, float offset, float t);

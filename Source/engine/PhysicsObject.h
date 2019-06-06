@@ -4,6 +4,7 @@
 #include "Collider.h"
 #include "../Shape.h"
 #include "../effects/Sound.h"
+#include "Time.h"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -35,9 +36,9 @@ public:
     PhysicsObject(glm::vec3 position, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
     PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
     PhysicsObject(glm::vec3 position, glm::quat orientation, glm::vec3 scale, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
-    void resolveCollision(float dt);
+    void resolveCollision();
     void checkCollision(PhysicsObject *other);
-    void update(float dt);
+    void update();
     virtual void onHardCollision(float impactVel, Collision &collision);
     float getRadius(); // get radius of bounding sphere
     void applyImpulse(glm::vec3 impulse);

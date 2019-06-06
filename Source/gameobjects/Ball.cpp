@@ -1,23 +1,5 @@
 #include "Ball.h"
 
-#include "../Shape.h"
-#include "../WindowManager.h"
-#include "../engine/ColliderSphere.h"
-#include "../engine/PhysicsObject.h"
-#include "../engine/ParticleEmitter.h"
-#include "../effects/ParticleSpark.h"
-#include "../effects/Sound.h"
-#include "Enemy.h"
-#include "PowerUp.h"
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/projection.hpp>
-#include <glm/gtx/intersect.hpp>
-#include <glm/glm.hpp>
-#include <memory>
-#include <cmath>
-#include <iostream>
-#include <unordered_set>
-
 using namespace glm;
 using namespace std;
 
@@ -62,11 +44,9 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
     this->sparkEmitter = sparkEmitter;
 }
 
-void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
+void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
 {
-
-    if (frozen)
-        return;
+    if (frozen) return;
 
     for (auto collision : collider->pendingCollisions)
     {
@@ -91,8 +71,9 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         }
     }
 
-    PhysicsObject::update(dt); 
-    glm::vec3 direction = vec3(0);
+    PhysicsObject::update();
+
+    vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
     {
         direction += vec3(dolly.x, 0.0f, dolly.z);
@@ -173,6 +154,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
 
         if (powerUpReady){
             if (activePowerUp->powerUpType == 0 && activePowerUp->activatable){
+                soundEngine->superBounce();
                 cout << "Used Super Jump powerUp" << endl;
                 jumpForce = 150;
                 activePowerUp->activatable = false;
@@ -189,11 +171,14 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         netForce += direction * moveForce;
     }
 
-    if (velocity.x != 0 && velocity.y != 0)
+    if (velocity.x != 0 || velocity.z != 0)
     {
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
-        quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
-        orientation = q * orientation;
+        quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * Time.physicsDeltaTime, axis);
+        if (!isnan(q.w))
+        {
+            orientation = q * orientation;
+        }
     }
 }
 

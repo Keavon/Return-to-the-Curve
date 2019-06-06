@@ -20,4 +20,8 @@ Preferences::Preferences(string prefsFile)
 
     YAML::Node soundNode = file["sound"];
     sound.music = soundNode["music"].as<bool>();
+
+    YAML::Node scenesNode = file["scenes"];
+    scenes.startup = scenesNode["startup"].as<int>();
+    scenes.list = scenesNode["list"].as<vector<string>>();
 }

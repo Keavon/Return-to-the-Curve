@@ -1,13 +1,4 @@
 #include "Goal.h"
-#include "../engine/TriggerSphere.h"
-#include "../engine/ParticleEmitter.h"
-#include "../effects/ParticleFirework.h"
-#include "../effects/Sound.h"
-#include "Ball.h"
-
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
 
 using namespace std;
 using namespace glm;
@@ -23,7 +14,7 @@ void Goal::init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime)
     this->startTime = startTime;
 }
 
-void Goal::update(float dt)
+void Goal::update()
 {
     for (auto collision : collider->pendingCollisions)
     {
@@ -62,4 +53,5 @@ void Goal::reset()
     ballInGoal = false;
     didWin = false;
     fireworkEmitter->stop();
+    collider->pendingCollisions.clear();
 }

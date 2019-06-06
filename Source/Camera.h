@@ -1,9 +1,17 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
+#include <cmath>
+#include <algorithm>
+#include <cstdlib>
+#include <glm/glm.hpp>
+#include <math.h>
+
 #include "Pathing.h"
 #include "WindowManager.h"
 #include "gameobjects/Ball.h"
-#include <glm/glm.hpp>
+#include "engine/Time.h"
 
 class Camera {
 public:
@@ -11,11 +19,11 @@ public:
 
     Camera(WindowManager *windowManager, glm::vec3 centerOfLevel);
     ~Camera();
-    void update(float dt, std::shared_ptr<Ball> ball);
+    void update(std::shared_ptr<Ball> ball);
     void init();
     void startLvlPreview(glm::vec3 lvlCenterPt);
     void marbleModeUpdate(shared_ptr<Ball> ball);
-    void editModeUpdate(float dt);
+    void editModeUpdate();
     void flythroughModeUpdate();
     void saveMarbleView();
     void restoreMarbleView();

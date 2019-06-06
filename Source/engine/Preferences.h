@@ -23,5 +23,10 @@ public:
         bool music;
     } sound;
 
+    struct {
+        int startup;
+        std::vector<std::string> list;
+    } scenes;
+
     Preferences(std::string prefsFile);
 };

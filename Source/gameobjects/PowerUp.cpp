@@ -21,7 +21,7 @@ PowerUp::PowerUp(vec3 position, int powerUpType, quat orientation, shared_ptr<Sh
 
 }
 
-void PowerUp::update(float dt)
+void PowerUp::update()
 {
     for (auto collision : collider->pendingCollisions)
     {

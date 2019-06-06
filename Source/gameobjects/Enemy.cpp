@@ -1,15 +1,6 @@
 #include "Enemy.h"
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <math.h>
-#include "../Shape.h"
-#include "../WindowManager.h"
-#include "../engine/ColliderSphere.h"
-#include "../engine/TriggerSphere.h"
-#include "../engine/PhysicsObject.h"
 
-#include <glm/glm.hpp>
-#include <memory>
+#include <iostream>
 
 using namespace glm;
 using namespace std;
@@ -52,7 +43,7 @@ void Enemy::init(WindowManager *windowManager)
     this->windowManager = windowManager;
 }
 
-void Enemy::update(float dt, vec3 ballPosition)
+void Enemy::update(vec3 ballPosition)
 {
 	/*
 		TODO:
@@ -110,14 +101,15 @@ void Enemy::update(float dt, vec3 ballPosition)
         float dX = targetX - position.x;
         float dZ = targetZ - position.z;
         float dY = targetY - position.y;
-        direction = normalize(vec3{dX ,dY ,dZ});
-        velocity.x = velocity.z = 0;
+        direction = normalize(vec3(dX, dY, dZ));
+        velocity.x = 0;
+        velocity.z = 0;
         velocity.y = 0;
         //vec3 axis = vec3{0,1,0};
         //quat q = rotate(, axis);
         //orientation = q * orientation;
         velocity = direction * moveSpeed;
-        position += velocity * dt;
+        position += velocity * Time.physicsDeltaTime;
         if (sqrt( pow((targetX - position.x), 2) + 
                 pow((targetZ - position.z), 2)) 
             < 1.02 ) {
@@ -135,7 +127,7 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 	shared_ptr<MatrixStack> M2 = M;
 	{
 		static float t = 0;
-		t += 0.01;
+		t += Time.deltaTime / 2;
 		quat r = rotate(quat(1, 0, 0, 0), 90.0f, vec3(1, 0, 0));
 		MatrixStack BaseMat;
 		MatrixStack uLeg1;
