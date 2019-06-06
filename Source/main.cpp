@@ -305,7 +305,9 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (debugLight) drawDepthMap();
-        else renderPlayerView(&LS);
+        else renderPlayerView(&LS); 
+		auto M = make_shared<MatrixStack>();
+		uiObjects.logo->draw(shaderManager.get("ui"), M);
     }
 
     void drawScene(shared_ptr<Program> shader)
