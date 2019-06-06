@@ -173,13 +173,13 @@ float PhysicsObject::getRadius()
     {
         return 0;
     }
-    else if (scale == vec3(0))
+    else if (scale == vec3(1))
     {
         return collider->bbox.radius;
     }
     else
     {
-        return (std::max)({scale.x, scale.y, scale.z}) * collider->bbox.radius;
+        return collider->getRadius(scale);
     }
 }
 

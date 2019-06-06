@@ -83,7 +83,7 @@ void Enemy::update(float dt)
 
 void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-	if (!inView)
+	if (!inView && cull)
 	{
 		return;
 	}

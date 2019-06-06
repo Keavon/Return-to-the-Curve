@@ -257,13 +257,16 @@ void Octree::drawDebugBoundingSpheres(shared_ptr<Program> prog)
 
     for (auto object : objects)
     {
-        M->pushMatrix();
-            M->translate(object->getCenterPos());
-            M->scale(object->getRadius());
-            glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-            glUniform1f(prog->getUniform("radius"), object->getRadius());
-            billboard->draw(prog);
-        M->popMatrix();
+        if (object->inView)
+        {
+            M->pushMatrix();
+                M->translate(object->getCenterPos());
+                M->scale(object->getRadius() * 2);
+                glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+                glUniform1f(prog->getUniform("radius"), object->getRadius());
+                billboard->draw(prog);
+            M->popMatrix();
+        }
     }
 }
 
@@ -293,8 +296,8 @@ void Octree::drawDebugOctants(shared_ptr<Program> prog)
 
         M->pushMatrix();
             M->translate(node->center);
-            M->scale(node->dimensions / 2.0f);
-			glUniform1f(prog->getUniform("edge"), dot(node->dimensions, vec3(0.5)) / 3.0f);
+            M->scale(node->dimensions);
+			glUniform1f(prog->getUniform("edge"), (node->dimensions.x + node->dimensions.y + node->dimensions.z) / 3);
             glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
             cube->draw(prog);
         M->popMatrix();
@@ -328,6 +331,53 @@ void Octree::insert(shared_ptr<PhysicsObject> object)
 
 void Octree::insert(vector<shared_ptr<PhysicsObject>> objects)
 {
+    for (auto object : objects)
+    {
+        insert(object);
+    }
+}
+
+void Octree::fitToObjects()
+{
+    root = nullptr;
+
+    if (objects.size() == 0)
+    {
+        imin = vec3(-1);
+        imax = vec3(1);
+        return;
+    }
+
+    float padding = 5;
+    vec3 dMin, dMax, pos;
+    float radius;
+    auto first = *objects.begin();
+    pos = first->getCenterPos();
+    radius = first->getRadius();
+    dMin = pos - radius;
+    dMax = pos + radius;
+
+    for (auto object : objects)
+    {
+        pos = object->getCenterPos();
+        radius = object->getRadius();
+        vec3 objMin = pos - radius;
+        vec3 objMax = pos + radius;
+        dMin.x = std::min(dMin.x, objMin.x);
+        dMin.y = std::min(dMin.y, objMin.y);
+        dMin.z = std::min(dMin.z, objMin.z);
+        dMax.x = std::max(dMax.x, objMax.x);
+        dMax.y = std::max(dMax.y, objMax.y);
+        dMax.z = std::max(dMax.z, objMax.z);
+    }
+
+    vec3 center = (dMax + dMin) / 2.0f;
+    vec3 size = dMax - dMin;
+    float maxExtent = (std::max)({size.x, size.y, size.z});
+
+    imax = center + maxExtent;
+    imin = center - maxExtent;
+
     for (auto object : objects)
     {
         insert(object);

@@ -274,6 +274,8 @@ public:
         gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
+
+        sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
 
     /*
@@ -336,6 +338,8 @@ public:
 
     void drawShadowMap(mat4 *LS)
     {
+        GameObject::setCulling(false);
+        
         // set up light's depth map
         glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -359,6 +363,8 @@ public:
     void drawDepthMap()
     {
         // Code to draw the light depth buffer
+
+        GameObject::setCulling(true);
 
         // geometry style debug on light - test transforms, draw geometry from light perspective
         if (debugGeometry)
@@ -428,6 +434,8 @@ public:
 
     void renderPlayerView(mat4 *LS)
     {
+        GameObject::setCulling(true);
+
         drawSkybox();
 
         shared_ptr<Program> pbr = shaderManager.get("pbr");

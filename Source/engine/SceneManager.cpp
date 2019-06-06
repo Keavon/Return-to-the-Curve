@@ -5,12 +5,9 @@ using namespace glm;
 
 #define ARRAY_TO_VEC3(arrayOf3) vec3(arrayOf3[0].as<float>(), arrayOf3[1].as<float>(), arrayOf3[2].as<float>())
 
-SceneManager::SceneManager(shared_ptr<PrefabManager> prefabManager)
+SceneManager::SceneManager(shared_ptr<PrefabManager> prefabManager) : octree(vec3(-100), vec3(100))
 {
     this->prefabManager = prefabManager;
-
-    this->octree = Octree(vec3(-200, -210, -200), vec3(200, 190, 200));
-    //octree->init(modelManager->get("billboard.obj"), modelManager->get("cube.obj"));
 }
 
 void SceneManager::load(string sceneFile)
@@ -42,5 +39,6 @@ void SceneManager::load(string sceneFile)
 
         scene.push_back(instance);
         octree.insert(instance->physicsObject);
+        octree.fitToObjects();
     }
 }

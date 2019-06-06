@@ -22,3 +22,8 @@ void TriggerCylinder::checkCollision(PhysicsObject *owner, PhysicsObject *obj, C
 {
     checkColSphereTriggerCylinder(obj, col, owner, this);
 }
+
+float TriggerCylinder::getRadius(glm::vec3 scale)
+{
+    return glm::length(vec3(radius, length, radius) * scale);
+}
