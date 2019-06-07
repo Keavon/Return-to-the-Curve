@@ -436,6 +436,7 @@ public:
         // set up light's depth map
         glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
 
