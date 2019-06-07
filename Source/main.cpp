@@ -87,7 +87,7 @@ public:
     // Camera
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
-    
+
     struct
     {
         shared_ptr<Ball> marble;
@@ -136,8 +136,8 @@ public:
 
     void loadShaders()
     {
-        vector<string> pbrUniforms = { "P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
-        shared_ptr<Program> pbr = shaderManager.get("pbr", { "vertPos", "vertNor", "vertTex" }, pbrUniforms);
+        vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
+        shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
         materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
         shaderManager.get("sky", {"vertPos"}, {"P", "V", "Texture0"});
@@ -150,27 +150,9 @@ public:
         shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
     }
 
-    void loadMaterials()
-    {
-        materialManager.get("marble_tiles", "png");
-        materialManager.get("coal_matte_tiles", "png");
-        materialManager.get("brown_rock", "png");
-        materialManager.get("seaside_rocks", "png");
-        materialManager.get("coal_matte_tiles", "png");
-        materialManager.get("marble_tiles", "png");
-        materialManager.get("rusted_metal", "jpg");
-        materialManager.get("painted_metal", "png");
-    }
-
     void loadSkybox()
     {
         skyboxManager.get("desert_hill", 1);
-    }
-
-    void loadParticleTextures()
-    {
-        textureManager.get("particles/star_07.png", 1);
-        textureManager.get("particles/scorch_02.png", 1);
     }
 
     void loadShadows()
@@ -220,12 +202,14 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void loadEffects() {
+    void loadEffects()
+    {
         emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
         emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
     }
 
-    void loadFBOQuad() {
+    void loadFBOQuad()
+    {
         glGenVertexArrays(1, &fboQuadVertexArrayID);
         glBindVertexArray(fboQuadVertexArrayID);
 
@@ -255,7 +239,8 @@ public:
         modelManager.get("quadSphere.obj", true);
     }
 
-    void loadLevel() {
+    void loadLevel()
+    {
         sceneManager.load(RESOURCE_DIRECTORY + "/levels/" + preferences.scenes.list[preferences.scenes.startup] + ".yaml");
     }
 
@@ -270,13 +255,14 @@ public:
         gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
         gameObjects.marble->addSkin(materialManager.get("marble_tiles", "png"));
 
-        if (preferences.scenes.startup == 0) {
+        if (preferences.scenes.startup == 0)
+        {
             // Enemy 1
             vector<glm::vec3> enemyPath = {
                 vec3{95.0, 2.0, 7.0},
                 vec3{100.0, 2.0, 15.0},
                 vec3{110.0, 2.0, -1.0},
-                vec3{115.0, 2.0, 7.0} };
+                vec3{115.0, 2.0, 7.0}};
             gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
             gameObjects.enemy1->init(windowManager);
             sceneManager.octree.insert(gameObjects.enemy1);
@@ -286,7 +272,7 @@ public:
                 vec3{125.0, 8.0, 55.0},
                 vec3{115.0, 20.0, 55.0},
                 vec3{105.0, 5.0, 55.0},
-                vec3{95.0, 8.0, 55.0} };
+                vec3{95.0, 8.0, 55.0}};
             gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
             gameObjects.enemy2->init(windowManager);
             sceneManager.octree.insert(gameObjects.enemy2);
@@ -344,8 +330,9 @@ public:
         gameObjects.marble->draw(shader, M);
 
         // Draw enemies
-        if (preferences.scenes.startup == 0) {
             if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
+        if (preferences.scenes.startup == 0)
+        {
             gameObjects.enemy1->draw(shader, M);
             gameObjects.enemy2->draw(shader, M);
         }
@@ -408,7 +395,8 @@ public:
         {
             return sceneManager.scene[index];
         }
-        else {
+        else
+        {
             return nullptr;
         }
     }
@@ -416,7 +404,7 @@ public:
     void drawShadowMap(mat4 *LS)
     {
         GameObject::setCulling(false);
-        
+
         // set up light's depth map
         glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -492,7 +480,8 @@ public:
         sky->unbind();
     }
 
-    void drawOctree() {
+    void drawOctree()
+    {
         shared_ptr<Program> circle = shaderManager.get("circle");
 
         circle->bind();
@@ -534,13 +523,15 @@ public:
 
         pbr->unbind();
 
-        if (sceneManager.octree.debug) drawOctree();
+        if (sceneManager.octree.debug)
+            drawOctree();
 
         shared_ptr<Program> particle = shaderManager.get("particle");
         particle->bind();
         setProjectionMatrix(particle);
         setView(particle);
-        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list()) {
+        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list())
+        {
             emitter->draw(particle);
         }
         particle->unbind();
@@ -564,7 +555,8 @@ public:
     {
         gameObjects.marble->update(camera->dolly, camera->strafe);
         gameObjects.goal->update();
-        if (preferences.scenes.startup == 0) {
+        if (preferences.scenes.startup == 0)
+        {
             gameObjects.enemy1->update();
             gameObjects.enemy2->update();
         }
@@ -687,12 +679,14 @@ public:
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
             gameObjects.marble->frozen = editMode;
-            if (editMode) {
+            if (editMode)
+            {
                 camera->saveMarbleView();
                 gameObjects.marble->playPosition = gameObjects.marble->position;
                 gameObjects.marble->position = gameObjects.marble->startPosition;
             }
-            else {
+            else
+            {
                 camera->restoreMarbleView();
                 gameObjects.marble->position = gameObjects.marble->playPosition;
             }
@@ -710,7 +704,7 @@ public:
             resetPlayer();
         }
         else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-        {   // just a test since super bounce has no trigger yet
+        { // just a test since super bounce has no trigger yet
             soundEngine->superBounce();
         }
         //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
@@ -786,9 +780,7 @@ int main(int argc, char **argv)
     application->loadWindow();
     application->loadCanvas();
     application->loadShaders();
-    application->loadMaterials();
     application->loadSkybox();
-    application->loadParticleTextures();
     application->loadShadows();
     application->loadObjectMap();
     application->loadEffects();
@@ -831,7 +823,6 @@ int main(int argc, char **argv)
         application->beforeRender();
         application->render();
         glfwSwapBuffers(application->windowManager->getHandle());
-
     }
 
     application->windowManager->shutdown();
