@@ -80,6 +80,9 @@ public:
     bool debugGeometry = 1;
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
+    GLuint objectMapFBO;
+    GLuint objectMapTex;
+    GLuint objectMapDepthBuf;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -144,6 +147,7 @@ public:
         shaderManager.get("pass", {"vertPos"}, {"texBuf"});
         shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
+        shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
     }
 
     void loadMaterials()
@@ -189,6 +193,30 @@ public:
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void loadObjectMap()
+    {
+        // Generate FBO for object map
+        glGenFramebuffers(1, &objectMapFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        // Generate texture where IDs of objects are stored
+        glGenTextures(1, &objectMapTex);
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, 0, 0, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Generate depth buffer
+        glGenTextures(1, &objectMapDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Bind with framebuffer's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -301,6 +329,7 @@ public:
         M->loadIdentity();
 
         shared_ptr<Program> pbr = shaderManager.get("pbr");
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
 
         if (shader == pbr)
         {
@@ -322,14 +351,66 @@ public:
         }
 
         // Draw scene instances
+        int i = 0;
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             if (shader == pbr) instance->material->bind();
+            else if (shader == objectMap)
+                glUniform1i(shader->getUniform("objectIndex"), i);
             instance->physicsObject->draw(shader, M);
+            i++;
         }
 
         // Cleanup
         M->popMatrix();
+    }
+
+    shared_ptr<Instance> getClickedObject(int x, int y)
+    {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        y = height - y;
+
+        GameObject::setCulling(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        glViewport(0, 0, width, height);
+
+        // Resize textures to current window size
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        GLint clear = -2;
+        glClearBufferiv(GL_COLOR, 0, &clear);
+
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
+
+        // Render scene as object IDs
+        objectMap->bind();
+        setProjectionMatrix(objectMap);
+        setView(objectMap);
+        glUniform1i(objectMap->getUniform("objectIndex"), -1);
+        drawScene(objectMap);
+        objectMap->unbind();
+
+        // Get index of clicked object in sceneManager.scene
+        // -2: no object clicked
+        // -1: object clicked but not in sceneManager.scene
+        GLint index;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &index);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (index >= 0)
+        {
+            return sceneManager.scene[index];
+        }
+        else {
+            return nullptr;
+        }
     }
 
     void drawShadowMap(mat4 *LS)
@@ -339,6 +420,7 @@ public:
         // set up light's depth map
         glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
 
@@ -660,6 +742,15 @@ public:
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+
+            if (editMode)
+            {
+                auto instance = getClickedObject(posX, posY);
+                if (instance != nullptr)
+                {
+                    instance->physicsObject->position += vec3(0, 1, 0);
+                }
+            }
         }
 
         if (action == GLFW_RELEASE)
@@ -699,6 +790,7 @@ int main(int argc, char **argv)
     application->loadSkybox();
     application->loadParticleTextures();
     application->loadShadows();
+    application->loadObjectMap();
     application->loadEffects();
     application->loadFBOQuad();
     application->loadModels();
