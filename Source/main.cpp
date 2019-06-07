@@ -201,23 +201,25 @@ public:
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
-
-        int width, height;
-        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+    void loadObjectMap()
+    {
         // Generate FBO for object map
         glGenFramebuffers(1, &objectMapFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
 
+        // Generate texture where IDs of objects are stored
         glGenTextures(1, &objectMapTex);
         glBindTexture(GL_TEXTURE_2D, objectMapTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, 0, 0, 0, GL_RED_INTEGER, GL_INT, NULL);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
+        // Generate depth buffer
         glGenTextures(1, &objectMapDepthBuf);
         glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -384,7 +386,7 @@ public:
         }
 
         // Draw scene instances
-        int i = 1;
+        int i = 0;
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             if (shader == pbr) instance->material->bind();
@@ -398,7 +400,7 @@ public:
         M->popMatrix();
     }
 
-    void drawObjectMap(int x, int y)
+    shared_ptr<Instance> getClickedObject(int x, int y)
     {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
@@ -408,25 +410,42 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
 
         glViewport(0, 0, width, height);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Resize textures to current window size
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        GLint clear = -2;
+        glClearBufferiv(GL_COLOR, 0, &clear);
 
         shared_ptr<Program> objectMap = shaderManager.get("object_map");
 
+        // Render scene as object IDs
         objectMap->bind();
         setProjectionMatrix(objectMap);
         setView(objectMap);
+        glUniform1i(objectMap->getUniform("objectIndex"), -1);
         drawScene(objectMap);
         objectMap->unbind();
 
-        GLTextureWriter::WriteImage(objectMapTex, "objectMap.png");
-
-        GLubyte index;
-        glReadPixels(x, y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &index);
-        unsigned int idx = index;
-        cout << "Object: " << idx << endl;
+        // Get index of clicked object in sceneManager.scene
+        // -2: no object clicked
+        // -1: object clicked but not in sceneManager.scene
+        GLint index;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &index);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (index >= 0)
+        {
+            return sceneManager.scene[index];
+        }
+        else {
+            return nullptr;
+        }
     }
 
     void drawShadowMap(mat4 *LS)
@@ -772,7 +791,14 @@ public:
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
 
-            drawObjectMap(posX, posY);
+            if (editMode)
+            {
+                auto instance = getClickedObject(posX, posY);
+                if (instance != nullptr)
+                {
+                    instance->physicsObject->position += vec3(0, 1, 0);
+                }
+            }
         }
 
         if (action == GLFW_RELEASE)
@@ -812,6 +838,7 @@ int main(int argc, char **argv)
     application->loadSkybox();
     application->loadParticleTextures();
     application->loadShadows();
+    application->loadObjectMap();
     application->loadEffects();
     application->loadFBOQuad();
     application->loadModels();
