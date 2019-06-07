@@ -79,6 +79,9 @@ public:
     bool debugGeometry = 1;
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
+    GLuint objectMapFBO;
+    GLuint objectMapTex;
+    GLuint objectMapDepthBuf;
 
     // Light Position Globals
     vec3 gameLight = vec3(300, 150, 250);
@@ -151,6 +154,7 @@ public:
         shaderManager.get("pass", {"vertPos"}, {"texBuf"});
         shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
+        shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
     }
 
     void loadMaterials()
@@ -196,6 +200,28 @@ public:
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        // Generate FBO for object map
+        glGenFramebuffers(1, &objectMapFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        glGenTextures(1, &objectMapTex);
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glGenTextures(1, &objectMapDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Bind with framebuffer's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -330,6 +356,7 @@ public:
         M->loadIdentity();
 
         shared_ptr<Program> pbr = shaderManager.get("pbr");
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
 
         if (shader == pbr)
         {
@@ -357,14 +384,49 @@ public:
         }
 
         // Draw scene instances
+        int i = 1;
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             if (shader == pbr) instance->material->bind();
+            else if (shader == objectMap)
+                glUniform1i(shader->getUniform("objectIndex"), i);
             instance->physicsObject->draw(shader, M);
+            i++;
         }
 
         // Cleanup
         M->popMatrix();
+    }
+
+    void drawObjectMap(int x, int y)
+    {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        y = height - y;
+
+        GameObject::setCulling(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        glViewport(0, 0, width, height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
+
+        objectMap->bind();
+        setProjectionMatrix(objectMap);
+        setView(objectMap);
+        drawScene(objectMap);
+        objectMap->unbind();
+
+        GLTextureWriter::WriteImage(objectMapTex, "objectMap.png");
+
+        GLubyte index;
+        glReadPixels(x, y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &index);
+        unsigned int idx = index;
+        cout << "Object: " << idx << endl;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void drawShadowMap(mat4 *LS)
@@ -708,6 +770,8 @@ public:
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+
+            drawObjectMap(posX, posY);
         }
 
         if (action == GLFW_RELEASE)
