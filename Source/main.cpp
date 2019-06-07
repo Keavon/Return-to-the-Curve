@@ -81,10 +81,6 @@ public:
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
 
-    // Light Position Globals
-    vec3 gameLight = vec3(300, 150, -250);
-    vec3 gameLightColor = vec3(250000, 250000, 250000);
-
     // Camera
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
@@ -351,7 +347,7 @@ public:
         depth->bind();
         // TODO you will need to fix these
         mat4 LP = SetOrthoMatrix(depth);
-        mat4 LV = SetLightView(depth, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+        mat4 LV = SetLightView(depth, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
         drawScene(depth);
         depth->unbind();
@@ -374,7 +370,7 @@ public:
             depthDebug->bind();
             // render scene from light's point of view
             SetOrthoMatrix(depthDebug);
-            SetLightView(depthDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+            SetLightView(depthDebug, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
             drawScene(depthDebug);
             depthDebug->unbind();
         }
@@ -526,8 +522,8 @@ public:
      */
     void setLight(shared_ptr<Program> prog)
     {
-        glUniform3f(prog->getUniform("lightPosition"), gameLight.x, gameLight.y, gameLight.z);
-        glUniform3f(prog->getUniform("lightColor"), gameLightColor.x, gameLightColor.y, gameLightColor.z);
+        glUniform3f(prog->getUniform("lightPosition"), sceneManager.light.direction.x, sceneManager.light.direction.y, sceneManager.light.direction.z);
+        glUniform3f(prog->getUniform("lightColor"), sceneManager.light.brightness.x, sceneManager.light.brightness.y, sceneManager.light.brightness.z);
     }
 
     mat4 SetOrthoMatrix(shared_ptr<Program> curShade)

@@ -25,6 +25,11 @@ public:
     glm::vec3 marbleStart;
     float deathBelow;
 
+    struct {
+        glm::vec3 direction;
+        glm::vec3 brightness;
+    } light;
+
     SceneManager(std::shared_ptr<PrefabManager> prefabManager);
     void load(std::string sceneFile);
     void save(std::string sceneFile);

@@ -22,6 +22,10 @@ void SceneManager::load(string sceneFile)
 
     deathBelow = file["marble"]["deathBelow"].as<float>();
 
+    YAML::Node lightNode = file["light"];
+    light.direction = ARRAY_TO_VEC3(lightNode["direction"]);
+    light.brightness = ARRAY_TO_VEC3(lightNode["color"]) * lightNode["intensity"].as<float>();
+
     for (YAML::Node object : file["track"])
     {
         shared_ptr<Instance> instance = prefabManager->get(object["prefab"].as<string>())->getNewInstance();
