@@ -1,0 +1,1 @@
+for %%A IN (*.png) DO ffmpeg -i "%%A" -q:v 4 "%%A.jpg"
