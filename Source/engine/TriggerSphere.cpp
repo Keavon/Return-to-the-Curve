@@ -22,3 +22,8 @@ void TriggerSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Col
 {
     checkColSphereTriggerSphere(obj, col, owner, this);
 }
+
+float TriggerSphere::getRadius(glm::vec3 scale)
+{
+    return bbox.radius * scale.x;
+}

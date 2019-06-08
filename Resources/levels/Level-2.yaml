@@ -1,0 +1,63 @@
+--- # Level 2
+name: Hop Scotch and a Jump
+skybox: desert_hilltop
+light:
+    location: [300, 250, 150]
+    color: [1, 1, 1]
+    intensity: 250000
+marble:
+    location: [-5, 1, 2]
+    scale: [1, 1, 1]
+    material: lava
+    lookDirection: 0
+    deathBelow: -10
+globalScale: [8, 8, 8]
+track:
+    -   prefab: Pillar Hexagon
+        location: [-5, 0, 2]
+    -   prefab: Trap Diamond
+        location: [-2, 0, 2]
+    -   prefab: Trap Diamond
+        location: [0, 0, 2]
+    -   prefab: Trap Diamond
+        location: [2, 0, 3]
+    -   prefab: Trap Diamond
+        location: [2, 0, 1]
+    -   prefab: Trap Diamond
+        location: [4, 0, 2]
+    -   prefab: Trap Diamond
+        location: [6, 0, 3]
+    -   prefab: Trap Diamond
+        location: [6, 0, 1]
+    -   prefab: Pillar Hexagon
+        location: [9, 0, 2]
+    -   prefab: Pillar Hexagon
+        location: [11, 0.5, 2]
+    -   prefab: Pillar Hexagon
+        location: [13, 1, 2]
+    -   prefab: Pillar Hexagon
+        location: [14, 1.5, 3.7]
+    -   prefab: Pillar Hexagon
+        location: [13, 2, 5.4]
+    -   prefab: Pillar Hexagon
+        location: [11, 2.5, 5.4]
+    -   prefab: Unit Cube
+        location: [8.45, 2.5, 5.4]
+        scale: [2.9, 0.2, 1]
+    -   prefab: Unit Cube
+        location: [5.5, 2.5, 5.4]
+        scale: [1, 0.2, 0.5]
+    -   prefab: Unit Cube
+        location: [3.5, 2.5, 5.4]
+        scale: [1, 0.2, 0.25]
+    -   prefab: Unit Cube
+        location: [1.5, 2.5, 5.4]
+        scale: [1, 0.2, 0.5]
+    -   prefab: Unit Cube
+        location: [-1.45, 2.5, 5.4]
+        scale: [2.9, 0.2, 1]
+    -   prefab: Pillar Hexagon
+        location: [-4, 3, 5.4]
+    -   prefab: Finish
+        location: [-4, 3, 5.4]
+        scale: [0.5, 0.5, 0.5]

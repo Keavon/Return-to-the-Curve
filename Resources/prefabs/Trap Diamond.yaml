@@ -1,0 +1,5 @@
+---
+model: Square Diamond Hole.obj
+material: [brown_rock, png]
+physics:
+    elasticity: 0.5

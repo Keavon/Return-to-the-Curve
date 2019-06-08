@@ -22,14 +22,29 @@ bool inRange(float n, float low, float high)
     return low <= n && n <= high;
 }
 
-PhysicsObject::PhysicsObject(vec3 position, quat orientation,
-                             shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, model), collider(collider),
-                                                                                       netForce(0), impulse(0), acceleration(0), velocity(0), mass(0), invMass(0),
-                                                                                       normForce(0), friction(0), elasticity(0), speed(0)
+PhysicsObject::PhysicsObject(vec3 position, shared_ptr<Shape> model, shared_ptr<Collider> collider) : PhysicsObject::PhysicsObject(position, quat(1, 0, 0, 0), vec3(1, 1, 1), model, collider) {}
+
+PhysicsObject::PhysicsObject(vec3 position, quat orientation, shared_ptr<Shape> model, shared_ptr<Collider> collider) : PhysicsObject::PhysicsObject(position, orientation, vec3(1, 1, 1), model, collider) {}
+
+PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model, shared_ptr<Collider> collider) : GameObject(position, orientation, scale, model)
 {
+    if (collider != nullptr) this->collider = collider;
+    else this->collider = make_shared<ColliderMesh>(model);
+
+    this->netForce = vec3(0, 0, 0);
+    this->impulse = vec3(0, 0, 0);
+    this->acceleration = vec3(0, 0, 0);
+    this->velocity = vec3(0, 0, 0);
+    this->mass = 0;
+    this->invMass = 0;
+    this->normForce = vec3(0, 0, 0);
+    this->friction = 0;
+    this->elasticity = 0;
+    this->speed = 0;
     collidable = true;
 }
-void PhysicsObject::update(float dt)
+
+void PhysicsObject::update()
 {
     normForce = vec3(0);
     netForce.y += GRAVITY * mass;
@@ -98,10 +113,18 @@ void PhysicsObject::update(float dt)
 
             // friction
             vec3 frictionDir = (relVel - proj(relVel, collision.normal));
-            if (frictionDir != vec3(0))
+            float frictionLen = length(frictionDir);
+            if (frictionLen > 0)
             {
-                frictionDir = normalize(frictionDir);
-                netForce += length(localNormForce) * friction * frictionDir;
+                if (frictionLen > 0.1)
+                {
+                    frictionDir = normalize(frictionDir);
+                }
+                vec3 frictionForce = length(localNormForce) * friction * frictionDir;
+                if (!isnan(frictionForce.x))
+                {
+                    netForce += frictionForce;
+                }
             }
 
             // correct position to prevent sinking/jitter
@@ -138,8 +161,19 @@ void PhysicsObject::update(float dt)
 
     // apply force
     acceleration = netForce * invMass;
-    velocity += acceleration * dt;
-    position += velocity * dt;
+    velocity += acceleration * Time.physicsDeltaTime;
+    if (fabs(velocity.x) > 0.01)
+    {
+        position.x += velocity.x * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.y) > 0.01)
+    {
+        position.y += velocity.y * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.z) > 0.01)
+    {
+        position.z += velocity.z * Time.physicsDeltaTime;
+    }
 
     impulse = vec3(0);
     netForce = vec3(0);
@@ -159,9 +193,29 @@ float PhysicsObject::getRadius()
     {
         return 0;
     }
+    else if (scale == vec3(1))
+    {
+        return collider->bbox.radius;
+    }
     else
     {
-        return (std::max)({scale.x, scale.y, scale.z}) * collider->bbox.radius;
+        return collider->getRadius(scale);
+    }
+}
+
+vec3 PhysicsObject::getCenterPos()
+{
+    if (collider == NULL || collider->bbox.center == vec3(0))
+    {
+        return position;
+    }
+    else if (orientation == quat(1, 0, 0, 0))
+    {
+        return position + collider->bbox.center * scale;
+    }
+    else
+    {
+        return position + vec3(mat4_cast(orientation) * vec4(collider->bbox.center * scale, 1));
     }
 }
 
@@ -169,4 +223,36 @@ float PhysicsObject::getRadius()
 void PhysicsObject::onHardCollision(float impactVel, Collision &collision)
 {
 
+}
+
+void PhysicsObject::applyImpulse(vec3 impulse)
+{
+    this->impulse += impulse;
+}
+
+void PhysicsObject::setMass(float mass)
+{
+    this->mass = mass;
+    if (mass == 0) this->invMass = 0;
+    else this->invMass = 1.0 / mass;
+}
+
+void PhysicsObject::setFriction(float friction)
+{
+    this->friction = friction;
+}
+
+void PhysicsObject::setElasticity(float elasticity)
+{
+    this->elasticity = elasticity;
+}
+
+void PhysicsObject::setVelocity(vec3 velocity)
+{
+    this->velocity = velocity;
+}
+
+vec3 PhysicsObject::getVelocity()
+{
+    return this->velocity;
 }

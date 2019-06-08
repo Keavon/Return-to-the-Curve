@@ -1,10 +1,5 @@
 #include "Camera.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
-#include <algorithm>
-#include <cstdlib>
 using namespace std;
 using namespace glm;
 
@@ -14,7 +9,7 @@ Camera::Camera(WindowManager *windowManager, vec3 centerOfLevel) : windowManager
 
 Camera::~Camera() {}
 
-void Camera::update(float dt, shared_ptr<Ball> ball) {
+void Camera::update(shared_ptr<Ball> ball) {
     glfwGetFramebufferSize(windowManager->getHandle(), &windowWidth, &windowHeight);
 
     // Handle movement input
@@ -32,8 +27,8 @@ void Camera::update(float dt, shared_ptr<Ball> ball) {
     radPerPx = M_PI / windowHeight;
 
     if (cameraMode == marble) marbleModeUpdate(ball);
-    else if (cameraMode == edit) editModeUpdate(dt);
-    else if (cameraMode == flythrough) flythroughModeUpdate();
+    else if (cameraMode == edit) editModeUpdate();
+    //else if (cameraMode == flythrough) flythroughModeUpdate();
 }
 
 void Camera::marbleModeUpdate(shared_ptr<Ball> ball) {
@@ -52,7 +47,7 @@ void Camera::marbleModeUpdate(shared_ptr<Ball> ball) {
     eye.z = lookAtPoint.z + distToBall * cos(pitch) * cos(M_PI - yaw);
 }
 
-void Camera::editModeUpdate(float dt) {
+void Camera::editModeUpdate() {
     float speed = moveSpeed;
     vec3 velocity = vec3(0, 0, 0);
     glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, !freeViewing ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
@@ -80,7 +75,7 @@ void Camera::editModeUpdate(float dt) {
         velocity -= cross(dolly, strafe);
     }
     if (length(velocity) != 0 && length(velocity) != NAN) {
-        eye += normalize(velocity) * speed * (float)dt;
+        eye += normalize(velocity) * speed * Time.deltaTime;
     }
 
     if (freeViewing) {
@@ -175,7 +170,7 @@ void Camera::init() {
     eye = vec3(0, this->height, 0);
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
-    pitch = radians(30.0);
+    pitch = radians(20.0);
     yaw = 10;
     distToBall = 15;
     cameraPath = new Pathing();
@@ -184,7 +179,7 @@ void Camera::init() {
     startTimer = 0;
 
 }
-
+// TODO:: fix to start with a given bezierCurve possibly
 void Camera::startLvlPreview(vec3 lvlCenterPt) {
     pathT = 0.01;
     pointReached = true;

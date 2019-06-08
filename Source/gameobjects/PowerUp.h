@@ -8,7 +8,7 @@ class PowerUp : public PhysicsObject
 {
 public:
     PowerUp(glm::vec3 position, int powerUpType, glm::quat orientation, std::shared_ptr<Shape> model, float radius, float length);
-    void update(float dt);
+    void update();
     void init();
 
     float radius;

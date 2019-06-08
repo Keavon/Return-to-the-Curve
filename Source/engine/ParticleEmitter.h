@@ -2,17 +2,20 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <memory>
+#include <iostream>
+
 #include "../Program.h"
 #include "../MatrixStack.h"
 #include "../Shape.h"
 #include "../Texture.h"
-#include <memory>
+#include "Time.h"
 
 class Particle
 {
 public:
     Particle();
-    virtual void update(float dt);
+    virtual void update();
     virtual void start();
     void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard);
 
@@ -32,9 +35,8 @@ public:
 class ParticleEmitter
 {
 public:
-    ParticleEmitter(int maxParticles);
-    void init(std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture);
-    void update(float dt);
+    ParticleEmitter(std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture, int maxParticles);
+    void update();
     void draw(std::shared_ptr<Program> prog);
     void addParticle(std::shared_ptr<Particle> p);
     void stop();

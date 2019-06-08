@@ -1,0 +1,5 @@
+---
+model: cube.obj
+material: [marble_tiles, png]
+physics:
+    elasticity: 0.5

@@ -34,6 +34,7 @@ public:
 class Octree
 {
 public:
+    Octree();
     Octree(glm::vec3 min, glm::vec3 max);
     void init(std::shared_ptr<Shape> billboard, std::shared_ptr<Shape> cube);
     std::vector<std::shared_ptr<PhysicsObject>> query(std::shared_ptr<PhysicsObject> object);
@@ -45,6 +46,7 @@ public:
     void update();
     void insert(std::shared_ptr<PhysicsObject> object);
     void insert(std::vector<std::shared_ptr<PhysicsObject>> object);
+    void fitToObjects();
 
     std::shared_ptr<OctNode> root;
     bool debug;

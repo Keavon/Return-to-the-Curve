@@ -27,8 +27,7 @@ uniform vec3 lightColor;
 
 uniform vec3 viewPos;
 
-uniform bool shadows;
-uniform float shadowSize;
+uniform float shadowResolution;
 uniform float shadowAA;
 
 out vec4 FragColor;
@@ -89,33 +88,31 @@ float TestShadow(vec4 LSfPos) {
 }
 
 float getShadeValue() {
-	float Shade = 0.0f;
-	//shadow
+	if (shadowResolution == 0) return 0.0f;
 
-	if (shadows)
+	float increment = (1.0f / shadowResolution);
+	float halfIncrement = (increment / 2.0f);
+	float samples = shadowAA + 1;
+
+	float startX = (fPosLS.x - ((samples + 1.0f) * halfIncrement));
+	float startY = (fPosLS.y - ((samples + 1.0f) * halfIncrement));
+
+	vec4 startSample = vec4(startX, startY, fPosLS.z, fPosLS.w);
+	vec4 subSample = startSample;
+
+	float shade = 0.0f;
+	for (float i = 0.0f; i < samples; i++)
 	{
-		float increment = (1.0f / shadowSize);
-		float halfIncrement = (increment / 2.0f);
-
-		float startX = (fPosLS.x - ((shadowAA + 1.0f) * halfIncrement));
-		float startY = (fPosLS.y - ((shadowAA + 1.0f) * halfIncrement));
-
-		vec4 startSample = vec4(startX, startY, fPosLS.z, fPosLS.w);
-		vec4 subSample = startSample;
-
-		for (float i = 0.0f; i < shadowAA; i++)
+		for (float j = 0.0f; j < samples; j++)
 		{
-			for (float j = 0.0f; j < shadowAA; j++)
-			{
-				subSample.x = startX + (i * increment);
-				subSample.y = startY +  (j * increment);
-				Shade += TestShadow(subSample);
-			}
+			subSample.x = startX + (i * increment);
+			subSample.y = startY +  (j * increment);
+			shade += TestShadow(subSample);
 		}
-		Shade = Shade / (shadowAA * shadowAA);
 	}
+	shade /= (samples * samples);
 
-	return 1.0 - Shade;
+	return 1.0f - shade;
 }
 
 void main() {
