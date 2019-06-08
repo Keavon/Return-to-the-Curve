@@ -250,6 +250,12 @@ public:
         gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
         gameObjects.marble->addSkin(materialManager.get("marble_tiles", "png"));
 
+        // Goal functionality
+        gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
+        sceneManager.octree.insert(gameObjects.goal);
+
+        // TODO:: Remove enemies or have them spawn in correct places for level 2
         // Enemy 1
         vector<glm::vec3> enemyPath = {
             vec3{95.0, 2.0, 7.0},
@@ -269,11 +275,6 @@ public:
         gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
         gameObjects.enemy2->init(windowManager);
         sceneManager.octree.insert(gameObjects.enemy2);
-
-        // Goal functionality
-        gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
-        gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
-        sceneManager.octree.insert(gameObjects.goal);
 
         // Sentry 1
         enemyPath = { vec3{65.0, 7.0, 32.0} };
@@ -675,6 +676,8 @@ public:
             gameObjects.powerUp1->collidable = true;
             gameObjects.powerUp2->collidable = true;
         }
+        // TODO - FIX camera flythrough so that it follows a predefined bezier curve
+        //   1st - find points in the world first to use for debugging/ trial with
         // else if (key == GLFW_KEY_C && action == GLFW_PRESS)
         // {
         //    camera->previewLvl = !camera->previewLvl;

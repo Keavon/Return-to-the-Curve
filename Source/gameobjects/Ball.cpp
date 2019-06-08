@@ -217,6 +217,7 @@ shared_ptr<Material> Ball::getSkinMaterial()
     return marbleSkins[currentSkin];
 }
 
+//TODO - Possibly Move these functions to Power up class?
 void Ball::activatePowerUp() 
 {
     //TODO: start a timer when activating power ups
