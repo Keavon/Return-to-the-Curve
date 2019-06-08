@@ -9,7 +9,7 @@ uniform float yOffset;
 
 void main()
 {
-	vec4 tcol = texture(tex,vec2(vertex_tex.x, vertex_tex.y));
+	vec4 tcol = texture(tex,vec2(vertex_tex.y, -vertex_tex.x));
 	FragColor = tcol;
 	//FragColor = vec4(0, 0, 1, 1);
 }
