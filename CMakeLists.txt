@@ -87,6 +87,9 @@ else()
   add_subdirectory(${CMAKE_SOURCE_DIR}/yaml-cpp)
   target_link_libraries(${CMAKE_PROJECT_NAME} yaml-cpp)
 
+  include_directories(${CMAKE_SOURCE_DIR}/stb-image/include)
+  include_directories(${CMAKE_SOURCE_DIR}/tiny-obj-loader/include)
+
   # OSX
   if(APPLE)
     
