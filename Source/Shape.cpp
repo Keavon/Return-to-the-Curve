@@ -1,9 +1,9 @@
 #include "Shape.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
+#include <tiny-obj-loader/tiny_obj_loader.h>
 
-#include "stb_image.h"
+#include <stb-image/stb_image.h>
 
 vector<vec3> Shape::getFace(int i, const mat4 &M)
 {

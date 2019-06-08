@@ -86,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw-x86\include;..\irrKlang-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw-x86\include;..\irrKlang-x86\include;%(AdditionalIncludeDirectories);..\tiny-obj-loader\include;..\stb-image\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -107,7 +107,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw\include;..\irrKlang\include;..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Source;..\glm;..\glad\include;..\glfw\include;..\irrKlang\include;..\yaml-cpp\include;%(AdditionalIncludeDirectories);..\tiny-obj-loader\include;..\stb-image\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -272,10 +272,7 @@
     <ClInclude Include="..\Source\Program.h" />
     <ClInclude Include="..\Source\Shape.h" />
     <ClInclude Include="..\Source\Skybox.h" />
-    <ClInclude Include="..\Source\stb_image.h" />
-    <ClInclude Include="..\Source\stb_image_write.h" />
     <ClInclude Include="..\Source\Texture.h" />
-    <ClInclude Include="..\Source\tiny_obj_loader.h" />
     <ClInclude Include="..\Source\WindowManager.h" />
     <ClInclude Include="..\yaml-cpp\src\collectionstack.h" />
     <ClInclude Include="..\yaml-cpp\src\contrib\graphbuilderadapter.h" />
