@@ -1,12 +1,4 @@
 #include "ColliderMesh.h"
-#include "ColliderSphere.h"
-#include "Collider.h"
-#include "PhysicsObject.h"
-
-#include "BoundingBox.h"
-#include <memory>
-#include <glm/glm.hpp>
-#include "../Shape.h"
 
 using namespace glm;
 using namespace std;

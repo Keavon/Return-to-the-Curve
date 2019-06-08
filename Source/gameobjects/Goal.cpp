@@ -1,8 +1,5 @@
 #include "Goal.h"
 
-using namespace std;
-using namespace glm;
-
 Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
     PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<TriggerSphere>(radius)), radius(radius), ballInGoal(false), didWin(false)
 {

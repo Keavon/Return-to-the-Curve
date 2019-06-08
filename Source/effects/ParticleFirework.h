@@ -1,9 +1,14 @@
 #pragma once
 
-#include "../engine/ParticleEmitter.h"
-#include <glm/glm.hpp>
-#include "../engine/Collider.h"
 #include <memory>
+#include <glm/glm.hpp>
+#include <cstdlib>
+
+#include "../engine/ParticleEmitter.h"
+#include "../engine/Collider.h"
+
+using namespace std;
+using namespace glm;
 
 class ParticleFirework : public Particle
 {

@@ -3,6 +3,9 @@
 #include <string>
 #include <cmath>
 #include <yaml-cpp/yaml.h>
+#include <math.h>
+
+using namespace std;
 
 class Preferences
 {

@@ -6,22 +6,6 @@
 #include "../MatrixStack.h"
 #include "../gameobjects/Ball.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/intersect.hpp>
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/projection.hpp>
-#include <glm/glm.hpp>
-#include <vector>
-#include <cmath>
-#include <iostream>
-#include <algorithm>
-#include <unordered_set>
-
-//#include <unistd.h>
-
-using namespace glm;
-using namespace std;
-
 Collider::Collider(vec3 min, vec3 max) :
     bbox(min, max)
 {

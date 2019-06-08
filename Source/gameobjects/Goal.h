@@ -10,8 +10,11 @@
 #include "../engine/TriggerSphere.h"
 #include "../effects/ParticleFirework.h"
 #include "../effects/Sound.h"
-#include "Ball.h"
 #include "../engine/Time.h"
+#include "Ball.h"
+
+using namespace std;
+using namespace glm;
 
 class Goal : public PhysicsObject
 {

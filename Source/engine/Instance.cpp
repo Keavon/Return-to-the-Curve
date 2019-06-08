@@ -1,10 +1,6 @@
-#pragma once
 
 #include "Instance.h"
 #include "Prefab.h"
-
-using namespace std;
-using namespace glm;
 
 Instance::Instance(Prefab& definition) : definition(definition)
 {

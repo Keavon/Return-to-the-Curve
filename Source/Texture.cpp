@@ -1,24 +1,11 @@
 #include "Texture.h"
-#include "GLSL.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb-image/stb_image.h>
 
-using namespace std;
+Texture::Texture() : filename(""), tid(0) {}
 
-Texture::Texture() :
-	filename(""),
-	tid(0)
-{
-	
-}
-
-Texture::~Texture()
-{
-	
-}
+Texture::~Texture() {}
 
 void Texture::init()
 {

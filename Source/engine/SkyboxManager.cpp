@@ -1,10 +1,5 @@
 #include "SkyboxManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 SkyboxManager::SkyboxManager(string relativePath) {
     this->relativePath = relativePath;
 }

@@ -1,11 +1,5 @@
 #include "Pathing.h"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <math.h>
-#include <algorithm>
-#include <cstdlib>
-
 Pathing::Pathing() {
     targetPos = vec3(0);
 }

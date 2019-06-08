@@ -1,9 +1,5 @@
 #include "Preferences.h"
 
-#include <math.h>
-
-using namespace std;
-
 Preferences::Preferences(string prefsFile)
 {
     YAML::Node file = YAML::LoadFile(prefsFile);

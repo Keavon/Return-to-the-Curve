@@ -1,12 +1,5 @@
 
 #include "Program.h"
-#include <iostream>
-#include <cassert>
-#include <fstream>
-
-#include "GLSL.h"
-
-#define CONTAINS(map, key) map.find(key) != map.end()
 
 std::string readFileAsString(const std::string &fileName)
 {

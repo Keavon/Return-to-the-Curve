@@ -1,10 +1,5 @@
 #include "Frustum.h"
 
-#include <glm/glm.hpp>
-
-using namespace std;
-using namespace glm;
-
 void Frustum::extractPlanes(mat4 P, mat4 V)
 {
     mat4 comp = transpose(P * V);

@@ -1,8 +1,5 @@
 #include "ParticleEmitter.h"
 
-using namespace std;
-using namespace glm;
-
 ParticleEmitter::ParticleEmitter(shared_ptr<Shape> billboard, shared_ptr<Texture> texture, int maxParticles)
 {
     this->billboard = billboard;

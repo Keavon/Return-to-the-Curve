@@ -7,6 +7,9 @@
 #include "TextureManager.h"
 #include "Program.h"
 
+using namespace std;
+using namespace glm;
+
 class Material
 {
 private:

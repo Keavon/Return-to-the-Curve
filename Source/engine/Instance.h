@@ -4,6 +4,9 @@
 #include "Material.h"
 #include "PhysicsObject.h"
 
+using namespace std;
+using namespace glm;
+
 class Prefab;
 
 class Instance {

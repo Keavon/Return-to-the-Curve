@@ -1,9 +1,14 @@
 #pragma once
 
-#include "../engine/ParticleEmitter.h"
-#include <glm/glm.hpp>
-#include "../engine/Collider.h"
 #include <memory>
+#include <cstdlib>
+#include <glm/glm.hpp>
+
+#include "../engine/ParticleEmitter.h"
+#include "../engine/Collider.h"
+
+using namespace std;
+using namespace glm;
 
 class ParticleSpark : public Particle
 {

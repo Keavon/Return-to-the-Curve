@@ -1,18 +1,31 @@
 #pragma once
 
+#include <memory>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <unordered_set>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/projection.hpp>
+#include <glm/gtx/intersect.hpp>
+#include <glm/glm.hpp>
+
 #include "GameObject.h"
 #include "Collider.h"
+#include "ColliderSphere.h"
+#include "Collider.h"
+#include "Time.h"
 #include "../Shape.h"
 #include "../effects/Sound.h"
-#include "Time.h"
-#include <glm/glm.hpp>
-#include <memory>
 
 #define GRAVITY -50.0f
 #define DRAG_COEFFICIENT 0.25f
 
-// https://gafferongames.com/post/physics_in_3d/
+using namespace std;
+using namespace glm;
 
+// https://gafferongames.com/post/physics_in_3d/
 class PhysicsObject : public GameObject
 {
 private:

@@ -1,5 +1,5 @@
 ---
 model: Pillar Hexagon.obj
-material: [brown_rock, png]
+material: [brown_rock, jpg]
 physics:
     elasticity: 0.5

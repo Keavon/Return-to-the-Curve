@@ -23,30 +23,34 @@
 #include "Enemy.h"
 #include "PowerUp.h"
 
+using namespace glm;
+using namespace std;
+
 class Ball : public PhysicsObject
 {
 public:
     Ball(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
     void init(WindowManager *windowManager, std::shared_ptr<ParticleEmitter> sparkEmitter);
     void update(glm::vec3 dolly, glm::vec3 strafe);
-    void activatePowerUp();
-    void prepNextPowerUp();
     virtual void onHardCollision(float impactVel, Collision &collision);
     void addSkin(std::shared_ptr<Material> newSkin);
     void setSkin(int skinIndex);
     void nextSkin();
+    void activatePowerUp();
+    void prepNextPowerUp();
     std::shared_ptr<Material> getSkinMaterial();
 
 	WindowManager *windowManager;
     PowerUp *activePowerUp;
+
     std::shared_ptr<ParticleEmitter> sparkEmitter;
     float radius;
     float moveForce;
     float jumpForce;
-    std::vector<PowerUp *> storedPowerUp;
+    bool frozen;
     bool hasPowerUp;
     bool powerUpReady;
-    bool frozen;
+    std::vector<PowerUp *> storedPowerUp;
 
     float JUMP_TIME;
     int WANTS_JUMP;

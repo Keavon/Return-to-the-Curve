@@ -1,15 +1,16 @@
-
 #pragma  once
-
-#ifndef LAB471_PROGRAM_H_INCLUDED
-#define LAB471_PROGRAM_H_INCLUDED
 
 #include <map>
 #include <string>
 #include <vector>
-
+#include <iostream>
+#include <cassert>
+#include <fstream>
 #include <glad/glad.h>
 
+#include "GLSL.h"
+
+#define CONTAINS(map, key) map.find(key) != map.end()
 
 std::string readFileAsString(const std::string &fileName);
 
@@ -28,8 +29,8 @@ public:
 
 	void addAttribute(const std::string &name);
 	void addUniform(const std::string &name);
-    bool hasAttribute(std::string attribute);
-    bool hasUniform(std::string uniform);
+	bool hasAttribute(std::string attribute);
+	bool hasUniform(std::string uniform);
 	GLint getAttribute(const std::string &name) const;
 	GLint getUniform(const std::string &name) const;
 
@@ -46,5 +47,3 @@ private:
 	bool verbose = true;
 
 };
-
-#endif // LAB471_PROGRAM_H_INCLUDED

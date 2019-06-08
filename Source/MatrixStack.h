@@ -1,19 +1,16 @@
-
 #pragma once
-#ifndef LAB471_MATRIXSTACK_H_INCLUDED
-#define LAB471_MATRIXSTACK_H_INCLUDED
 
 #include <stack>
 #include <memory>
 
-#include "glm/glm.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/glm.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 class MatrixStack
 {
-
 	std::stack<glm::mat4> stack;
 
 public:
@@ -73,5 +70,3 @@ public:
 	void print(const char *name = 0) const;
 
 };
-
-#endif // LAB471_PROGRAM_H_INCLUDED

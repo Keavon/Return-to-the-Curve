@@ -1,10 +1,5 @@
 #include "ShaderManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 ShaderManager::ShaderManager(string relativePath) {
     this->relativePath = relativePath;
 }

@@ -1,14 +1,5 @@
 #include "GameObject.h"
 
-#include <memory>
-#include "../Program.h"
-#include "../MatrixStack.h"
-#include <glm/glm.hpp>
-#include <iostream>
-
-using namespace std;
-using namespace glm;
-
 GameObject::GameObject(vec3 position, shared_ptr<Shape> model) : GameObject::GameObject(position, glm::quat(1, 0, 0, 0), vec3(1, 1, 1), model) {}
 
 GameObject::GameObject(vec3 position, quat orientation, shared_ptr<Shape> model) : GameObject::GameObject(position, orientation, vec3(1, 1, 1), model) {}

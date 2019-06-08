@@ -1,22 +1,5 @@
 #include "PhysicsObject.h"
 
-#include "ColliderSphere.h"
-#include "Collider.h"
-
-#define NOMINMAX
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/projection.hpp>
-#include <glm/gtx/intersect.hpp>
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <unordered_set>
-
-using namespace std;
-using namespace glm;
-
 bool inRange(float n, float low, float high)
 {
     return low <= n && n <= high;
@@ -82,7 +65,7 @@ void PhysicsObject::update()
             }
         }
     }
-    for (int i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
+    for (size_t i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
     {
         Collision *col = &collider->pendingCollisions[i];
         if (collisionsToRemove.find(col) != collisionsToRemove.end())
@@ -130,8 +113,8 @@ void PhysicsObject::update()
             // correct position to prevent sinking/jitter
             if (other->invMass == 0)
             {
-                float percent = 0.2;
-                float slop = 0.01;
+                float percent = 0.2f;
+                float slop = 0.01f;
                 vec3 correction = (std::max)(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
@@ -234,7 +217,7 @@ void PhysicsObject::setMass(float mass)
 {
     this->mass = mass;
     if (mass == 0) this->invMass = 0;
-    else this->invMass = 1.0 / mass;
+    else this->invMass = 1.0f / mass;
 }
 
 void PhysicsObject::setFriction(float friction)

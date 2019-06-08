@@ -1,20 +1,5 @@
 #include "Octree.h"
 
-#include "PhysicsObject.h"
-#include "../Program.h"
-#include "../MatrixStack.h"
-#include "Frustum.h"
-
-#include <algorithm>
-#include <iostream>
-#include <glm/glm.hpp>
-#include <unordered_set>
-#include <stack>
-#include <memory>
-
-using namespace glm;
-using namespace std;
-
 // https://www.gamedev.net/articles/programming/general-and-gameplay-programming/introduction-to-octrees-r3529/
 
 OctNode::OctNode(vec3 min, vec3 max, OctNode *parent) :
