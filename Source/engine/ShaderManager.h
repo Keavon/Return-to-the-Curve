@@ -16,11 +16,11 @@ using namespace glm;
 class ShaderManager
 {
 private:
-    std::map<std::string, std::shared_ptr<Program>> loadedPrograms;
-    std::string relativePath;
+    map<string, shared_ptr<Program>> loadedPrograms;
+    string relativePath;
 
 public:
-    ShaderManager(std::string relativePath);
-    std::shared_ptr<Program> get(std::string programFile);
-    std::shared_ptr<Program> get(std::string programFile, std::vector<std::string> attributes, std::vector<std::string> uniforms);
+    ShaderManager(string relativePath);
+    shared_ptr<Program> get(string programFile);
+    shared_ptr<Program> get(string programFile, vector<string> attributes, vector<string> uniforms);
 };

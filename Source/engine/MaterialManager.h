@@ -14,11 +14,11 @@ using namespace glm;
 class MaterialManager
 {
 private:
-    std::map<std::string, std::shared_ptr<Material>> loadedMaterials;
-    std::shared_ptr<Program> pbr;
-    std::shared_ptr<TextureManager> textureManager;
+    map<string, shared_ptr<Material>> loadedMaterials;
+    shared_ptr<Program> pbr;
+    shared_ptr<TextureManager> textureManager;
 
 public:
-    void init(std::shared_ptr<Program> pbr, std::shared_ptr<TextureManager> textureManager);
-    std::shared_ptr<Material> get(std::string materialName, std::string extension);
+    void init(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager);
+    shared_ptr<Material> get(string materialName, string extension);
 };

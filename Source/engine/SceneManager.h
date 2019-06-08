@@ -22,20 +22,20 @@ using namespace glm;
 class SceneManager
 {
 private:
-    std::shared_ptr<PrefabManager> prefabManager;
+    shared_ptr<PrefabManager> prefabManager;
 
 public:
-    std::vector<std::shared_ptr<Instance>> scene;
+    vector<shared_ptr<Instance>> scene;
     Octree octree;
-    glm::vec3 marbleStart;
+    vec3 marbleStart;
     float deathBelow;
 
     struct {
-        glm::vec3 direction;
-        glm::vec3 brightness;
+        vec3 direction;
+        vec3 brightness;
     } light;
 
-    SceneManager(std::shared_ptr<PrefabManager> prefabManager);
-    void load(std::string sceneFile);
-    void save(std::string sceneFile);
+    SceneManager(shared_ptr<PrefabManager> prefabManager);
+    void load(string sceneFile);
+    void save(string sceneFile);
 };

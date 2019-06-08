@@ -18,12 +18,12 @@ using namespace glm;
 class PrefabManager
 {
 public:
-    std::shared_ptr<MaterialManager> materialManager;
-    std::shared_ptr<ModelManager> modelManager;
-    std::map<std::string, std::shared_ptr<Prefab>> loadedPrefabs;
-    std::string relativePath;
+    shared_ptr<MaterialManager> materialManager;
+    shared_ptr<ModelManager> modelManager;
+    map<string, shared_ptr<Prefab>> loadedPrefabs;
+    string relativePath;
 
-    PrefabManager(std::string relativePath, std::shared_ptr<ModelManager> modelManager, std::shared_ptr<MaterialManager> materialManager);
+    PrefabManager(string relativePath, shared_ptr<ModelManager> modelManager, shared_ptr<MaterialManager> materialManager);
 
-    std::shared_ptr<Prefab> get(std::string prefabFile);
+    shared_ptr<Prefab> get(string prefabFile);
 };

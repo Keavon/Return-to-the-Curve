@@ -47,7 +47,7 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
     // Check bounding spheres
     if (distance2(sphere->getCenterPos(), mesh->getCenterPos()) <= pow(sphere->getRadius() + mesh->getRadius(), 2))
     {
-        mat4 M = glm::translate(glm::mat4(1.f), mesh->position) * glm::mat4_cast(mesh->orientation) * glm::scale(glm::mat4(1.f), mesh->scale);
+        mat4 M = translate(mat4(1.f), mesh->position) * mat4_cast(mesh->orientation) * scale(mat4(1.f), mesh->scale);
 
         unordered_set<Edge, EdgeHash> edgeSet;
         unordered_set<vec3> vertSet;

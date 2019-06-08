@@ -32,38 +32,38 @@ class Shape
 {
 
 public:
-	std::vector<glm::vec3> getFace(int i, const glm::mat4 &M);
+	vector<vec3> getFace(int i, const mat4 &M);
 	int getNumFaces();
-	glm::vec3 getVertex(int i, const glm::mat4 &M);
+	vec3 getVertex(int i, const mat4 &M);
 	int getNumVertices();
-	std::vector<glm::vec3> getEdge(int i, const glm::mat4 &M);
+	vector<vec3> getEdge(int i, const mat4 &M);
 	int getNumEdges();
 
-	void loadMesh(const std::string &meshName);
+	void loadMesh(const string &meshName);
 	void findEdges();
 	void calcNormals();
 	void init();
 	void resize();
 	void measure();
-	void draw(const std::shared_ptr<Program> program) const;
+	void draw(const shared_ptr<Program> program) const;
 
-	glm::vec3 min;
-	glm::vec3 max;
-	glm::vec3 center;
-	glm::vec3 size;
+	vec3 min;
+	vec3 max;
+	vec3 center;
+	vec3 size;
 
-	std::vector<unsigned int> edgeBuffer;
+	vector<unsigned int> edgeBuffer;
 
-	std::vector<unsigned int> indexBuffer;
+	vector<unsigned int> indexBuffer;
 	unsigned int indexBufferID = 0;
 
-	std::vector<float> positionBuffer;
+	vector<float> positionBuffer;
 	unsigned int positionBufferID = 0;
 
-	std::vector<float> normalBuffer;
+	vector<float> normalBuffer;
 	unsigned int normalBufferID = 0;
 
-	std::vector<float> uvBuffer;
+	vector<float> uvBuffer;
 	unsigned int uvBufferID = 0;
 
 	unsigned int vaoID = 0;

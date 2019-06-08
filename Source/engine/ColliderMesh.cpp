@@ -18,7 +18,7 @@ void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Coll
     checkSphereMesh(obj, col, owner, this);
 }
 
-float ColliderMesh::getRadius(glm::vec3 scale)
+float ColliderMesh::getRadius(vec3 scale)
 {
     return length(scale * (bbox.max - bbox.min)) / 2;
 }

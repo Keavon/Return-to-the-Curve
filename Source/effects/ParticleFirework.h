@@ -13,7 +13,7 @@ using namespace glm;
 class ParticleFirework : public Particle
 {
 public:
-    ParticleFirework(glm::vec3 startPosition);
+    ParticleFirework(vec3 startPosition);
     virtual void start();
     virtual void update();
 };

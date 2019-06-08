@@ -16,12 +16,12 @@ using namespace glm;
 class EmitterManager
 {
 private:
-    std::map<std::string, std::shared_ptr<ParticleEmitter>> loadedEmitters;
+    map<string, shared_ptr<ParticleEmitter>> loadedEmitters;
 
 public:
-    std::shared_ptr<ParticleEmitter> get(std::string name);
-    std::shared_ptr<ParticleEmitter> get(std::string name, std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture, int maxParticles);
+    shared_ptr<ParticleEmitter> get(string name);
+    shared_ptr<ParticleEmitter> get(string name, shared_ptr<Shape> billboard, shared_ptr<Texture> texture, int maxParticles);
 
-    std::vector<std::shared_ptr<ParticleEmitter>> list();
-    std::vector<std::string> listNames();
+    vector<shared_ptr<ParticleEmitter>> list();
+    vector<string> listNames();
 };

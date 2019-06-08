@@ -28,17 +28,17 @@ using namespace std;
 class Ball : public PhysicsObject
 {
 public:
-    Ball(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
-    void init(WindowManager *windowManager, std::shared_ptr<ParticleEmitter> sparkEmitter);
-    void update(glm::vec3 dolly, glm::vec3 strafe);
+    Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
+    void init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter);
+    void update(vec3 dolly, vec3 strafe);
     virtual void onHardCollision(float impactVel, Collision &collision);
-    void addSkin(std::shared_ptr<Material> newSkin);
+    void addSkin(shared_ptr<Material> newSkin);
     void setSkin(int skinIndex);
     void nextSkin();
-    std::shared_ptr<Material> getSkinMaterial();
+    shared_ptr<Material> getSkinMaterial();
 
 	WindowManager *windowManager;
-    std::shared_ptr<ParticleEmitter> sparkEmitter;
+    shared_ptr<ParticleEmitter> sparkEmitter;
     float radius;
     float moveForce;
     float jumpForce;
@@ -49,12 +49,12 @@ public:
 
     float LAND_TIME;
     int CAN_JUMP;
-    glm::vec3 LAST_NORMAL_FORCE;
+    vec3 LAST_NORMAL_FORCE;
 
     float JUMPED_AT_TIME;
     int JUST_JUMPED;
-    glm::vec3 startPosition;
-    glm::vec3 playPosition;
+    vec3 startPosition;
+    vec3 playPosition;
     int currentSkin = 0;
-    std::vector<std::shared_ptr<Material>> marbleSkins;
+    vector<shared_ptr<Material>> marbleSkins;
 };

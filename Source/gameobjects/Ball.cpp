@@ -38,7 +38,7 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
     this->sparkEmitter = sparkEmitter;
 }
 
-void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
+void Ball::update(vec3 dolly, vec3 strafe)
 {
     if (frozen)
         return;
@@ -149,7 +149,7 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
     }
 }
 
-void Ball::addSkin(std::shared_ptr<Material> newSkin)
+void Ball::addSkin(shared_ptr<Material> newSkin)
 {
     marbleSkins.push_back(newSkin);
 }

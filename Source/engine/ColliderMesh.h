@@ -12,11 +12,11 @@
 class ColliderMesh : public Collider
 {
 public:
-    ColliderMesh(std::shared_ptr<Shape> mesh);
+    ColliderMesh(shared_ptr<Shape> mesh);
 
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
-    virtual float getRadius(glm::vec3 scale);
+    virtual float getRadius(vec3 scale);
 
-    std::shared_ptr<Shape> mesh;
+    shared_ptr<Shape> mesh;
 };

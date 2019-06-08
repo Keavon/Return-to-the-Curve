@@ -257,7 +257,7 @@ public:
         if (preferences.scenes.startup == 0)
         {
             // Enemy 1
-            vector<glm::vec3> enemyPath = {
+            vector<vec3> enemyPath = {
                 vec3{95.0, 2.0, 7.0},
                 vec3{100.0, 2.0, 15.0},
                 vec3{110.0, 2.0, -1.0},

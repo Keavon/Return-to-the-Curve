@@ -8,9 +8,9 @@ using namespace glm;
 class Frustum
 {
 public:
-    void extractPlanes(glm::mat4 P, glm::mat4 V);
-    bool checkAABB(const glm::vec3 &mins, const glm::vec3 &maxs);
-    bool checkSphere(const glm::vec3 &center, float radius);
+    void extractPlanes(mat4 P, mat4 V);
+    bool checkAABB(const vec3 &mins, const vec3 &maxs);
+    bool checkSphere(const vec3 &center, float radius);
 
-    glm::vec4 planes[6];
+    vec4 planes[6];
 };

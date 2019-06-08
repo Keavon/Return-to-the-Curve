@@ -28,8 +28,8 @@ public:
 
     struct {
         int startup;
-        std::vector<std::string> list;
+        vector<string> list;
     } scenes;
 
-    Preferences(std::string prefsFile);
+    Preferences(string prefsFile);
 };

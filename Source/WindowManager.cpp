@@ -2,7 +2,7 @@
 
 void error_callback(int error, const char *description)
 {
-	std::cerr << description << std::endl;
+	cerr << description << endl;
 }
 
 WindowManager * WindowManager::instance = nullptr;
@@ -11,7 +11,7 @@ WindowManager::WindowManager()
 {
 	if (instance)
 	{
-		std::cerr << "One instance of WindowManager has already been created, event callbacks of new instance will not work." << std::endl;
+		cerr << "One instance of WindowManager has already been created, event callbacks of new instance will not work." << endl;
 	}
 
 	instance = this;
@@ -52,12 +52,12 @@ bool WindowManager::init(int const width, int const height, bool maximized, bool
 	// Initialize GLAD
 	if (!gladLoadGL())
 	{
-		std::cerr << "Failed to initialize GLAD" << std::endl;
+		cerr << "Failed to initialize GLAD" << endl;
 		return false;
 	}
 
-	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
+	cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
 
 	// Set vsync
 	glfwSwapInterval(1);

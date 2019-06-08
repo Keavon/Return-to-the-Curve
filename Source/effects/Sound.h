@@ -56,4 +56,4 @@ public:
     void updateMusic();
 };
 
-extern std::shared_ptr<Sound> soundEngine;
+extern shared_ptr<Sound> soundEngine;

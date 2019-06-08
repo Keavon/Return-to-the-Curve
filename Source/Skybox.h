@@ -16,7 +16,7 @@ class Skybox
 public:
 	Skybox();
 	virtual ~Skybox();
-	void setFilenames(std::string f[6]);
+	void setFilenames(string f[6]);
 	void init();
 	void setUnit(GLint u) { unit = u; }
 	GLint getUnit() const { return unit; }
@@ -25,7 +25,7 @@ public:
 	void setWrapModes(GLint wrapS, GLint wrapT); // Must be called after init()
 	GLint getID() const { return tid;}
 private:
-	std::string filenames[6];
+	string filenames[6];
 	int width;
 	int height;
 	GLuint tid;
