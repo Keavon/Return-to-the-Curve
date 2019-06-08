@@ -1,10 +1,7 @@
 
 #include "MatrixStack.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 
 static const int MaxMatrixSize = 100;
-
 
 MatrixStack::MatrixStack()
 {

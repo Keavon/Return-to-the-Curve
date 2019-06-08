@@ -14,6 +14,11 @@
 #include "PrefabManager.h"
 #include "Octree.h"
 
+using namespace std;
+using namespace glm;
+
+#define ARRAY_TO_VEC3(arrayOf3) vec3(arrayOf3[0].as<float>(), arrayOf3[1].as<float>(), arrayOf3[2].as<float>())
+
 class SceneManager
 {
 private:
@@ -24,6 +29,11 @@ public:
     Octree octree;
     glm::vec3 marbleStart;
     float deathBelow;
+
+    struct {
+        glm::vec3 direction;
+        glm::vec3 brightness;
+    } light;
 
     SceneManager(std::shared_ptr<PrefabManager> prefabManager);
     void load(std::string sceneFile);

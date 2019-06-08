@@ -8,6 +8,9 @@
 #include <memory>
 #include <iostream>
 
+using namespace std;
+using namespace glm;
+
 class Blower : public PhysicsObject
 {
 public:

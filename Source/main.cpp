@@ -25,16 +25,16 @@
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
-
 #include "engine/Time.h"
 #include "effects/ParticleSpark.h"
 #include "gameobjects/Ball.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
-#include "gameobjects/PowerUp.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
+#include "engine/ColliderSphere.h"
+#include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
@@ -79,15 +79,14 @@ public:
     bool debugGeometry = 1;
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
-
-    // Light Position Globals
-    vec3 gameLight = vec3(300, 150, 250);
-    vec3 gameLightColor = vec3(250000, 250000, 250000);
+    GLuint objectMapFBO;
+    GLuint objectMapTex;
+    GLuint objectMapDepthBuf;
 
     // Camera
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
-    
+
     struct
     {
         shared_ptr<Ball> marble;
@@ -140,8 +139,8 @@ public:
 
     void loadShaders()
     {
-        vector<string> pbrUniforms = { "P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos" };
-        shared_ptr<Program> pbr = shaderManager.get("pbr", { "vertPos", "vertNor", "vertTex" }, pbrUniforms);
+        vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
+        shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
         materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
         shaderManager.get("sky", {"vertPos"}, {"P", "V", "Texture0"});
@@ -151,29 +150,12 @@ public:
         shaderManager.get("pass", {"vertPos"}, {"texBuf"});
         shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
-    }
-
-    void loadMaterials()
-    {
-        materialManager.get("marble_tiles", "png");
-        materialManager.get("coal_matte_tiles", "png");
-        materialManager.get("brown_rock", "png");
-        materialManager.get("seaside_rocks", "png");
-        materialManager.get("coal_matte_tiles", "png");
-        materialManager.get("marble_tiles", "png");
-        materialManager.get("rusted_metal", "jpg");
-        materialManager.get("painted_metal", "png");
+        shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
     }
 
     void loadSkybox()
     {
         skyboxManager.get("desert_hill", 1);
-    }
-
-    void loadParticleTextures()
-    {
-        textureManager.get("particles/star_07.png", 1);
-        textureManager.get("particles/scorch_02.png", 1);
     }
 
     void loadShadows()
@@ -199,12 +181,38 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void loadEffects() {
+    void loadObjectMap()
+    {
+        // Generate FBO for object map
+        glGenFramebuffers(1, &objectMapFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        // Generate texture where IDs of objects are stored
+        glGenTextures(1, &objectMapTex);
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, 0, 0, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Generate depth buffer
+        glGenTextures(1, &objectMapDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Bind with framebuffer's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void loadEffects()
+    {
         emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
         emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
     }
 
-    void loadFBOQuad() {
+    void loadFBOQuad()
+    {
         glGenVertexArrays(1, &fboQuadVertexArrayID);
         glBindVertexArray(fboQuadVertexArrayID);
 
@@ -235,69 +243,72 @@ public:
         modelManager.get("bunny.obj", true);
     }
 
-    void loadLevel() {
+    void loadLevel()
+    {
         sceneManager.load(RESOURCE_DIRECTORY + "/levels/" + preferences.scenes.list[preferences.scenes.startup] + ".yaml");
     }
 
     void loadGameObjects()
     {
         // Marble
-        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
+        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
         gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
         sceneManager.octree.insert(gameObjects.marble);
-        gameObjects.marble->addSkin(materialManager.get("brown_rock", "png"));
-        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "png"));
-        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "png"));
-        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "png"));
+        gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "jpg"));
+
+        if (preferences.scenes.startup == 0)
+        {
+            // Enemy 1
+            vector<glm::vec3> enemyPath = {
+                vec3{95.0, 2.0, 7.0},
+                vec3{100.0, 2.0, 15.0},
+                vec3{110.0, 2.0, -1.0},
+                vec3{115.0, 2.0, 7.0}};
+            gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy1->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy1);
+
+            // Enemy 2
+            enemyPath = {
+                vec3{125.0, 8.0, 55.0},
+                vec3{115.0, 20.0, 55.0},
+                vec3{105.0, 5.0, 55.0},
+                vec3{95.0, 8.0, 55.0}};
+            gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy2->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy2);
+
+            // Sentry 1
+            enemyPath = { vec3{65.0, 7.0, 32.0} };
+            gameObjects.sentry1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.sentry1->init(windowManager);
+            sceneManager.octree.insert(gameObjects.sentry1);
+
+            // Sentry 2
+            enemyPath = { vec3{90.0, 2.0, 32.0} };
+            gameObjects.sentry2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.sentry2->init(windowManager);
+            sceneManager.octree.insert(gameObjects.sentry2);
+
+            //Power Up 1
+            gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
+            gameObjects.powerUp1->init();
+            sceneManager.octree.insert(gameObjects.powerUp1);
+
+
+            // Power Up 2
+            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
+            gameObjects.powerUp2->init();
+            sceneManager.octree.insert(gameObjects.powerUp2);
+        }
 
         // Goal functionality
-        gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
-
-        // TODO:: Remove enemies or have them spawn in correct places for level 2
-        // Enemy 1
-        vector<glm::vec3> enemyPath = {
-            vec3{95.0, 2.0, 7.0},
-            vec3{100.0, 2.0, 15.0},
-            vec3{110.0, 2.0, -1.0},
-            vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.enemy1->init(windowManager);
-        sceneManager.octree.insert(gameObjects.enemy1);
-
-        // Enemy 2
-        enemyPath = {
-            vec3{125.0, 8.0, 55.0},
-            vec3{115.0, 20.0, 55.0},
-            vec3{105.0, 5.0, 55.0},
-            vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.enemy2->init(windowManager);
-        sceneManager.octree.insert(gameObjects.enemy2);
-
-        // Sentry 1
-        enemyPath = { vec3{65.0, 7.0, 32.0} };
-        gameObjects.sentry1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.sentry1->init(windowManager);
-        sceneManager.octree.insert(gameObjects.sentry1);
-
-        // Sentry 2
-        enemyPath = { vec3{90.0, 2.0, 32.0} };
-        gameObjects.sentry2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-        gameObjects.sentry2->init(windowManager);
-        sceneManager.octree.insert(gameObjects.sentry2);
-
-        //Power Up 1
-        gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
-        gameObjects.powerUp1->init();
-        sceneManager.octree.insert(gameObjects.powerUp1);
-
-
-        // Power Up 2
-        gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
-        gameObjects.powerUp2->init();
-        sceneManager.octree.insert(gameObjects.powerUp2);
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
@@ -331,6 +342,7 @@ public:
         M->loadIdentity();
 
         shared_ptr<Program> pbr = shaderManager.get("pbr");
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
 
         if (shader == pbr)
         {
@@ -345,36 +357,95 @@ public:
         gameObjects.marble->draw(shader, M);
 
         // Draw enemies
-        if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
-        gameObjects.enemy1->draw(shader, M);
-        gameObjects.enemy2->draw(shader, M);
-        gameObjects.sentry1->draw(shader, M);
-        gameObjects.sentry2->draw(shader, M);
-        if (!gameObjects.powerUp1->destroyed){
-            gameObjects.powerUp1->draw(shader,M);
-        }
-        if (!gameObjects.powerUp2->destroyed){
-            gameObjects.powerUp2->draw(shader,M);
+            if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
+        if (preferences.scenes.startup == 0)
+        {
+            gameObjects.enemy1->draw(shader, M);
+            gameObjects.enemy2->draw(shader, M);
+            gameObjects.sentry1->draw(shader, M);
+            gameObjects.sentry2->draw(shader, M);
+            if (!gameObjects.powerUp1->destroyed)
+            {
+                gameObjects.powerUp1->draw(shader,M);
+            }
+            if (!gameObjects.powerUp2->destroyed)
+            {
+                gameObjects.powerUp2->draw(shader,M);
+            }
         }
 
         // Draw scene instances
+        int i = 0;
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             if (shader == pbr) instance->material->bind();
+            else if (shader == objectMap)
+                glUniform1i(shader->getUniform("objectIndex"), i);
             instance->physicsObject->draw(shader, M);
+            i++;
         }
 
         // Cleanup
         M->popMatrix();
     }
 
+    shared_ptr<Instance> getClickedObject(int x, int y)
+    {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        y = height - y;
+
+        GameObject::setCulling(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        glViewport(0, 0, width, height);
+
+        // Resize textures to current window size
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        GLint clear = -2;
+        glClearBufferiv(GL_COLOR, 0, &clear);
+
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
+
+        // Render scene as object IDs
+        objectMap->bind();
+        setProjectionMatrix(objectMap);
+        setView(objectMap);
+        glUniform1i(objectMap->getUniform("objectIndex"), -1);
+        drawScene(objectMap);
+        objectMap->unbind();
+
+        // Get index of clicked object in sceneManager.scene
+        // -2: no object clicked
+        // -1: object clicked but not in sceneManager.scene
+        GLint index;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &index);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (index >= 0)
+        {
+            return sceneManager.scene[index];
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
     void drawShadowMap(mat4 *LS)
     {
         GameObject::setCulling(false);
-        
+
         // set up light's depth map
         glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
 
@@ -383,7 +454,7 @@ public:
         depth->bind();
         // TODO you will need to fix these
         mat4 LP = SetOrthoMatrix(depth);
-        mat4 LV = SetLightView(depth, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+        mat4 LV = SetLightView(depth, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
         drawScene(depth);
         depth->unbind();
@@ -406,7 +477,7 @@ public:
             depthDebug->bind();
             // render scene from light's point of view
             SetOrthoMatrix(depthDebug);
-            SetLightView(depthDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+            SetLightView(depthDebug, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
             drawScene(depthDebug);
             depthDebug->unbind();
         }
@@ -446,7 +517,8 @@ public:
         sky->unbind();
     }
 
-    void drawOctree() {
+    void drawOctree()
+    {
         shared_ptr<Program> circle = shaderManager.get("circle");
 
         circle->bind();
@@ -488,13 +560,15 @@ public:
 
         pbr->unbind();
 
-        if (sceneManager.octree.debug) drawOctree();
+        if (sceneManager.octree.debug)
+            drawOctree();
 
         shared_ptr<Program> particle = shaderManager.get("particle");
         particle->bind();
         setProjectionMatrix(particle);
         setView(particle);
-        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list()) {
+        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list())
+        {
             emitter->draw(particle);
         }
         particle->unbind();
@@ -509,7 +583,7 @@ public:
 
         gameObjects.marble->position = sceneManager.marbleStart;
         gameObjects.marble->setVelocity(vec3(0.0f));
-        startTime = glfwGetTime();
+        startTime = (float)glfwGetTime();
         gameObjects.goal->reset();
         gameObjects.marble->frozen = 0;
     }
@@ -518,18 +592,20 @@ public:
     {
         gameObjects.marble->update(camera->dolly, camera->strafe);
         gameObjects.goal->update();
-        gameObjects.enemy1->update(gameObjects.marble->position);
-        gameObjects.enemy2->update(gameObjects.marble->position);
-        gameObjects.sentry1->update(gameObjects.marble->position);
-        gameObjects.sentry2->update(gameObjects.marble->position);
-
-        if (!gameObjects.powerUp1->destroyed){
-            gameObjects.powerUp1->update();
+        if (preferences.scenes.startup == 0)
+        {
+            gameObjects.enemy1->update(gameObjects.marble->position);
+            gameObjects.enemy2->update(gameObjects.marble->position);
+            gameObjects.sentry1->update(gameObjects.marble->position);
+            gameObjects.sentry2->update(gameObjects.marble->position);
+            if (!gameObjects.powerUp1->destroyed){
+                gameObjects.powerUp1->update();
+            }
+            
+            if (!gameObjects.powerUp2->destroyed){
+                gameObjects.powerUp2->update();
+            } 
         }
-        
-        if (!gameObjects.powerUp2->destroyed){
-            gameObjects.powerUp2->update();
-        } 
     }
 
     void physicsTick()
@@ -539,7 +615,7 @@ public:
         vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
         for (shared_ptr<PhysicsObject> object : instancesToCheck)
         {
-            if (object->collidable)
+            if(object->collidable)
                 object->checkCollision(gameObjects.marble.get());
         }
 
@@ -567,8 +643,8 @@ public:
      */
     void setLight(shared_ptr<Program> prog)
     {
-        glUniform3f(prog->getUniform("lightPosition"), gameLight.x, gameLight.y, gameLight.z);
-        glUniform3f(prog->getUniform("lightColor"), gameLightColor.x, gameLightColor.y, gameLightColor.z);
+        glUniform3f(prog->getUniform("lightPosition"), sceneManager.light.direction.x, sceneManager.light.direction.y, sceneManager.light.direction.z);
+        glUniform3f(prog->getUniform("lightColor"), sceneManager.light.brightness.x, sceneManager.light.brightness.y, sceneManager.light.brightness.z);
     }
 
     mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
@@ -650,12 +726,14 @@ public:
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
             gameObjects.marble->frozen = editMode;
-            if (editMode) {
+            if (editMode)
+            {
                 camera->saveMarbleView();
                 gameObjects.marble->playPosition = gameObjects.marble->position;
                 gameObjects.marble->position = gameObjects.marble->startPosition;
             }
-            else {
+            else
+            {
                 camera->restoreMarbleView();
                 gameObjects.marble->position = gameObjects.marble->playPosition;
             }
@@ -671,34 +749,38 @@ public:
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
             resetPlayer();
-            gameObjects.powerUp1->destroyed = false;
-            gameObjects.powerUp2->destroyed = false;
-            gameObjects.powerUp1->collidable = true;
-            gameObjects.powerUp2->collidable = true;
+            if (preferences.scenes.startup == 0)
+            {
+                gameObjects.powerUp1->destroyed = false;
+                gameObjects.powerUp2->destroyed = false;
+                gameObjects.powerUp1->collidable = true;
+                gameObjects.powerUp2->collidable = true;
+            }
+        }
+        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+        { // just a test since super bounce has no trigger yet
+            soundEngine->superBounce();
         }
         // TODO - FIX camera flythrough so that it follows a predefined bezier curve
         //   1st - find points in the world first to use for debugging/ trial with
-        // else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        // {
+        
+        //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        //{
         //    camera->previewLvl = !camera->previewLvl;
         //    if (camera->previewLvl)
         //    {
         //        camera->startLvlPreview(CENTER_LVL_POSITION);
         //    }
-        // }
-        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-        {   // just a test since super bounce has no trigger yet
-            soundEngine->superBounce();
-        }
+        //}
     }
 
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
         deltaY *= -1;
-        float newDistance = deltaY + camera->distToBall;
+        float newDistance = (float)deltaY + camera->distToBall;
         if (newDistance < 20 && newDistance > 2.5)
         {
-            camera->distToBall += deltaY;
+            camera->distToBall += (float)deltaY;
         }
     }
 
@@ -711,6 +793,15 @@ public:
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
             cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+
+            if (editMode)
+            {
+                shared_ptr<Instance> instance = getClickedObject((int)posX, (int)posY);
+                if (instance != nullptr)
+                {
+                    instance->physicsObject->position += vec3(0, 1, 0);
+                }
+            }
         }
 
         if (action == GLFW_RELEASE)
@@ -746,10 +837,9 @@ int main(int argc, char **argv)
     application->loadWindow();
     application->loadCanvas();
     application->loadShaders();
-    application->loadMaterials();
     application->loadSkybox();
-    application->loadParticleTextures();
     application->loadShadows();
+    application->loadObjectMap();
     application->loadEffects();
     application->loadFBOQuad();
     application->loadModels();
@@ -757,19 +847,19 @@ int main(int argc, char **argv)
     application->loadGameObjects();
     application->loadSounds();
 
-    application->startTime = glfwGetTime();
+    application->startTime = (float)glfwGetTime();
 
-    float startTimestamp = glfwGetTime();
+    float startTimestamp = (float)glfwGetTime();
     float lastFrameTimestamp = 0;
     float lastPhysicsTimestamp = 0;
     float rollingAverageFrameTime = 0;
     float accumulator = 0;
-    Time.physicsDeltaTime = 0.02;
+    Time.physicsDeltaTime = 0.02f;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
-        float t = glfwGetTime();
+        float t = (float)glfwGetTime();
         Time.deltaTime = t - Time.timeSinceStart - startTimestamp;
         accumulator += Time.deltaTime;
         Time.timeSinceStart = t - startTimestamp;
@@ -790,7 +880,6 @@ int main(int argc, char **argv)
         application->beforeRender();
         application->render();
         glfwSwapBuffers(application->windowManager->getHandle());
-
     }
 
     application->windowManager->shutdown();

@@ -1,12 +1,15 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "Collider.h"
 #include "ColliderMesh.h"
 #include "TriggerSphere.h"
 #include "TriggerCylinder.h"
 #include "PhysicsObject.h"
+#include "BoundingBox.h"
 
-#include <glm/glm.hpp>
+using namespace glm;
 
 class ColliderSphere : public Collider
 {

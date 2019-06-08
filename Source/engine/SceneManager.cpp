@@ -1,10 +1,5 @@
 #include "SceneManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define ARRAY_TO_VEC3(arrayOf3) vec3(arrayOf3[0].as<float>(), arrayOf3[1].as<float>(), arrayOf3[2].as<float>())
-
 SceneManager::SceneManager(shared_ptr<PrefabManager> prefabManager) : octree(vec3(-100), vec3(100))
 {
     this->prefabManager = prefabManager;
@@ -21,6 +16,10 @@ void SceneManager::load(string sceneFile)
     marbleStart = ARRAY_TO_VEC3(file["marble"]["location"]) * globalScale;
 
     deathBelow = file["marble"]["deathBelow"].as<float>();
+
+    YAML::Node lightNode = file["light"];
+    light.direction = ARRAY_TO_VEC3(lightNode["direction"]);
+    light.brightness = ARRAY_TO_VEC3(lightNode["color"]) * lightNode["intensity"].as<float>();
 
     for (YAML::Node object : file["track"])
     {

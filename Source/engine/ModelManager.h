@@ -6,6 +6,11 @@
 
 #include "Shape.h"
 
+using namespace std;
+using namespace glm;
+
+#define CONTAINS(map, key) map.find(key) != map.end()
+
 class ModelManager
 {
 private:

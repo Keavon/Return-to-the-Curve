@@ -1,15 +1,4 @@
-//
-//    Many useful helper functions for GLSL shaders - gleaned from various sources including orange book
-//    Created by zwood on 2/21/10.
-//    Modified by sueda 10/15/15.
-//
-
 #include "GLSL.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <cstring>
-#include <cassert>
 
 namespace GLSL
 {

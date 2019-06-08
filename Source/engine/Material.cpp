@@ -1,8 +1,5 @@
 #include "Material.h"
 
-using namespace std;
-using namespace glm;
-
 Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager)
 {
     this->pbr = pbr;

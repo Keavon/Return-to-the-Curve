@@ -2,6 +2,13 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+#include "GLSL.h"
+
+using namespace std;
 
 class Texture
 {
@@ -16,11 +23,11 @@ public:
 	void unbind();
 	void setWrapModes(GLint wrapS, GLint wrapT); // Must be called after init()
 	GLint getID() const { return tid;}
+	
 private:
 	std::string filename;
 	int width;
 	int height;
 	GLuint tid;
 	GLint unit;
-	
 };

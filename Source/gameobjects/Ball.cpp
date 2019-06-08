@@ -1,8 +1,5 @@
 #include "Ball.h"
 
-using namespace glm;
-using namespace std;
-
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;
@@ -46,7 +43,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
 
     for (auto collision : collider->pendingCollisions)
     {
@@ -64,7 +62,7 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
                 storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
             }
             //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : (char*)storedPowerUp[0]->powerUpType);
+            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : to_string(storedPowerUp[0]->powerUpType).c_str());
             printf("Press 'E' to activate\n");
             //cout << "Stored size: " << storedPowerUp.size() << endl;
             hasPowerUp = true;
@@ -94,7 +92,7 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
     //===============================================================================
     //Determine Jump
     //===============================================================================
-    float currentTime = glfwGetTime();
+    float currentTime = (float)glfwGetTime();
     vec3 normForceDir = vec3(0.0f);
     if (normForce != vec3(0))
     {
@@ -126,7 +124,6 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
             }
         }
     }
-
     // Any of the three timers expire?
     if (WANTS_JUMP && (currentTime - JUMP_TIME) >= 0.125)
     {

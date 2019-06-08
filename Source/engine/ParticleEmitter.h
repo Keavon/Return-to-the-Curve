@@ -11,6 +11,9 @@
 #include "../Texture.h"
 #include "Time.h"
 
+using namespace std;
+using namespace glm;
+
 class Particle
 {
 public:

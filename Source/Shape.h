@@ -11,6 +11,21 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <unordered_set>
+#include <iostream>
+
+#include "GLSL.h"
+#include "Program.h"
+
+using namespace std;
+using namespace glm;
+
 class Program;
 
 class Shape
@@ -30,25 +45,27 @@ public:
 	void init();
 	void resize();
 	void measure();
-	void draw(const std::shared_ptr<Program> prog) const;
+	void draw(const std::shared_ptr<Program> program) const;
 
 	glm::vec3 min;
 	glm::vec3 max;
 	glm::vec3 center;
 	glm::vec3 size;
 
-// private:
+	std::vector<unsigned int> edgeBuffer;
 
-	std::vector<unsigned int> eleBuf;
-	std::vector<unsigned int> edgeBuf;
-	std::vector<float> posBuf;
-	std::vector<float> norBuf;
-	std::vector<float> texBuf;
+	std::vector<unsigned int> indexBuffer;
+	unsigned int indexBufferID = 0;
 
-	unsigned int eleBufID = 0;
-	unsigned int posBufID = 0;
-	unsigned int norBufID = 0;
-	unsigned int texBufID = 0;
+	std::vector<float> positionBuffer;
+	unsigned int positionBufferID = 0;
+
+	std::vector<float> normalBuffer;
+	unsigned int normalBufferID = 0;
+
+	std::vector<float> uvBuffer;
+	unsigned int uvBufferID = 0;
+
 	unsigned int vaoID = 0;
 };
 

@@ -10,6 +10,11 @@
 #include "Shape.h"
 #include "Prefab.h"
 
+using namespace std;
+using namespace glm;
+
+#define CONTAINS(map, key) map.find(key) != map.end()
+
 class PrefabManager
 {
 public:

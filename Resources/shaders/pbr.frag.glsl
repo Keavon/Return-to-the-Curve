@@ -21,7 +21,6 @@ uniform sampler2D aoMap;
 // uniform float ao;
 // const float ao = 1.0;
 
-// Lights
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
 

@@ -1,14 +1,4 @@
 #include "ColliderSphere.h"
-#include "ColliderMesh.h"
-#include "TriggerSphere.h"
-#include "TriggerCylinder.h"
-#include "Collider.h"
-#include "PhysicsObject.h"
-
-#include "BoundingBox.h"
-#include <glm/glm.hpp>
-
-using namespace glm;
 
 ColliderSphere::ColliderSphere(float radius) :
     Collider(radius), radius(radius)

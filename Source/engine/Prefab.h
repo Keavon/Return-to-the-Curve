@@ -5,6 +5,9 @@
 #include "PhysicsObject.h"
 #include "Instance.h"
 
+using namespace std;
+using namespace glm;
+
 class Prefab {
 public:
     std::shared_ptr<Shape> model;

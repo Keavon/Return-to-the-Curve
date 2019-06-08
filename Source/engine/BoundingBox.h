@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <algorithm>
+
+using namespace glm;
 
 class BoundingBox
 {

@@ -1,8 +1,5 @@
 #include "Prefab.h"
 
-using namespace std;
-using namespace glm;
-
 Prefab::Prefab(shared_ptr<Shape> model, shared_ptr<Material> material)
 {
     this->model = model;

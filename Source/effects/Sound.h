@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <memory>
 #include <vector>
+#include <random>
+#include <time.h> 
 #include <irrKlang.h>
 #include <algorithm>
 

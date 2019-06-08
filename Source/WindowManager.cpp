@@ -1,9 +1,4 @@
-
 #include "WindowManager.h"
-#include "GLSL.h"
-
-#include <iostream>
-
 
 void error_callback(int error, const char *description)
 {
@@ -42,7 +37,7 @@ bool WindowManager::init(int const width, int const height, bool maximized, bool
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    if (maximized) glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+	if (maximized) glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 	// Create a windowed mode window and its OpenGL context.
 	windowHandle = glfwCreateWindow(width, height, "Return To the Curve", fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
@@ -70,7 +65,7 @@ bool WindowManager::init(int const width, int const height, bool maximized, bool
 	glfwSetKeyCallback(windowHandle, key_callback);
 	glfwSetMouseButtonCallback(windowHandle, mouse_callback);
 	glfwSetFramebufferSizeCallback(windowHandle, resize_callback);
-    glfwSetScrollCallback(windowHandle, scroll_callback);
+	glfwSetScrollCallback(windowHandle, scroll_callback);
 
 	glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
