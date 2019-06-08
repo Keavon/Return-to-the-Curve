@@ -2,14 +2,24 @@
 
 #include "BoundingBox.h"
 
-#include <glm/glm.hpp>
-#include <vector>
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+#include <glm/gtx/intersect.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/projection.hpp>
+#include <glm/glm.hpp>
+
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <unordered_set>
 
 // https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/
 // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
+
+using namespace glm;
+using namespace std;
 
 class ColliderMesh;
 class ColliderSphere;

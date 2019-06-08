@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+using namespace std;
+using namespace glm;
+
 class Frustum
 {
 public:

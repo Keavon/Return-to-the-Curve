@@ -1,17 +1,24 @@
 #pragma once
 
+#include <algorithm>
+#include <iostream>
+#include <glm/glm.hpp>
+#include <unordered_set>
+#include <stack>
 #include <memory>
 #include <vector>
-#include <unordered_set>
-#include <glm/glm.hpp>
+
 #include "PhysicsObject.h"
-#include "../Program.h"
-#include "../Shape.h"
-#include "../MatrixStack.h"
 #include "Frustum.h"
+#include "../Program.h"
+#include "../MatrixStack.h"
+#include "../Shape.h"
 
 #define MAX_DEPTH
 #define MAX_ELEMENTS
+
+using namespace glm;
+using namespace std;
 
 class OctNode
 {

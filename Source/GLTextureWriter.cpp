@@ -1,10 +1,8 @@
 
 #include "GLTextureWriter.h"
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
-
-#include <iostream>
-
 
 /**
  * Retrieve the width of the texture

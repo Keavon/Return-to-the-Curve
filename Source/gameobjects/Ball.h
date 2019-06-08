@@ -22,6 +22,9 @@
 #include "../WindowManager.h"
 #include "Enemy.h"
 
+using namespace glm;
+using namespace std;
+
 class Ball : public PhysicsObject
 {
 public:

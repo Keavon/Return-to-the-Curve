@@ -14,6 +14,11 @@
 #include "PrefabManager.h"
 #include "Octree.h"
 
+using namespace std;
+using namespace glm;
+
+#define ARRAY_TO_VEC3(arrayOf3) vec3(arrayOf3[0].as<float>(), arrayOf3[1].as<float>(), arrayOf3[2].as<float>())
+
 class SceneManager
 {
 private:

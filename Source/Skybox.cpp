@@ -1,23 +1,8 @@
 #include "Skybox.h"
-#include "GLSL.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include "stb_image.h"
 
-using namespace std;
+Skybox::Skybox() : filenames{""}, tid(0) {}
 
-Skybox::Skybox() :
-	filenames{""},
-	tid(0)
-{
-	
-}
-
-Skybox::~Skybox()
-{
-	
-}
+Skybox::~Skybox() {}
 
 void Skybox::init()
 {

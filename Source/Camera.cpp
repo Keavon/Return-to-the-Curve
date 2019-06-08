@@ -1,8 +1,5 @@
 #include "Camera.h"
 
-using namespace std;
-using namespace glm;
-
 Camera::Camera(WindowManager *windowManager, vec3 centerOfLevel) : windowManager(windowManager)
 {
     levelCenterPoint = centerOfLevel;

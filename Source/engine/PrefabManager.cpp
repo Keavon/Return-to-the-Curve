@@ -1,10 +1,5 @@
 #include "PrefabManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 PrefabManager::PrefabManager(string relativePath, shared_ptr<ModelManager> modelManager, shared_ptr<MaterialManager> materialManager)
 {
     this->relativePath = relativePath;

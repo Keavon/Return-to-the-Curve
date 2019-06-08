@@ -1,8 +1,5 @@
 #include "Ball.h"
 
-using namespace glm;
-using namespace std;
-
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;

@@ -5,6 +5,9 @@
 #include "Program.h"
 #include "Shape.h"
 
+using namespace std;
+using namespace glm;
+
 class Object3D
 {
 public:

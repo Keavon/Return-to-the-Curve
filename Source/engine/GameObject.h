@@ -2,10 +2,15 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <iostream>
+
 #include "../Program.h"
 #include "../Shape.h"
-#include "Collider.h"
 #include "../MatrixStack.h"
+#include "Collider.h"
+
+using namespace std;
+using namespace glm;
 
 class GameObject
 {

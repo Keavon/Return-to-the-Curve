@@ -1,21 +1,5 @@
 #include "PhysicsObject.h"
 
-#include "ColliderSphere.h"
-#include "Collider.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/projection.hpp>
-#include <glm/gtx/intersect.hpp>
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <unordered_set>
-
-using namespace std;
-using namespace glm;
-
 bool inRange(float n, float low, float high)
 {
     return low <= n && n <= high;

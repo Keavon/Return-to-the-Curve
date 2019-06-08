@@ -1,26 +1,9 @@
 #include "Shape.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <algorithm>
-#include <cstdlib>
-#include <ctime>
-#include <unordered_set>
-#include <iostream>
-
-#include "GLSL.h"
-#include "Program.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 #include "stb_image.h"
-
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-using namespace std;
-using namespace glm;
 
 vector<vec3> Shape::getFace(int i, const mat4 &M)
 {

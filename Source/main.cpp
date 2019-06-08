@@ -25,7 +25,6 @@
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
-
 #include "engine/Time.h"
 #include "effects/ParticleSpark.h"
 #include "gameobjects/Ball.h"

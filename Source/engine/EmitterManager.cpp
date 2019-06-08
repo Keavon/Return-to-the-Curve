@@ -1,10 +1,5 @@
 #include "EmitterManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 shared_ptr<ParticleEmitter> EmitterManager::get(string name)
 {
     if (!(CONTAINS(loadedEmitters, name)))

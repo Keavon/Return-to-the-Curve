@@ -1,12 +1,5 @@
 #include "ParticleFirework.h"
 
-#include <glm/glm.hpp>
-#include <memory>
-#include <cstdlib>
-
-using namespace std;
-using namespace glm;
-
 ParticleFirework::ParticleFirework(vec3 startPosition) : Particle()
 {
     this->startPosition = startPosition;

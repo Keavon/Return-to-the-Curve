@@ -6,6 +6,11 @@
 
 #include "Material.h"
 
+using namespace std;
+using namespace glm;
+
+#define CONTAINS(map, key) map.find(key) != map.end()
+
 class MaterialManager
 {
 private:

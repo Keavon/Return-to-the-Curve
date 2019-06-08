@@ -13,15 +13,18 @@
 #include "gameobjects/Ball.h"
 #include "engine/Time.h"
 
+using namespace std;
+using namespace glm;
+
 class Camera {
 public:
     enum CameraMode { marble, edit, flythrough };
 
-    Camera(WindowManager *windowManager, glm::vec3 centerOfLevel);
+    Camera(WindowManager *windowManager, vec3 centerOfLevel);
     ~Camera();
-    void update(std::shared_ptr<Ball> ball);
+    void update(shared_ptr<Ball> ball);
     void init();
-    void startLvlPreview(glm::vec3 lvlCenterPt);
+    void startLvlPreview(vec3 lvlCenterPt);
     void marbleModeUpdate(shared_ptr<Ball> ball);
     void editModeUpdate();
     void flythroughModeUpdate();
@@ -48,11 +51,11 @@ public:
     double savedYaw;
     float savedDistToBall;
 
-    glm::vec3 eye;
-    glm::vec3 lookAtPoint;
-    glm::vec3 upVec;
-    glm::vec3 dolly;
-    glm::vec3 strafe;
+    vec3 eye;
+    vec3 lookAtPoint;
+    vec3 upVec;
+    vec3 dolly;
+    vec3 strafe;
 
     //Camera Path Data
     bool pointReached;
@@ -73,14 +76,14 @@ public:
     double dy;
     double radPerPx;
 
-    glm::vec3 cameraPathTarget;
-    glm::vec3 cameraStartPos;
-    glm::vec3 circStartPos;
-    glm::vec3 circNextPos;
-    glm::vec3 levelCenterPoint;
-    glm::vec3 lookAtPathVel;
-    glm::vec3 lookAtTarget;
-    glm::vec3 lookAtVec;
-    glm::vec3 pathVect;
-    glm::vec3 pathVel;
+    vec3 cameraPathTarget;
+    vec3 cameraStartPos;
+    vec3 circStartPos;
+    vec3 circNextPos;
+    vec3 levelCenterPoint;
+    vec3 lookAtPathVel;
+    vec3 lookAtTarget;
+    vec3 lookAtVec;
+    vec3 pathVect;
+    vec3 pathVel;
 };

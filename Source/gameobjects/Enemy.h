@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <cmath>
 #include <math.h>
+#include <iostream>
 
 #include "../engine/PhysicsObject.h"
 #include "../engine/ColliderSphere.h"
@@ -13,6 +14,9 @@
 #include "../Shape.h"
 #include "../WindowManager.h"
 #include "../engine/Time.h"
+
+using namespace glm;
+using namespace std;
 
 class Enemy : public PhysicsObject
 {

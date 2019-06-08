@@ -2,6 +2,14 @@
 
 #include <glad/glad.h>
 #include <string>
+#include "GLSL.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+#include "stb_image.h"
+
+using namespace std;
 
 class Skybox
 {

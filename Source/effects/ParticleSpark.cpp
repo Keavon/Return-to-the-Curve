@@ -1,12 +1,5 @@
 #include "ParticleSpark.h"
 
-#include <glm/glm.hpp>
-#include <memory>
-#include <cstdlib>
-
-using namespace std;
-using namespace glm;
-
 ParticleSpark::ParticleSpark(vec3 position, float impactVel, vec3 impactNormal) : Particle()
 {
     this->position = position;
