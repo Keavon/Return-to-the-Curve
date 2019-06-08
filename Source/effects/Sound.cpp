@@ -33,7 +33,7 @@ Sound::Sound()
         cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
     }
 
-    srand(time(0));
+    srand((int)static_cast<int>(time(0)));
     int i = (rand() % NUMBER_OF_MUSIC_TRACKS);
     currentTrack = i;
 }

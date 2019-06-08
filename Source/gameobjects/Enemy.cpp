@@ -5,73 +5,77 @@
 using namespace glm;
 using namespace std;
 
-Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius):
-    PhysicsObject(enemyPath[0], orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
+Enemy::Enemy(std::vector<glm::vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius) : PhysicsObject(enemyPath[0], orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
 {
-    curvePath = new Pathing(enemyPath);
-    speed = 0;
-    material = 0;
+	curvePath = new Pathing(enemyPath);
+	speed = 0;
+	material = 0;
 
-    moveSpeed = 8;
-    t = 0.1;
-    acceleration = vec3(0, 0, 0);
-    direction = vec3(0);
-    
-    forward = true;
-    pointReached = true;
+	moveSpeed = 8;
+	t = 0.1f;
+	acceleration = vec3(0, 0, 0);
+	direction = vec3(0);
+
+	forward = true;
+	pointReached = true;
 }
 
 void Enemy::init(WindowManager *windowManager)
 {
-    this->windowManager = windowManager;
+	this->windowManager = windowManager;
 }
 
 void Enemy::update()
 {
-    collider->pendingCollisions.clear();
+	collider->pendingCollisions.clear();
 
-    if (pointReached) {
+	if (pointReached)
+	{
 		curvePath->calcBezierCurveTarget(t);
-        targetX = curvePath->getTargetPos().x;
-        targetY = curvePath->getTargetPos().y + 3;
-        targetZ = curvePath->getTargetPos().z;
-		if (t < 0){
-            forward = true;
+		targetX = curvePath->getTargetPos().x;
+		targetY = curvePath->getTargetPos().y + 3;
+		targetZ = curvePath->getTargetPos().z;
+		if (t < 0)
+		{
+			forward = true;
 			//printf("Switch to forward\n");
-        }
-        if (t > 1) {
-            forward = false;
+		}
+		if (t > 1)
+		{
+			forward = false;
 			//printf("Switch to backward\n");
-        }
-		if (forward) {
-            t += 0.02;
-            //printf("Incremented t to : %f\n", t);
-        }
-        else {
-            t -= 0.02;
-            //printf("Decremented t to : %f\n", t);
-        }
-        pointReached = false;
-    }
-        float dX = targetX - position.x;
-        float dZ = targetZ - position.z;
-        float dY = targetY - position.y;
-        direction = normalize(vec3(dX, dY, dZ));
-        velocity.x = 0;
-        velocity.z = 0;
-        velocity.y = 0;
-        //vec3 axis = vec3{0,1,0};
-        //quat q = rotate(, axis);
-        //orientation = q * orientation;
-        velocity = direction * moveSpeed;
-        //printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
-        position += velocity * Time.physicsDeltaTime;
-        //printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
-        if (sqrt( pow((targetX - position.x), 2) + 
-                pow((targetZ - position.z), 2)) 
-            < 1.02 ) {
-            pointReached = true;
-        }
+		}
+		if (forward)
+		{
+			t += 0.02f;
+			//printf("Incremented t to : %f\n", t);
+		}
+		else
+		{
+			t -= 0.02f;
+			//printf("Decremented t to : %f\n", t);
+		}
+		pointReached = false;
+	}
+	float dX = targetX - position.x;
+	float dZ = targetZ - position.z;
+	float dY = targetY - position.y;
+	direction = normalize(vec3(dX, dY, dZ));
+	velocity.x = 0;
+	velocity.z = 0;
+	velocity.y = 0;
+	//vec3 axis = vec3{0,1,0};
+	//quat q = rotate(, axis);
+	//orientation = q * orientation;
+	velocity = direction * moveSpeed;
+	//printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
+	position += velocity * Time.physicsDeltaTime;
+	//printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
+	if (sqrt(pow((targetX - position.x), 2) +
+			 pow((targetZ - position.z), 2)) < 1.02)
+	{
+		pointReached = true;
+	}
 }
 
 void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
@@ -100,7 +104,8 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		MatrixStack lLeg4;
 		MatrixStack Foot4;
 		M2 = M;
-		scale = vec3(2, 2, 2);;
+		scale = vec3(2, 2, 2);
+		;
 		M->pushMatrix();
 		M->translate(position - vec3(0, 2.5, 0));
 		M->translate(vec3(0, (3.5 + sin(t * 4) / 3.0f), 0));
@@ -118,7 +123,7 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		uLeg1.translate(vec3(0.7f, -2, 0.7f));
 		uLeg1.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 1.25f, vec3(0, 1, 0)));
 		uLeg1.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -3, vec3(1, 0, 0)));
-		uLeg1.rotate(rotate(quat(1, 0, 0, 0), sin(t*8)/2, vec3(1, 0, 0)));
+		uLeg1.rotate(rotate(quat(1, 0, 0, 0), sin(t * 8) / 2, vec3(1, 0, 0)));
 		uLeg1.translate(vec3(0, 0, -0.8f));
 		lLeg1 = setlLeg(uLeg1, 0, t);
 		//lLeg1 = uLeg1;
@@ -140,17 +145,17 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		footModel->draw(prog);
 		uLeg2 = BaseMat;
 		uLeg2.scale(vec3(0.5f, 0.5f, 0.5f));
-		uLeg2.translate(vec3(-0.7f, -2, 0.7f));
+		uLeg2.translate(vec3(-0.7f, -2.0f, 0.7f));
 		uLeg2.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 0.75f, vec3(0, 1, 0)));
 		uLeg2.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -3, vec3(1, 0, 0)));
 		uLeg2.rotate(rotate(quat(1, 0, 0, 0), sin((t * 8) + (float)M_PI_2) / 2, vec3(1, 0, 0)));
 		uLeg2.translate(vec3(0, 0, -0.8f));
-		lLeg2 = setlLeg(uLeg2, M_PI_2, t);
+		lLeg2 = setlLeg(uLeg2, (float)M_PI_2, t);
 		//lLeg2.translate(vec3(0, 0, -0.9f));
 		//lLeg2.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 0.625f, vec3(1, 0, 0)));
 		//lLeg2.rotate(rotate(quat(1, 0, 0, 0), cos((t * 8) + (float)M_PI_2) / 2, vec3(1, 0, 0)));
 		//lLeg2.translate(vec3(0, 0, -0.9f));
-		Foot2 = setFoot(lLeg2, M_PI_2, t);
+		Foot2 = setFoot(lLeg2, (float)M_PI_2, t);
 		//Foot2.translate(vec3(0, 0, -0.9f));
 		//Foot2.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -4, vec3(1, 0, 0)));
 		//Foot2.rotate(rotate(quat(1, 0, 0, 0), sin((t * 8) + (float)M_PI_2)/4, vec3(1, 0, 0)));
@@ -186,17 +191,17 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 		footModel->draw(prog);
 		uLeg4 = BaseMat;
 		uLeg4.scale(vec3(0.5f, 0.5f, 0.5f));
-		uLeg4.translate(vec3(0.7f, -2, -0.7f));
+		uLeg4.translate(vec3(0.7f, -2.0f, -0.7f));
 		uLeg4.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 1.75f, vec3(0, 1, 0)));
 		uLeg4.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -3, vec3(1, 0, 0)));
 		uLeg4.rotate(rotate(quat(1, 0, 0, 0), sin((t * 8) + (float)M_PI_2) / 2, vec3(1, 0, 0)));
 		uLeg4.translate(vec3(0, 0, -0.8f));
-		lLeg4 = setlLeg(uLeg4, M_PI_2, t);
+		lLeg4 = setlLeg(uLeg4, (float)M_PI_2, t);
 		//lLeg4.translate(vec3(0, 0, -0.9f));
 		//lLeg4.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 0.625f, vec3(1, 0, 0)));
 		//lLeg4.rotate(rotate(quat(1, 0, 0, 0), cos((t * 8) + (float)M_PI_2) / 2, vec3(1, 0, 0)));
 		//lLeg4.translate(vec3(0, 0, -0.9f));
-		Foot4 = setFoot(lLeg4, M_PI_2, t);
+		Foot4 = setFoot(lLeg4, (float)M_PI_2, t);
 		//Foot4.translate(vec3(0, 0, -0.9f));
 		//Foot4.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -4, vec3(1, 0, 0)));
 		//Foot4.rotate(rotate(quat(1, 0, 0, 0), sin((t * 8) + (float)M_PI_2)/4, vec3(1, 0, 0)));
@@ -219,8 +224,9 @@ void Enemy::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 	}
 }
 
-MatrixStack Enemy::setlLeg(MatrixStack uLeg, float offset, float t) {
-	MatrixStack lLeg = uLeg; 
+MatrixStack Enemy::setlLeg(MatrixStack uLeg, float offset, float t)
+{
+	MatrixStack lLeg = uLeg;
 	lLeg.translate(vec3(0, 0, -0.9f));
 	lLeg.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI * 0.625f, vec3(1, 0, 0)));
 	lLeg.rotate(rotate(quat(1, 0, 0, 0), cos((t * 8) + offset) / 2, vec3(1, 0, 0)));
@@ -228,7 +234,8 @@ MatrixStack Enemy::setlLeg(MatrixStack uLeg, float offset, float t) {
 	return lLeg;
 }
 
-MatrixStack Enemy::setFoot(MatrixStack lLeg, float offset, float t) {
+MatrixStack Enemy::setFoot(MatrixStack lLeg, float offset, float t)
+{
 	MatrixStack foot = lLeg;
 	foot.translate(vec3(0, 0, -0.9f));
 	foot.rotate(rotate(quat(1, 0, 0, 0), (float)M_PI / -4, vec3(1, 0, 0)));

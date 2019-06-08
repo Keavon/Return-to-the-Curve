@@ -247,7 +247,7 @@ public:
     void loadGameObjects()
     {
         // Marble
-        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1);
+        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
         gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
         sceneManager.octree.insert(gameObjects.marble);
         gameObjects.marble->addSkin(materialManager.get("brown_rock", "png"));
@@ -546,7 +546,7 @@ public:
 
         gameObjects.marble->position = sceneManager.marbleStart;
         gameObjects.marble->setVelocity(vec3(0.0f));
-        startTime = glfwGetTime();
+        startTime = (float)glfwGetTime();
         gameObjects.goal->reset();
         gameObjects.marble->frozen = 0;
     }
@@ -720,10 +720,10 @@ public:
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
         deltaY *= -1;
-        float newDistance = deltaY + camera->distToBall;
+        float newDistance = (float)deltaY + camera->distToBall;
         if (newDistance < 20 && newDistance > 2.5)
         {
-            camera->distToBall += deltaY;
+            camera->distToBall += (float)deltaY;
         }
     }
 
@@ -739,7 +739,7 @@ public:
 
             if (editMode)
             {
-                auto instance = getClickedObject(posX, posY);
+                shared_ptr<Instance> instance = getClickedObject((int)posX, (int)posY);
                 if (instance != nullptr)
                 {
                     instance->physicsObject->position += vec3(0, 1, 0);
@@ -790,19 +790,19 @@ int main(int argc, char **argv)
     application->loadGameObjects();
     application->loadSounds();
 
-    application->startTime = glfwGetTime();
+    application->startTime = (float)glfwGetTime();
 
-    float startTimestamp = glfwGetTime();
+    float startTimestamp = (float)glfwGetTime();
     float lastFrameTimestamp = 0;
     float lastPhysicsTimestamp = 0;
     float rollingAverageFrameTime = 0;
     float accumulator = 0;
-    Time.physicsDeltaTime = 0.02;
+    Time.physicsDeltaTime = 0.02f;
 
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
-        float t = glfwGetTime();
+        float t = (float)glfwGetTime();
         Time.deltaTime = t - Time.timeSinceStart - startTimestamp;
         accumulator += Time.deltaTime;
         Time.timeSinceStart = t - startTimestamp;

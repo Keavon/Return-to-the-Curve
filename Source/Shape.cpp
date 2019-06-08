@@ -35,7 +35,7 @@ vector<vec3> Shape::getFace(int i, const mat4 &M)
 
 int Shape::getNumFaces()
 {
-	return indexBuffer.size() / 3;
+	return (int)(indexBuffer.size() / 3);
 }
 
 vec3 Shape::getVertex(int i, const mat4 &M)
@@ -45,7 +45,7 @@ vec3 Shape::getVertex(int i, const mat4 &M)
 
 int Shape::getNumVertices()
 {
-	return positionBuffer.size() / 3;
+	return (int)(positionBuffer.size() / 3);
 }
 
 vector<vec3> Shape::getEdge(int i, const mat4 &M)
@@ -61,7 +61,7 @@ vector<vec3> Shape::getEdge(int i, const mat4 &M)
 
 int Shape::getNumEdges()
 {
-	return edgeBuffer.size() / 2;
+	return (int)(edgeBuffer.size() / 2);
 }
 
 typedef pair<unsigned int, unsigned int> vert_pair;

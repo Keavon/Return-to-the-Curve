@@ -43,7 +43,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
 
 void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
 
     for (auto collision : collider->pendingCollisions)
     {
@@ -76,7 +77,7 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
     //===============================================================================
     //Determine Jump
     //===============================================================================
-    float currentTime = glfwGetTime();
+    float currentTime = (float)glfwGetTime();
     vec3 normForceDir = vec3(0.0f);
     if (normForce != vec3(0))
     {
