@@ -1,10 +1,8 @@
 
 #include "GLTextureWriter.h"
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
-#include <iostream>
-
+#include <stb-image/stb_image_write.h>
 
 /**
  * Retrieve the width of the texture
@@ -48,7 +46,7 @@ void getData(void * dataBuffer, GLenum format, GLenum type)
  * @param  fileName the name of the file
  * @return          true if successfull
  */
-bool GLTextureWriter::WriteImage(std::shared_ptr<Texture> texture, std::string fileName)
+bool GLTextureWriter::WriteImage(shared_ptr<Texture> texture, string fileName)
 {
 	return WriteImage(texture->getID(), fileName);
 }
@@ -59,7 +57,7 @@ bool GLTextureWriter::WriteImage(std::shared_ptr<Texture> texture, std::string f
  * @param  imgName the filename to write to
  * @return         true if successful.
  */
-bool GLTextureWriter::WriteImage(const Texture &  texture, std::string imgName)
+bool GLTextureWriter::WriteImage(const Texture &  texture, string imgName)
 {
 	return WriteImage(texture.getID(), imgName);
 }
@@ -90,7 +88,7 @@ void flip_buffer(char * imgData, int width, int height )
 	}
 }
 
-bool GLTextureWriter::WriteImage(GLint tid, std::string imgName)
+bool GLTextureWriter::WriteImage(GLint tid, string imgName)
 {
 	//Backup old openGL state.
 	GLint backupBoundTexture;
@@ -118,7 +116,7 @@ bool GLTextureWriter::WriteImage(GLint tid, std::string imgName)
 	int res =  stbi_write_png(imgName.c_str(), txWidth, txHeight, 3, dataBuffer, sizeof(char)*3*txWidth);
 	if(!res)
 	{
-		std::cerr << "Could not write to  " << imgName << std::endl;
+		cerr << "Could not write to  " << imgName << endl;
 	}
 
 	//Cleanup

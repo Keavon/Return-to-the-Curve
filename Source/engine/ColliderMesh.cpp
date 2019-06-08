@@ -1,12 +1,4 @@
 #include "ColliderMesh.h"
-#include "ColliderSphere.h"
-#include "Collider.h"
-#include "PhysicsObject.h"
-
-#include "BoundingBox.h"
-#include <memory>
-#include <glm/glm.hpp>
-#include "../Shape.h"
 
 using namespace glm;
 using namespace std;
@@ -26,7 +18,7 @@ void ColliderMesh::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Coll
     checkSphereMesh(obj, col, owner, this);
 }
 
-float ColliderMesh::getRadius(glm::vec3 scale)
+float ColliderMesh::getRadius(vec3 scale)
 {
     return length(scale * (bbox.max - bbox.min)) / 2;
 }

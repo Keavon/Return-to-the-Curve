@@ -1,26 +1,5 @@
 #include "Ball.h"
 
-#include "../Shape.h"
-#include "../WindowManager.h"
-#include "../engine/ColliderSphere.h"
-#include "../engine/PhysicsObject.h"
-#include "../engine/ParticleEmitter.h"
-#include "../effects/ParticleSpark.h"
-#include "../effects/Sound.h"
-#include "Enemy.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/projection.hpp>
-#include <glm/gtx/intersect.hpp>
-#include <glm/glm.hpp>
-#include <memory>
-#include <cmath>
-#include <iostream>
-#include <unordered_set>
-
-using namespace glm;
-using namespace std;
-
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;
@@ -59,9 +38,8 @@ void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkE
     this->sparkEmitter = sparkEmitter;
 }
 
-void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
+void Ball::update(vec3 dolly, vec3 strafe)
 {
-
     if (frozen)
         return;
 
@@ -73,7 +51,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         }
     }
 
-    PhysicsObject::update(dt);
+    PhysicsObject::update();
 
     vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
@@ -96,7 +74,7 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
     //===============================================================================
     //Determine Jump
     //===============================================================================
-    float currentTime = glfwGetTime();
+    float currentTime = (float)glfwGetTime();
     vec3 normForceDir = vec3(0.0f);
     if (normForce != vec3(0))
     {
@@ -146,11 +124,14 @@ void Ball::update(float dt, glm::vec3 dolly, glm::vec3 strafe)
         netForce += direction * moveForce;
     }
 
-    if (velocity.x != 0 && velocity.y != 0)
+    if (velocity.x != 0 || velocity.z != 0)
     {
         vec3 axis = normalize(cross(vec3(0, 1, 0), velocity));
-        quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * dt, axis);
-        orientation = q * orientation;
+        quat q = rotate(quat(1, 0, 0, 0), length(vec2(velocity.x, velocity.z)) / radius * Time.physicsDeltaTime, axis);
+        if (!isnan(q.w))
+        {
+            orientation = q * orientation;
+        }
     }
 }
 
@@ -168,7 +149,7 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
     }
 }
 
-void Ball::addSkin(std::shared_ptr<Material> newSkin)
+void Ball::addSkin(shared_ptr<Material> newSkin)
 {
     marbleSkins.push_back(newSkin);
 }

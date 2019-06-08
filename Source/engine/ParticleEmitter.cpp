@@ -1,12 +1,4 @@
 #include "ParticleEmitter.h"
-#include "../MatrixStack.h"
-#include "../Texture.h"
-
-#include <memory>
-#include <iostream>
-
-using namespace std;
-using namespace glm;
 
 ParticleEmitter::ParticleEmitter(shared_ptr<Shape> billboard, shared_ptr<Texture> texture, int maxParticles)
 {
@@ -16,7 +8,7 @@ ParticleEmitter::ParticleEmitter(shared_ptr<Shape> billboard, shared_ptr<Texture
     this->numActiveParticles = 0;
 }
 
-void ParticleEmitter::update(float dt)
+void ParticleEmitter::update()
 {
     numActiveParticles = 0;
     for (auto &p : particles)
@@ -24,7 +16,7 @@ void ParticleEmitter::update(float dt)
         if (p->t < p->lifespan)
         {
             numActiveParticles++;
-            p->update(dt);
+            p->update();
         }
     }
 }
@@ -75,7 +67,7 @@ void ParticleEmitter::stop()
     particles.clear();
 }
 
-void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard)
+void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, shared_ptr<Shape> billboard)
 {
     M->pushMatrix();
         M->translate(position);
@@ -87,20 +79,16 @@ void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, std::sh
     M->popMatrix();
 }
 
-void Particle::update(float dt)
+void Particle::update()
 {
-    t += dt;
-    if (t > lifespan && respawn)
-    {
-        start();
-    }
-    velocity += dt * acceleration;
-    position += dt * velocity;
-    rotation += dt * rotationSpeed;
+    t += Time.deltaTime;
+    if (t > lifespan && respawn) start();
+    velocity += Time.deltaTime * acceleration;
+    position += Time.deltaTime * velocity;
+    rotation += Time.deltaTime * rotationSpeed;
 }
 
-Particle::Particle() :
-    respawn(false), t(0), scale(1), rotation(0), acceleration(0), position(0), velocity(0), color(1), rotationSpeed(0)
+Particle::Particle() : respawn(false), t(0), scale(1), rotation(0), acceleration(0), position(0), velocity(0), color(1), rotationSpeed(0)
 {
 }
 

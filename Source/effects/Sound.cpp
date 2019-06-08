@@ -32,7 +32,10 @@ Sound::Sound()
         completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
         cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
     }
-    currentTrack = 4;
+
+    srand((int)static_cast<int>(time(0)));
+    int i = (rand() % NUMBER_OF_MUSIC_TRACKS);
+    currentTrack = i;
 }
 
 Sound::~Sound()

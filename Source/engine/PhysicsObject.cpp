@@ -1,22 +1,5 @@
 #include "PhysicsObject.h"
 
-#include "ColliderSphere.h"
-#include "Collider.h"
-
-#define NOMINMAX
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/projection.hpp>
-#include <glm/gtx/intersect.hpp>
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <unordered_set>
-
-using namespace std;
-using namespace glm;
-
 bool inRange(float n, float low, float high)
 {
     return low <= n && n <= high;
@@ -43,7 +26,7 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared
     this->speed = 0;
 }
 
-void PhysicsObject::update(float dt)
+void PhysicsObject::update()
 {
     normForce = vec3(0);
     netForce.y += GRAVITY * mass;
@@ -81,7 +64,7 @@ void PhysicsObject::update(float dt)
             }
         }
     }
-    for (int i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
+    for (size_t i = collider->pendingCollisions.size() - 1; i >= 0 && !collisionsToRemove.empty(); i--)
     {
         Collision *col = &collider->pendingCollisions[i];
         if (collisionsToRemove.find(col) != collisionsToRemove.end())
@@ -112,17 +95,25 @@ void PhysicsObject::update(float dt)
 
             // friction
             vec3 frictionDir = (relVel - proj(relVel, collision.normal));
-            if (frictionDir != vec3(0))
+            float frictionLen = length(frictionDir);
+            if (frictionLen > 0)
             {
-                frictionDir = normalize(frictionDir);
-                netForce += length(localNormForce) * friction * frictionDir;
+                if (frictionLen > 0.1)
+                {
+                    frictionDir = normalize(frictionDir);
+                }
+                vec3 frictionForce = length(localNormForce) * friction * frictionDir;
+                if (!isnan(frictionForce.x))
+                {
+                    netForce += frictionForce;
+                }
             }
 
             // correct position to prevent sinking/jitter
             if (other->invMass == 0)
             {
-                float percent = 0.2;
-                float slop = 0.01;
+                float percent = 0.2f;
+                float slop = 0.01f;
                 vec3 correction = (std::max)(collision.penetration - slop, 0.0f) / (invMass + other->invMass) * percent * -collision.normal;
                 position += invMass * correction;
             }
@@ -152,8 +143,19 @@ void PhysicsObject::update(float dt)
 
     // apply force
     acceleration = netForce * invMass;
-    velocity += acceleration * dt;
-    position += velocity * dt;
+    velocity += acceleration * Time.physicsDeltaTime;
+    if (fabs(velocity.x) > 0.01)
+    {
+        position.x += velocity.x * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.y) > 0.01)
+    {
+        position.y += velocity.y * Time.physicsDeltaTime;
+    }
+    if (fabs(velocity.z) > 0.01)
+    {
+        position.z += velocity.z * Time.physicsDeltaTime;
+    }
 
     impulse = vec3(0);
     netForce = vec3(0);
@@ -214,7 +216,7 @@ void PhysicsObject::setMass(float mass)
 {
     this->mass = mass;
     if (mass == 0) this->invMass = 0;
-    else this->invMass = 1.0 / mass;
+    else this->invMass = 1.0f / mass;
 }
 
 void PhysicsObject::setFriction(float friction)

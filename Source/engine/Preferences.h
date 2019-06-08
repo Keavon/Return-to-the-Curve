@@ -3,6 +3,9 @@
 #include <string>
 #include <cmath>
 #include <yaml-cpp/yaml.h>
+#include <math.h>
+
+using namespace std;
 
 class Preferences
 {
@@ -23,5 +26,10 @@ public:
         bool music;
     } sound;
 
-    Preferences(std::string prefsFile);
+    struct {
+        int startup;
+        vector<string> list;
+    } scenes;
+
+    Preferences(string prefsFile);
 };

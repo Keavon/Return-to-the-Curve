@@ -1,10 +1,5 @@
 #include "TextureManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 TextureManager::TextureManager(string relativePath) {
     this->relativePath = relativePath;
 }

@@ -278,16 +278,7 @@
     <ClInclude Include="..\Source\Skybox.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\stb_image.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\stb_image_write.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Texture.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\tiny_obj_loader.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\WindowManager.h">
@@ -450,6 +441,9 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\Preferences.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Time.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>

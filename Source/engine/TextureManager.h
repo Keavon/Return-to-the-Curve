@@ -8,13 +8,18 @@
 
 #include "Texture.h"
 
+using namespace std;
+using namespace glm;
+
+#define CONTAINS(map, key) map.find(key) != map.end()
+
 class TextureManager
 {
 private:
-    std::map<std::string, std::shared_ptr<Texture>> loadedTextures;
-    std::string relativePath;
+    map<string, shared_ptr<Texture>> loadedTextures;
+    string relativePath;
 
 public:
-    TextureManager(std::string relativePath);
-    std::shared_ptr<Texture> get(std::string textureFile, int textureUnit = 0, GLenum wrapX = GL_REPEAT, GLenum wrapY = GL_REPEAT);
+    TextureManager(string relativePath);
+    shared_ptr<Texture> get(string textureFile, int textureUnit = 0, GLenum wrapX = GL_REPEAT, GLenum wrapY = GL_REPEAT);
 };

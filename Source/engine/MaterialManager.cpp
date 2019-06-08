@@ -1,10 +1,5 @@
 #include "MaterialManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 void MaterialManager::init(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager) {
     this->pbr = pbr;
     this->textureManager = textureManager;

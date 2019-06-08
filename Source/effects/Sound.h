@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <memory>
 #include <vector>
+#include <random>
+#include <time.h> 
 #include <irrKlang.h>
 #include <algorithm>
 
@@ -54,4 +56,4 @@ public:
     void updateMusic();
 };
 
-extern std::shared_ptr<Sound> soundEngine;
+extern shared_ptr<Sound> soundEngine;

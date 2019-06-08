@@ -1,9 +1,5 @@
 #include "Blower.h"
 
-using namespace std;
-using namespace glm;
-
-
 Blower::Blower(vec3 position, quat orientation, float radius, float length) :
     PhysicsObject(position, orientation, nullptr, make_shared<TriggerCylinder>(radius, length)),
     radius(radius), length(length)

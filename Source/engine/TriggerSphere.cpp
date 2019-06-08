@@ -1,12 +1,4 @@
 #include "TriggerSphere.h"
-#include "ColliderMesh.h"
-#include "Collider.h"
-#include "PhysicsObject.h"
-
-#include "BoundingBox.h"
-#include <glm/glm.hpp>
-
-using namespace glm;
 
 TriggerSphere::TriggerSphere(float radius) :
     Collider(vec3(-radius), vec3(radius)), radius(radius)
@@ -23,7 +15,7 @@ void TriggerSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Col
     checkColSphereTriggerSphere(obj, col, owner, this);
 }
 
-float TriggerSphere::getRadius(glm::vec3 scale)
+float TriggerSphere::getRadius(vec3 scale)
 {
     return bbox.radius * scale.x;
 }

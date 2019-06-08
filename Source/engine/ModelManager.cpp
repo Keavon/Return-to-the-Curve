@@ -1,10 +1,5 @@
 #include "ModelManager.h"
 
-using namespace std;
-using namespace glm;
-
-#define CONTAINS(map, key) map.find(key) != map.end()
-
 ModelManager::ModelManager(string relativePath) {
     this->relativePath = relativePath;
 }

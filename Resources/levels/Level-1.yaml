@@ -2,7 +2,7 @@
 name: Original Sandbox
 skybox: desert_hilltop
 light:
-    location: [300, 250, 150]
+    direction: [300, 250, 150]
     color: [1, 1, 1]
     intensity: 250000
 marble:
