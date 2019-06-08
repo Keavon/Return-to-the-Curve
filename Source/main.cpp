@@ -182,7 +182,8 @@ public:
     {
         textureManager.get("particles/star_07.png", 1);
         textureManager.get("particles/scorch_02.png", 1);
-        textureManager.get("particles/scorch_02.png", 1);
+        textureManager.get("ui/Level1.png", 1);
+		textureManager.get("ui/YouWin.png", 1);
     }
 
     void loadShadows()
@@ -288,7 +289,7 @@ public:
 
 	void loadUIObjects() {
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/Level1.png", 1));
-		//uiObjects.winMessage = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/YouWin.png", 0));
+		uiObjects.winMessage = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/YouWin.png", 0));
 		//uiObjects.dummy = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/books.png");
 		//UIObject r = UIObject(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
 	}
@@ -313,9 +314,9 @@ public:
         if (debugLight) drawDepthMap();
         else renderPlayerView(&LS); 
 		auto M = make_shared<MatrixStack>();
-		uiObjects.logo->draw(shaderManager.get("ui"), M);
+		uiObjects.logo->draw(shaderManager.get("ui"), M, true);
 		if (gameObjects.goal->didWin) {
-			//uiObjects.winMessage->draw(shaderManager.get("ui"), M);
+			uiObjects.winMessage->draw(shaderManager.get("ui"), M);
 		}
     }
 
@@ -715,15 +716,15 @@ int main(int argc, char **argv)
     application->loadCanvas();
     application->loadShaders();
     application->loadMaterials();
-    application->loadSkybox();
     application->loadParticleTextures();
+    application->loadSkybox();
+	application->loadUIObjects();
     application->loadShadows();
     application->loadEffects();
     application->loadFBOQuad();
     application->loadModels();
     application->loadLevel();
     application->loadGameObjects();
-	application->loadUIObjects();
     application->loadSounds();
 
     application->startTime = glfwGetTime();

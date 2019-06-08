@@ -38,14 +38,16 @@ UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shap
 	cout << "object initialized" << endl;
 }
 
-void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
+void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, bool rot)
 {
 	t += 0.05;
 	prog->bind();
 	M->pushMatrix();
 	M->translate(position);
 	M->scale(scale);
-	M->rotate(rotate(quat(1, 0, 0, 0), sin(t), vec3(0, 1, 0)));
+	if (rot) {
+		M->rotate(rotate(quat(1, 0, 0, 0), sin(t), vec3(0, 1, 0)));
+	}
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	M->loadIdentity();
 	model->draw(prog);
