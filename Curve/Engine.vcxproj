@@ -185,6 +185,7 @@
     <ClCompile Include="..\Source\engine\TextureManager.cpp" />
     <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
+    <ClCompile Include="..\Source\engine\UIObject.cpp" />
     <ClCompile Include="..\Source\gameobjects\Ball.cpp" />
     <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
@@ -260,8 +261,7 @@
     <ClInclude Include="..\Source\engine\Time.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
-    <ClCompile Include="..\Source\engine\UIObject.cpp" />
-    <ClCompile Include="..\Source\engine\UIObject.h" />
+    <ClInclude Include="..\Source\engine\UIObject.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />

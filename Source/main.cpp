@@ -155,7 +155,7 @@ public:
         shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
         shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
-		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M"});
+		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M", "Texture"});
     }
 
     void loadSkybox()
@@ -295,10 +295,8 @@ public:
     }
 
 	void loadUIObjects() {
-		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "/ui/Level1.png" : "/ui/Level2.png", 0));
-		uiObjects.winMessage = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("/ui/YouWin.png", 0));
-		//uiObjects.dummy = make_shared<UIObject>(vec3(0.0f, 0.0f, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/books.png");
-		//UIObject r = UIObject(vec3(1.0f, 1.0f, 1.0f), vec3(0.2f), quat(0.0f, 0.0f, 0.0f, 0.0f), modelManager.get("billboard.obj"), RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
+		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
     /*
@@ -319,12 +317,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (debugLight) drawDepthMap();
-        else renderPlayerView(&LS); 
-		auto M = make_shared<MatrixStack>();
-		uiObjects.logo->draw(shaderManager.get("ui"), M, 1);
-		if (gameObjects.goal->didWin) {
-			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
-		}
+        else renderPlayerView(&LS);
     }
 
     void drawScene(shared_ptr<Program> shader)
@@ -435,7 +428,6 @@ public:
         shared_ptr<Program> depth = shaderManager.get("depth");
 
         depth->bind();
-        // TODO you will need to fix these
         mat4 LP = SetOrthoMatrix(depth);
         mat4 LV = SetLightView(depth, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
@@ -519,6 +511,19 @@ public:
         cubeOutline->unbind();
     }
 
+    void drawGameplayUI()
+    {
+		auto M = make_shared<MatrixStack>();
+
+        // Current level
+		uiObjects.logo->draw(shaderManager.get("ui"), M, 1);
+
+        // Win message
+		if (gameObjects.goal->didWin) {
+			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+		}
+    }
+
     void renderPlayerView(mat4 *LS)
     {
         GameObject::setCulling(true);
@@ -543,8 +548,7 @@ public:
 
         pbr->unbind();
 
-        if (sceneManager.octree.debug)
-            drawOctree();
+        if (sceneManager.octree.debug) drawOctree();
 
         shared_ptr<Program> particle = shaderManager.get("particle");
         particle->bind();
@@ -555,6 +559,8 @@ public:
             emitter->draw(particle);
         }
         particle->unbind();
+
+        drawGameplayUI();
     }
 
     /*

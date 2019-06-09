@@ -220,9 +220,6 @@
     <ClCompile Include="..\Source\engine\Preferences.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\engine\UIObject.h">
-      <Filter>Source\engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\engine\UIObject.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
@@ -444,6 +441,9 @@
       <Filter>Source\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\engine\Time.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\UIObject.h">
       <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>

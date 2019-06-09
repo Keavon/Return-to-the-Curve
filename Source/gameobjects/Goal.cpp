@@ -34,11 +34,6 @@ void Goal::onWin()
 {
     soundEngine->win();
 
-    cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-    cout << "You win!" << endl;
-    cout << "Time: " << glfwGetTime() - *startTime << endl;
-    cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-
     for (int i = 0; i < 100; i++)
     {
         fireworkEmitter->addParticle(make_shared<ParticleFirework>(position));

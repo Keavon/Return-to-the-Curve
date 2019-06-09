@@ -7,7 +7,7 @@ Texture::Texture() : filename(""), tid(0) {}
 
 Texture::~Texture() {}
 
-void Texture::init()
+void Texture::init(GLenum wrapS, GLenum wrapT)
 {
 	// Load texture
 	int w, h, ncomps;
@@ -17,9 +17,9 @@ void Texture::init()
 		cerr << filename << " not found" << endl;
 	}
 	if(ncomps != 1 && ncomps != 3 && ncomps != 4) {
-		cerr << filename << " must have 1, 3, or 4 components (RGB or RGBA)" << endl;
+		cerr << filename << " must have 1, 3, or 4 components (R8, RGB or RGBA)" << endl;
 	}
-	if((w & (w - 1)) != 0 || (h & (h - 1)) != 0) {
+	if((wrapS != GL_CLAMP_TO_EDGE || wrapT != GL_CLAMP_TO_EDGE) && ((w & (w - 1)) != 0 || (h & (h - 1)) != 0)) {
 		cerr << filename << " must be a power of 2" << endl;
 	}
 	width = w;
@@ -38,8 +38,8 @@ void Texture::init()
 	// Generate image pyramid
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Set texture wrap modes for the S and T directions
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
 	// Set filtering mode for magnification and minimification
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -49,7 +49,7 @@ void Texture::init()
 	stbi_image_free(data);
 }
 
-void Texture::setWrapModes(GLint wrapS, GLint wrapT)
+void Texture::setWrapModes(GLenum wrapS, GLenum wrapT)
 {
 	// Must be called after init()
 	glBindTexture(GL_TEXTURE_2D, tid);

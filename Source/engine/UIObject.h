@@ -1,28 +1,37 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
+#include <cmath>
+#include <math.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <string>
+#include <iostream>
+
 #include "../Program.h"
 #include "../Shape.h"
 #include "Collider.h"
 #include "../MatrixStack.h"
-#include <string>
+
+using namespace std;
+using namespace glm;
 
 class UIObject
 {
 public:
 	//UIObject();
-	//UIObject(glm::vec3 position, glm::vec3 scale, glm::quat orientation, std::shared_ptr<Shape> model, std::string imgName, int unit);
-	UIObject(glm::vec3 position, glm::vec3 scale, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Texture> img);
+	//UIObject(vec3 position, vec3 scale, quat orientation, shared_ptr<Shape> model, string imgName, int unit);
+	UIObject(vec3 position, vec3 scale, quat orientation, shared_ptr<Shape> model, shared_ptr<Texture> img);
 	virtual void update(float dt) {};
-	void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M, int anim = 0);
+	void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, int anim = 0);
 
-	glm::vec3 position;
-	glm::vec3 scale;
-	glm::quat orientation;
+	vec3 position;
+	vec3 scale;
+	quat orientation;
 	int material;
-	std::shared_ptr<Shape> model;
-	std::shared_ptr<Texture> img;
+	shared_ptr<Shape> model;
+	shared_ptr<Texture> img;
 	bool inView;
 	float t;
 };
