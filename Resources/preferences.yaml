@@ -9,7 +9,7 @@ shadows:
 sound:
     music: true
 scenes:
-    startup: 1
+    startup: 0
     list:
         - Level-1
         - Level-2

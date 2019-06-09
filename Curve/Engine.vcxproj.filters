@@ -220,6 +220,12 @@
     <ClCompile Include="..\Source\engine\Preferences.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\UIObject.h">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\UIObject.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

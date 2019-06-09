@@ -1,0 +1,118 @@
+﻿  Building Custom Rule C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt
+  CMake does not need to re-run because C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/generate.stamp is up-to-date.
+  Camera.cpp
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(66): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(70): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(81): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(100): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(124): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(125): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(126): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(167): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(168): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(169): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp(202): warning C4305: '=': truncation from 'double' to 'float'
+  GLSL.cpp
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLSL.cpp(113): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(2263): note: see declaration of 'sscanf'
+  GLTextureWriter.cpp
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\stb_image_write.h(223): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\stb_image_write.h(616): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(1774): note: see declaration of 'sprintf'
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\stb_image_write.h(999): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+  MatrixStack.cpp
+  Object3D.cpp
+  Pathing.cpp
+  Program.cpp
+  Shape.cpp
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.cpp(38): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.cpp(48): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.cpp(64): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Skybox.cpp
+  Texture.cpp
+  WindowManager.cpp
+  BoundingBox.cpp
+  Collider.cpp
+  ColliderMesh.cpp
+  ColliderSphere.cpp
+  Frustum.cpp
+  GameObject.cpp
+  Octree.cpp
+  PhysicsObject.cpp
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.cpp(6): warning C4005: 'NOMINMAX': macro redefinition
+  C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include\glad/glad.h(36): note: see previous definition of 'NOMINMAX'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.cpp(63): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.cpp(64): warning C4305: 'initializing': truncation from 'double' to 'float'
+  TriggerCylinder.cpp
+  Generating Code...
+  Compiling...
+  TriggerSphere.cpp
+  Ball.cpp
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\gameobjects\Enemy.h(26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Ball.cpp(91): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Blower.cpp
+  Box.cpp
+  Enemy.cpp
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\gameobjects\Enemy.h(26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(26): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(57): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(61): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(96): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(157): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(162): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(203): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp(208): warning C4305: 'argument': truncation from 'double' to 'float'
+  Goal.cpp
+  main.cpp
+c:\users\daniel\documents\gitkraker\cpe-476-project-curve\source\gameobjects/Enemy.h(26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(390): warning C4129: '%': unrecognized character escape sequence
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(967): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(979): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(981): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(1037): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(1055): warning C4305: 'argument': truncation from 'const double' to 'float'
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\memory(1801): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\memory(1866): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<glm::vec3&,glm::qua<float,0>,std::shared_ptr<Shape>&,int>(glm::vec3 &,glm::qua<float,0> &&,std::shared_ptr<Shape> &,int &&)' being compiled
+          with
+          [
+              _Ty=Ball
+          ]
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\memory(1866): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<glm::vec3&,glm::qua<float,0>,std::shared_ptr<Shape>&,int>(glm::vec3 &,glm::qua<float,0> &&,std::shared_ptr<Shape> &,int &&)' being compiled
+          with
+          [
+              _Ty=Ball
+          ]
+  C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp(562): note: see reference to function template instantiation 'std::shared_ptr<Ball> std::make_shared<Ball,glm::vec3&,glm::quat,std::shared_ptr<Shape>&,int>(glm::vec3 &,glm::quat &&,std::shared_ptr<Shape> &,int &&)' being compiled
+  Generating Code...
+  glad.c
+  curve.vcxproj -> C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\Release\curve.exe

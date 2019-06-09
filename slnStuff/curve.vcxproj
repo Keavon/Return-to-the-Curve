@@ -1,0 +1,494 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EE12E52E-22D8-3FB8-BD2A-E8B1973ACD02}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>curve</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="do_not_import_user.props" Condition="exists('do_not_import_user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">curve.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">curve</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">curve.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">curve</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">curve.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">curve</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">curve.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">curve</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;GLFW_DLL;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLFW_DLL;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+powershell -noprofile -executionpolicy Bypass -file C:/Users/Daniel/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Debug/curve.exe -installedDir C:/Users/Daniel/vcpkg/installed/x64-windows/debug/bin -OutVariable out
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>C:\Users\Daniel\vcpkg\installed\x64-windows\debug\lib\glfw3dll.lib;opengl32.lib;..\irrKlang\lib\Winx64-visualStudio\irrKlang.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Debug/curve.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Debug/curve.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+powershell -noprofile -executionpolicy Bypass -file C:/Users/Daniel/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Release/curve.exe -installedDir C:/Users/Daniel/vcpkg/installed/x64-windows/bin -OutVariable out
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>C:\Users\Daniel\vcpkg\installed\x64-windows\lib\glfw3dll.lib;opengl32.lib;..\irrKlang\lib\Winx64-visualStudio\irrKlang.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Release/curve.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/Release/curve.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+powershell -noprofile -executionpolicy Bypass -file C:/Users/Daniel/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/MinSizeRel/curve.exe -installedDir C:/Users/Daniel/vcpkg/installed/x64-windows/bin -OutVariable out
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>C:\Users\Daniel\vcpkg\installed\x64-windows\debug\lib\glfw3dll.lib;opengl32.lib;..\irrKlang\lib\Winx64-visualStudio\irrKlang.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/MinSizeRel/curve.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/MinSizeRel/curve.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLFW_DLL;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\irrKlang\include;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source;C:\Users\Daniel\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+powershell -noprofile -executionpolicy Bypass -file C:/Users/Daniel/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/RelWithDebInfo/curve.exe -installedDir C:/Users/Daniel/vcpkg/installed/x64-windows/bin -OutVariable out
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>C:\Users\Daniel\vcpkg\installed\x64-windows\debug\lib\glfw3dll.lib;opengl32.lib;..\irrKlang\lib\Winx64-visualStudio\irrKlang.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/RelWithDebInfo/curve.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/RelWithDebInfo/curve.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve -BC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff --check-stamp-file C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\WindowsPaths.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCXXCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeRCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeSystem.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Config.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3ConfigVersion.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-debug.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-release.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets.cmake;C:\Users\Daniel\vcpkg\scripts\buildsystems\vcpkg.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve -BC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff --check-stamp-file C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\WindowsPaths.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCXXCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeRCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeSystem.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Config.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3ConfigVersion.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-debug.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-release.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets.cmake;C:\Users\Daniel\vcpkg\scripts\buildsystems\vcpkg.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve -BC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff --check-stamp-file C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\WindowsPaths.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCXXCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeRCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeSystem.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Config.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3ConfigVersion.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-debug.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-release.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets.cmake;C:\Users\Daniel\vcpkg\scripts\buildsystems\vcpkg.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve -BC:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff --check-stamp-file C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\Platform\WindowsPaths.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeCXXCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeRCCompiler.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\3.14.2\CMakeSystem.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Config.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3ConfigVersion.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-debug.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets-release.cmake;C:\Users\Daniel\vcpkg\installed\x64-windows\share\glfw3\glfw3Targets.cmake;C:\Users\Daniel\vcpkg\scripts\buildsystems\vcpkg.cmake;C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLSL.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLTextureWriter.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\MatrixStack.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Object3D.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Pathing.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Program.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Skybox.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Texture.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\WindowManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\ParticleFirework.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\ParticleSpark.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\Sound.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\BoundingBox.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Collider.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderMesh.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderSphere.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\EmitterManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Frustum.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\GameObject.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Instance.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Material.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\MaterialManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ModelManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Octree.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ParticleEmitter.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Prefab.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PrefabManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Preferences.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\SceneManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ShaderManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\SkyboxManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TextureManager.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerCylinder.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerSphere.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\UIObject.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Ball.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Blower.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Goal.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\main.cpp" />
+    <ClCompile Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\src\glad.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Camera.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLSL.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\GLTextureWriter.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\MatrixStack.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Object3D.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Pathing.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Program.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Shape.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Skybox.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\Texture.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\WindowManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\ParticleFirework.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\ParticleSpark.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\effects\Sound.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\BoundingBox.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Collider.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderMesh.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ColliderSphere.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\EmitterManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Frustum.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\GameObject.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Instance.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Material.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\MaterialManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ModelManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Octree.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ParticleEmitter.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PhysicsObject.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Prefab.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\PrefabManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\Preferences.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\SceneManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\ShaderManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\SkyboxManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TextureManager.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerCylinder.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\TriggerSphere.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\engine\UIObject.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Ball.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Blower.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Enemy.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\gameobjects\Goal.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\stb_image.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\stb_image_write.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Source\tiny_obj_loader.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\glad\include\glad\glad.h" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\circle.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\circle.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\cube_outline.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\cube_outline.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_debug.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\depth_debug.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\particle.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\particle.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pass.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pass.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pbr.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\pbr.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\sky.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\sky.vert.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\ui.frag.glsl" />
+    <None Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\Resources\shaders\ui.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\Daniel\Documents\GitKraker\CPE-476-Project-Curve\slnStuff\ZERO_CHECK.vcxproj">
+      <Project>{51487DB6-DEB8-36DA-B956-71E2D88ACAE2}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

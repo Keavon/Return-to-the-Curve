@@ -260,6 +260,8 @@
     <ClInclude Include="..\Source\engine\Time.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
+    <ClCompile Include="..\Source\engine\UIObject.cpp" />
+    <ClCompile Include="..\Source\engine\UIObject.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />
