@@ -1,3 +1,0 @@
-C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/curve.dir
-C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/ALL_BUILD.dir
-C:/Users/Daniel/Documents/GitKraker/CPE-476-Project-Curve/slnStuff/CMakeFiles/ZERO_CHECK.dir
