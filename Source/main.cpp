@@ -32,7 +32,7 @@
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
 #include "gameobjects/Blower.h"
-#include "gameobjects/Volume.h"
+#include "gameobjects/Beam.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
@@ -164,7 +164,7 @@ public:
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
         shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
 		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M", "Texture"});
-		shaderManager.get("beam", { "vertPos" }, {"P", "V", "M", "depthBuf", "viewport"});
+		shaderManager.get("beam", { "vertPos" }, {"P", "V", "M", "depthBuf", "viewport", "density"});
 		shaderManager.get("world_depth", { "vertPos" }, {"P", "V", "M"});
     }
 
@@ -256,15 +256,6 @@ public:
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Bind with framebuffer's depth buffer
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-        {
-            cout << "GL_FRAMEBUFFER_COMPLETE" << endl;
-        }
-        else
-        {
-            cout << "oh no" << endl;
-        }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -357,8 +348,8 @@ public:
         sceneManager.octree.insert(gameObjects.goal);
 
         // Beam
-        gameObjects.beam = make_shared<Volume>(gameObjects.marble->position + vec3(0, 3, 0), quat(0, 1, 0, 0), modelManager.get("cone.obj"));
-        gameObjects.beam->scale = vec3(5, 10, 5);
+        gameObjects.beam = make_shared<Beam>(gameObjects.goal->position + vec3(0, 10, 0), quat(0, 1, 0, 0), modelManager.get("cone.obj"));
+        gameObjects.beam->scale = vec3(10, 20, 10);
         sceneManager.octree.insert(gameObjects.beam);
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
@@ -554,6 +545,7 @@ public:
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
+        // Render the depth of the scene to a texture
         depth->bind();
         setProjectionMatrix(depth);
         setView(depth);
@@ -574,6 +566,7 @@ public:
 
         drawScene(depth);
 
+        // Render the back faces of the beam
         glCullFace(GL_FRONT);
         gameObjects.beam->draw(depth, make_shared<MatrixStack>());
         glCullFace(GL_BACK);
@@ -582,15 +575,17 @@ public:
         glEnable(GL_BLEND);
         depth->unbind();
 
+        // Render the beam using the depth data to make a volumetric effect
         beam->bind();
         setProjectionMatrix(beam);
         setView(beam);
         glUniform2f(beam->getUniform("viewport"), width, height);
         glUniform1i(beam->getUniform("depthBuf"), 0);
+        glUniform1f(beam->getUniform("density"), sin(Time.timeSinceStart*3) * 0.025f + 0.075f);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
-
         gameObjects.beam->draw(beam, make_shared<MatrixStack>());
+        
         beam->unbind();
     }
 
@@ -895,7 +890,6 @@ public:
                     instance->physicsObject->position += vec3(0, 1, 0);
                 }
             }
-            GLTextureWriter::WriteImage(beamWorldDepthBuf, "beam_depth.png");
         }
 
         if (action == GLFW_RELEASE)

@@ -8,8 +8,8 @@
 #include <memory>
 #include <iostream>
 
-class Volume : public PhysicsObject
+class Beam : public PhysicsObject
 {
 public:
-    Volume(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model);
+    Beam(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model);
 };

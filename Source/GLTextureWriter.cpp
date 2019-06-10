@@ -103,17 +103,73 @@ bool GLTextureWriter::WriteImage(GLint tid, string imgName)
 
 
 	//Allocate buffer
-	char * dataBuffer = new char[txWidth*txHeight*3];
+	float * dataBuffer = new float[txWidth*txHeight*4];
 
 	//Get data from Opengl
-	getData(dataBuffer, GL_RGB, GL_UNSIGNED_BYTE);
+	getData(dataBuffer, GL_RGBA, GL_FLOAT);
+
+	char *colorBuffer = new char[txWidth*txHeight*3];
+	for (int i = 0; i < txWidth*txHeight; i++)
+	{
+		char c = (char) (dataBuffer[i*4] / 100.f * 256);
+		colorBuffer[i*3+0] = c;
+		colorBuffer[i*3+1] = c;
+		colorBuffer[i*3+2] = c;
+	}
 
 	//Flip data for output
-	flip_buffer(dataBuffer,txWidth,txHeight);
+	flip_buffer(colorBuffer,txWidth,txHeight);
 
 
 	//Write image to PNG
-	int res =  stbi_write_png(imgName.c_str(), txWidth, txHeight, 3, dataBuffer, sizeof(char)*3*txWidth);
+	int res =  stbi_write_png(imgName.c_str(), txWidth, txHeight, 3, colorBuffer, sizeof(char)*3*txWidth);
+	if(!res)
+	{
+		cerr << "Could not write to  " << imgName << endl;
+	}
+
+	//Cleanup
+	delete [] dataBuffer;
+
+	//Bind old texture
+	glBindTexture(GL_TEXTURE_2D,backupBoundTexture);
+
+	return res;
+}
+
+bool GLTextureWriter::WriteDepthImage(GLint tid, string imgName)
+{
+	//Backup old openGL state.
+	GLint backupBoundTexture;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &backupBoundTexture);
+
+	//Bind texture to buffer
+	glBindTexture(GL_TEXTURE_2D,tid);
+
+	//Retrieve width and height
+	int txWidth = getTextureWidth();
+	int txHeight = getTextureWidth();
+
+
+	//Allocate buffer
+	float * dataBuffer = new float[txWidth*txHeight];
+
+	//Get data from Opengl
+	getData(dataBuffer, GL_DEPTH_COMPONENT, GL_FLOAT);
+
+	char * colorBuffer = new char[txWidth*txHeight*3];
+	float maxD = 0;
+	for (int i = 0; i < txWidth*txHeight*3; i++)
+	{
+		colorBuffer[i] = (char) (dataBuffer[i/3] * 256);
+	}
+
+	//Flip data for output
+	flip_buffer(colorBuffer,txWidth,txHeight);
+
+
+	//Write image to PNG
+	int res =  stbi_write_png(imgName.c_str(), txWidth, txHeight, 3, colorBuffer, sizeof(char)*3*txWidth);
 	if(!res)
 	{
 		cerr << "Could not write to  " << imgName << endl;
