@@ -188,6 +188,7 @@
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
     <ClCompile Include="..\Source\engine\UIObject.cpp" />
     <ClCompile Include="..\Source\gameobjects\Ball.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Beam.cpp" />
     <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
     <ClCompile Include="..\Source\gameobjects\Goal.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
     <ClInclude Include="..\Source\engine\UIObject.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
+    <ClInclude Include="..\Source\gameobjects\Beam.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />
     <ClInclude Include="..\Source\gameobjects\Goal.h" />
