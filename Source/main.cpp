@@ -307,7 +307,7 @@ public:
     {
         // Marble
         gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
-        gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
+        gameObjects.marble->init(windowManager, emitterManager.get("sparks"), camera);
         sceneManager.octree.insert(gameObjects.marble);
         gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
         gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
@@ -696,7 +696,7 @@ public:
 
     void beforePhysics()
     {
-        gameObjects.marble->update(camera->dolly, camera->strafe);
+        gameObjects.marble->update();
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {

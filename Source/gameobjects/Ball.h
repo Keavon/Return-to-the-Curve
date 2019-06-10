@@ -25,12 +25,14 @@
 using namespace glm;
 using namespace std;
 
+class Camera;
+
 class Ball : public PhysicsObject
 {
 public:
     Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
-    void init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter);
-    void update(vec3 dolly, vec3 strafe);
+    void init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera);
+    virtual void update();
     virtual void onHardCollision(float impactVel, Collision &collision);
     void addSkin(shared_ptr<Material> newSkin);
     void setSkin(int skinIndex);
@@ -39,6 +41,7 @@ public:
 
 	WindowManager *windowManager;
     shared_ptr<ParticleEmitter> sparkEmitter;
+    shared_ptr<Camera> camera;
     float radius;
     float moveForce;
     float jumpForce;

@@ -166,6 +166,41 @@ void PhysicsObject::update()
     netForce = vec3(0);
 }
 
+void PhysicsObject::start()
+{
+
+}
+
+void PhysicsObject::lateUpdate()
+{
+
+}
+
+void PhysicsObject::physicsUpdate()
+{
+
+}
+
+void PhysicsObject::latePhysicsUpdate()
+{
+
+}
+
+void PhysicsObject::triggerEnter()
+{
+
+}
+
+void PhysicsObject::triggerStay()
+{
+
+}
+
+void PhysicsObject::triggerExit()
+{
+
+}
+
 void PhysicsObject::checkCollision(PhysicsObject *other)
 {
     if (other->collider != NULL && collider != NULL && !other->ignoreCollision && !ignoreCollision)

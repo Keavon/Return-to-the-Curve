@@ -20,7 +20,7 @@ class Goal : public PhysicsObject
 {
 public:
     Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
-    void update();
+    virtual void update();
     void init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime);
     void onWin();
     void reset();
