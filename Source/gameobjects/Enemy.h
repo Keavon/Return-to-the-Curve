@@ -33,6 +33,7 @@ public:
     float moveSpeed;
     float radius;
     float t = 0.1f;
+	float k = 0.1f;
     float targetX;
     float targetZ;
     float targetY;
