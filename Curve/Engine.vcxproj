@@ -161,6 +161,7 @@
     <ClCompile Include="..\Source\Camera.cpp" />
     <ClCompile Include="..\Source\effects\ParticleFirework.cpp" />
     <ClCompile Include="..\Source\effects\ParticleSpark.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleWind.cpp" />
     <ClCompile Include="..\Source\effects\Sound.cpp" />
     <ClCompile Include="..\Source\engine\BoundingBox.cpp" />
     <ClCompile Include="..\Source\engine\Collider.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="..\Source\Camera.h" />
     <ClInclude Include="..\Source\effects\ParticleFirework.h" />
     <ClInclude Include="..\Source\effects\ParticleSpark.h" />
+    <ClInclude Include="..\Source\effects\ParticleWind.h" />
     <ClInclude Include="..\Source\effects\Sound.h" />
     <ClInclude Include="..\Source\engine\BoundingBox.h" />
     <ClInclude Include="..\Source\engine\Collider.h" />
