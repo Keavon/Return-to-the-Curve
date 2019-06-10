@@ -61,4 +61,6 @@ public:
     void setVelocity(vec3 velocity);
     vec3 getCenterPos();
     vec3 getVelocity();
+    bool ignoreCollision;
+    bool solid;
 };
