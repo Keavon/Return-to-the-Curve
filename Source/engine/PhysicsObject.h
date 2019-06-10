@@ -49,10 +49,20 @@ public:
     PhysicsObject(vec3 position, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
     PhysicsObject(vec3 position, quat orientation, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
     PhysicsObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
-    void resolveCollision();
-    void checkCollision(PhysicsObject *other);
-    void update();
+
+    // standard interface
+    /* GameObject.h: virtual void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)); */
+    virtual void start();
+    virtual void update();
+    virtual void lateUpdate();
+    virtual void physicsUpdate();
+    virtual void latePhysicsUpdate();
+    virtual void triggerEnter();
+    virtual void triggerStay();
+    virtual void triggerExit();
     virtual void onHardCollision(float impactVel, Collision &collision);
+
+    void checkCollision(PhysicsObject *other);
     float getRadius(); // get radius of bounding sphere
     void applyImpulse(vec3 impulse);
     void setMass(float mass);
@@ -61,4 +71,6 @@ public:
     void setVelocity(vec3 velocity);
     vec3 getCenterPos();
     vec3 getVelocity();
+    bool ignoreCollision;
+    bool solid;
 };

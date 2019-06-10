@@ -24,8 +24,8 @@ public:
     Enemy(vector<vec3> enemyPath, quat orientation, shared_ptr<Shape> model,
           shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius);
     void init(WindowManager *windowManager);
-    void update();
-    void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M);
+    virtual void update();
+    virtual void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M);
     MatrixStack setlLeg(MatrixStack uLeg, float offset, float t);
     MatrixStack setFoot(MatrixStack lLeg, float offset, float t);
     Pathing *curvePath;

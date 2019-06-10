@@ -19,8 +19,8 @@ public:
     GameObject(vec3 position, shared_ptr<Shape> model);
     GameObject(vec3 position, quat orientation, shared_ptr<Shape> model);
     GameObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model);
-    virtual void update(float dt) {};
-    void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M);
+    virtual void update() {};
+    virtual void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M);
     static void setCulling(bool cull);
 
     vec3 position;

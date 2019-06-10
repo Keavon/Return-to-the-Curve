@@ -24,6 +24,8 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared
     this->friction = 0;
     this->elasticity = 0;
     this->speed = 0;
+    this->ignoreCollision = false;
+    this->solid = true;
 }
 
 void PhysicsObject::update()
@@ -80,6 +82,9 @@ void PhysicsObject::update()
     {
         // resolve collision
         PhysicsObject *other = collision.other;
+
+        if (!solid || !other->solid) continue;
+
         vec3 relVel = other->velocity - velocity;
         float velAlongNormal = dot(relVel, collision.normal);
         if (velAlongNormal < 0)
@@ -161,9 +166,44 @@ void PhysicsObject::update()
     netForce = vec3(0);
 }
 
+void PhysicsObject::start()
+{
+
+}
+
+void PhysicsObject::lateUpdate()
+{
+
+}
+
+void PhysicsObject::physicsUpdate()
+{
+
+}
+
+void PhysicsObject::latePhysicsUpdate()
+{
+
+}
+
+void PhysicsObject::triggerEnter()
+{
+
+}
+
+void PhysicsObject::triggerStay()
+{
+
+}
+
+void PhysicsObject::triggerExit()
+{
+
+}
+
 void PhysicsObject::checkCollision(PhysicsObject *other)
 {
-    if (other->collider != NULL)
+    if (other->collider != NULL && collider != NULL && !other->ignoreCollision && !ignoreCollision)
     {
         collider->checkCollision(this, other, other->collider.get());
     }

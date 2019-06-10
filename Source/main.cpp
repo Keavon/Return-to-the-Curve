@@ -19,6 +19,7 @@
 #include "GLSL.h"
 #include "GLTextureWriter.h"
 #include "MatrixStack.h"
+#include "GLTextureWriter.h"
 #include "Object3D.h"
 #include "Program.h"
 #include "effects/Sound.h"
@@ -31,6 +32,7 @@
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
 #include "gameobjects/Blower.h"
+#include "gameobjects/Beam.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
@@ -84,6 +86,9 @@ public:
     GLuint objectMapFBO;
     GLuint objectMapTex;
     GLuint objectMapDepthBuf;
+    GLuint beamFBO;
+    GLuint beamDepthBuf;
+    GLuint beamWorldDepthBuf;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -96,6 +101,7 @@ public:
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
         shared_ptr<Blower> blower;
+        shared_ptr<PhysicsObject> beam;
     } gameObjects;
 
 	struct
@@ -158,6 +164,8 @@ public:
         shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
         shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
 		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M", "Texture"});
+		shaderManager.get("beam", { "vertPos" }, {"P", "V", "M", "depthBuf", "viewport", "density"});
+		shaderManager.get("world_depth", { "vertPos" }, {"P", "V", "M"});
     }
 
     void loadSkybox()
@@ -190,6 +198,9 @@ public:
 
     void loadObjectMap()
     {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
         // Generate FBO for object map
         glGenFramebuffers(1, &objectMapFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
@@ -197,15 +208,51 @@ public:
         // Generate texture where IDs of objects are stored
         glGenTextures(1, &objectMapTex);
         glBindTexture(GL_TEXTURE_2D, objectMapTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, 0, 0, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Generate depth buffer
         glGenTextures(1, &objectMapDepthBuf);
         glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
+
+        // Bind with framebuffer's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void loadBeam()
+    {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
+        // Generate FBO for beam
+        glGenFramebuffers(1, &beamFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
+
+        // Generate texture where depth is stored in world units
+        glGenTextures(1, &beamWorldDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, beamWorldDepthBuf, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Generate depth buffer
+        glGenTextures(1, &beamDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, beamDepthBuf, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Bind with framebuffer's depth buffer
@@ -248,6 +295,7 @@ public:
         modelManager.get("billboard.obj", true);
         modelManager.get("goal.obj", true);
         modelManager.get("quadSphere.obj", true);
+        modelManager.get("cone.obj", true);
     }
 
     void loadLevel()
@@ -259,7 +307,7 @@ public:
     {
         // Marble
         gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
-        gameObjects.marble->init(windowManager, emitterManager.get("sparks"));
+        gameObjects.marble->init(windowManager, emitterManager.get("sparks"), camera);
         sceneManager.octree.insert(gameObjects.marble);
         gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
         gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
@@ -298,6 +346,11 @@ public:
         gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
+
+        // Beam
+        gameObjects.beam = make_shared<Beam>(gameObjects.goal->position + vec3(0, 10, 0), quat(0, 1, 0, 0), modelManager.get("cone.obj"));
+        gameObjects.beam->scale = vec3(10, 20, 10);
+        sceneManager.octree.insert(gameObjects.beam);
 
         sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
@@ -482,6 +535,60 @@ public:
         }
     }
 
+    void drawBeam()
+    {
+        if (!gameObjects.beam->inView) return;
+
+        shared_ptr<Program> beam = shaderManager.get("beam");
+        shared_ptr<Program> depth = shaderManager.get("world_depth");
+
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
+        // Render the depth of the scene to a texture
+        depth->bind();
+        setProjectionMatrix(depth);
+        setView(depth);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
+        glDisable(GL_BLEND);
+
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);        
+        glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glViewport(0, 0, width, height);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        float clear = 0;
+        glClearBufferfv(GL_COLOR, 0, &clear);
+
+        drawScene(depth);
+
+        // Render the back faces of the beam
+        glCullFace(GL_FRONT);
+        gameObjects.beam->draw(depth, make_shared<MatrixStack>());
+        glCullFace(GL_BACK);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glEnable(GL_BLEND);
+        depth->unbind();
+
+        // Render the beam using the depth data to make a volumetric effect
+        beam->bind();
+        setProjectionMatrix(beam);
+        setView(beam);
+        glUniform2f(beam->getUniform("viewport"), width, height);
+        glUniform1i(beam->getUniform("depthBuf"), 0);
+        glUniform1f(beam->getUniform("density"), sin(Time.timeSinceStart*3) * 0.025f + 0.075f);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        gameObjects.beam->draw(beam, make_shared<MatrixStack>());
+        
+        beam->unbind();
+    }
+
     void drawSkybox()
     {
         shared_ptr<Program> sky = shaderManager.get("sky");
@@ -556,6 +663,8 @@ public:
 
         pbr->unbind();
 
+        drawBeam();
+
         if (sceneManager.octree.debug) drawOctree();
 
         shared_ptr<Program> particle = shaderManager.get("particle");
@@ -587,7 +696,7 @@ public:
 
     void beforePhysics()
     {
-        gameObjects.marble->update(camera->dolly, camera->strafe);
+        gameObjects.marble->update();
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {
@@ -819,6 +928,7 @@ int main(int argc, char **argv)
     application->loadSkybox();
     application->loadShadows();
     application->loadObjectMap();
+    application->loadBeam();
     application->loadEffects();
     application->loadFBOQuad();
     application->loadModels();
