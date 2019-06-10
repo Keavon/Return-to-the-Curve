@@ -30,6 +30,7 @@
 #include "gameobjects/Ball.h"
 #include "gameobjects/Goal.h"
 #include "gameobjects/Enemy.h"
+#include "gameobjects/Blower.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
@@ -94,6 +95,7 @@ public:
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
+        shared_ptr<Blower> blower;
     } gameObjects;
 
 	struct
@@ -214,6 +216,7 @@ public:
     {
         emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
         emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
+        emitterManager.get("wind", modelManager.get("billboard.obj"), textureManager.get("particles/smoke_04.png"), 1000);
     }
 
     void loadFBOQuad()
@@ -265,6 +268,11 @@ public:
 
         if (preferences.scenes.startup == 0)
         {
+            // Blower
+            gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), 3.14f/4, vec3(0, 0, 1)), 3, 10);
+            gameObjects.blower->init(emitterManager.get("wind"));
+            sceneManager.octree.insert(gameObjects.blower);
+
             // Enemy 1
             vector<vec3> enemyPath = {
                 vec3{95.0, 2.0, 7.0},
@@ -583,6 +591,7 @@ public:
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {
+            gameObjects.blower->update();
             gameObjects.enemy1->update();
             gameObjects.enemy2->update();
         }
@@ -612,6 +621,7 @@ public:
 
         emitterManager.get("sparks")->update();
         emitterManager.get("fireworks")->update();
+        emitterManager.get("wind")->update();
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
         sceneManager.octree.markInView(viewFrustum);
