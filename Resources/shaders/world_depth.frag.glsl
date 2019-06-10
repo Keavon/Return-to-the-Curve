@@ -1,10 +1,10 @@
 #version 330 core
 
 in float depth;
-out float value;
+out vec4 value;
 
 void main()
 {
-    value = depth;
+    value = vec4(depth);
 }
 

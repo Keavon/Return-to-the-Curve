@@ -3,33 +3,27 @@
 uniform sampler2D depthBuf;
 uniform vec2 viewport;
 
-uniform float density = 0.01;
+uniform float density = 0.05;
 
-uniform float zNear = 0.1;
-uniform float zFar = 200;
-
-in float depth;
+in float frontZ;
 
 out vec4 color;
 
 void main()
 {
-	color = vec4(-depth / 50, 0, 0, 1);
-	return;
-
 	float backZ = texture(depthBuf, gl_FragCoord.xy / viewport).r;
-	float frontZ = gl_FragCoord.z / gl_FragCoord.w;
-	if (frontZ <= backZ)
+	float lengthInBeam = backZ - max(0, frontZ);
+	if (frontZ == 0)
 	{
-		color = vec4(0, 1, 1, (backZ - frontZ) * density);
+		color = vec4(1, 1, 1, 1);
+		return;
 	}
-	else if (backZ == 0)
+	if (lengthInBeam > 0)
 	{
-		color = vec4(0, 1, 0, 1);
+		color = vec4(0, 1, 1, lengthInBeam * density);
 	}
 	else
 	{
-		// discard;
-		color = vec4((backZ - 0.99) * 100, 0, 0, 1);
+		color = vec4(1, 0, 0, 1);
 	}
 }

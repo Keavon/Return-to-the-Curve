@@ -5,11 +5,11 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 
-out float depth;
+out float frontZ;
 
 void main()
 {
     gl_Position = P * V * M * vertPos;
 
-    depth = (V * M * vertPos).z;
+    frontZ = -(V * M * vertPos).z;
 }

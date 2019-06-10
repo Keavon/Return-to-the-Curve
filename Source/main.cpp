@@ -88,6 +88,7 @@ public:
     GLuint objectMapDepthBuf;
     GLuint beamFBO;
     GLuint beamDepthBuf;
+    GLuint beamWorldDepthBuf;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -164,6 +165,7 @@ public:
         shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
 		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M", "Texture"});
 		shaderManager.get("beam", { "vertPos" }, {"P", "V", "M", "depthBuf", "viewport"});
+		shaderManager.get("world_depth", { "vertPos" }, {"P", "V", "M"});
     }
 
     void loadSkybox()
@@ -229,6 +231,18 @@ public:
         glGenFramebuffers(1, &beamFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
 
+        // Generate texture where depth is stored in world units
+        glGenTextures(1, &beamWorldDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, beamWorldDepthBuf, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         // Generate depth buffer
         glGenTextures(1, &beamDepthBuf);
         glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
@@ -239,10 +253,18 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Bind with framebuffer's depth buffer
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+        {
+            cout << "GL_FRAMEBUFFER_COMPLETE" << endl;
+        }
+        else
+        {
+            cout << "oh no" << endl;
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -527,23 +549,28 @@ public:
         if (!gameObjects.beam->inView) return;
 
         shared_ptr<Program> beam = shaderManager.get("beam");
-        shared_ptr<Program> depth = shaderManager.get("depth");
+        shared_ptr<Program> depth = shaderManager.get("world_depth");
 
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
         depth->bind();
-        mat4 P = setProjectionMatrix(nullptr);
-        mat4 V = setView(nullptr);
-        glUniformMatrix4fv(depth->getUniform("LP"), 1, GL_FALSE, value_ptr(P));
-        glUniformMatrix4fv(depth->getUniform("LV"), 1, GL_FALSE, value_ptr(V));
+        setProjectionMatrix(depth);
+        setView(depth);
 
         glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
+        glDisable(GL_BLEND);
 
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);        
         glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
         glViewport(0, 0, width, height);
         glClear(GL_DEPTH_BUFFER_BIT);
+
+        float clear = 0;
+        glClearBufferfv(GL_COLOR, 0, &clear);
 
         drawScene(depth);
 
@@ -552,6 +579,7 @@ public:
         glCullFace(GL_BACK);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glEnable(GL_BLEND);
         depth->unbind();
 
         beam->bind();
@@ -560,7 +588,7 @@ public:
         glUniform2f(beam->getUniform("viewport"), width, height);
         glUniform1i(beam->getUniform("depthBuf"), 0);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
 
         gameObjects.beam->draw(beam, make_shared<MatrixStack>());
         beam->unbind();
@@ -867,7 +895,7 @@ public:
                     instance->physicsObject->position += vec3(0, 1, 0);
                 }
             }
-            GLTextureWriter::WriteDepthImage(beamDepthBuf, "beam_depth.png");
+            GLTextureWriter::WriteImage(beamWorldDepthBuf, "beam_depth.png");
         }
 
         if (action == GLFW_RELEASE)
