@@ -135,20 +135,6 @@ public:
 		camera->init();
 	}
 
-	void loadSounds() {
-		soundEngine = make_shared<Sound>();
-
-		if (preferences.sound.music) soundEngine->playPauseMusic();
-		
-        if (gameObjects.blower)
-        {
-            soundEngine->fan(gameObjects.blower->position.x, gameObjects.blower->position.y, gameObjects.blower->position.z);
-        }
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
 	void loadShaders() {
 		vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
 		shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
@@ -315,90 +301,15 @@ public:
 		marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
 		marble->addSkin(materialManager.get("marble_tiles", "jpg"));
 
+		auto finish = sceneManager.findInstance("Finish")->physicsObject;
+		gameObjects.goal = make_shared<Goal>(finish->position + vec3(0, 2, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+
 		if (preferences.scenes.startup == 0) {
 			// Blower
 			gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), (float)M_PI_4, vec3(0, 0, 1)), 3.0f, 10.0f);
 			gameObjects.blower->init(emitterManager.get("wind"));
 			sceneManager.octree.insert(gameObjects.blower);
-
-			// Enemy 1
-			vector<vec3> enemyPath = {
-				vec3{95.0, 2.0, 7.0},
-				vec3{100.0, 2.0, 15.0},
-				vec3{110.0, 2.0, -1.0},
-				vec3{115.0, 2.0, 7.0}};
-			gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			gameObjects.enemy1->init(windowManager);
-			sceneManager.octree.insert(gameObjects.enemy1);
-
-			// Enemy 2
-			enemyPath = {
-				vec3{125.0, 8.0, 55.0},
-				vec3{115.0, 20.0, 55.0},
-				vec3{105.0, 5.0, 55.0},
-				vec3{95.0, 8.0, 55.0}};
-			gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			gameObjects.enemy2->init(windowManager);
-			sceneManager.octree.insert(gameObjects.enemy2);
-
-			gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
-		} else if (preferences.scenes.startup == 1) {
-			gameObjects.goal = make_shared<Goal>(vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
 		} else if (preferences.scenes.startup == 2) {
-			gameObjects.goal = make_shared<Goal>(vec3(0, 0, 60), quat(1, 0, 0, 0), nullptr, 1.50f);
-
-			// Enemy 1
-			vector<vec3> enemyPath = {
-				vec3(16.0, -37, -76.0),
-				vec3(6.0, -37, -100.0),
-				vec3(-6.0, -37, -100.0),
-				vec3(-16.0, -37, -76.0),
-			};
-			auto enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			sceneManager.octree.insert(enemy);
-			gameObjects.general.push_back(enemy);
-
-			// Enemy 2
-			enemyPath = {
-				vec3(-16.0, -37, -76.0),
-				vec3(-6.0, -37, -52.0),
-				vec3(6.0, -37, -52.0),
-				vec3(16.0, -37, -76.0),
-			};
-			enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			sceneManager.octree.insert(enemy);
-			gameObjects.general.push_back(enemy);
-
-			// Enemy 3
-			enemyPath = {
-				vec3(0, -40, -76.0),
-				vec3(0, -47, -76.0),
-				vec3(0, -53, -76.0),
-				vec3(0, -60, -76.0)};
-			enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			sceneManager.octree.insert(enemy);
-			gameObjects.general.push_back(enemy);
-
-			// Enemy 4
-			enemyPath = {
-				vec3(-84, -10, -108.0),
-				vec3(-84, -3, -108.0),
-				vec3(-84, 3, -108.0),
-				vec3(-84, 10, -108.0)};
-			enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			sceneManager.octree.insert(enemy);
-			gameObjects.general.push_back(enemy);
-
-			// Enemy 5
-			enemyPath = {
-				vec3(-40, 10, 30),
-				vec3(-40, 13, 30),
-				vec3(-40, 16, 30),
-				vec3(-40, 19, 30)};
-			enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
-			sceneManager.octree.insert(enemy);
-			gameObjects.general.push_back(enemy);
-
 			// Blower 1
 			auto blower = make_shared<Blower>(vec3(0, -35, -108), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 3.0f, 10.0f);
 			blower->force = 200;
@@ -428,6 +339,19 @@ public:
 	void loadUIObjects() {
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+	}
+
+	void loadSounds() {
+		soundEngine = make_shared<Sound>();
+
+		if (preferences.sound.music) soundEngine->playPauseMusic();
+
+		if (gameObjects.blower) {
+			soundEngine->fan(gameObjects.blower->position.x, gameObjects.blower->position.y, gameObjects.blower->position.z);
+		}
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	/*
@@ -474,10 +398,6 @@ public:
 
 		// Draw enemies
 		if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
-		if (preferences.scenes.startup == 0) {
-			gameObjects.enemy1->draw(shader, M);
-			gameObjects.enemy2->draw(shader, M);
-		}
 
 		// Draw scene instances
 		int i = 0;
@@ -754,10 +674,17 @@ public:
 		gameObjects.goal->update();
 		if (preferences.scenes.startup == 0) {
 			gameObjects.blower->update();
-			gameObjects.enemy1->update();
-			gameObjects.enemy2->update();
 		}
 	}
+
+	// void beforePhysics() {
+	// 	gameObjects.goal->update();
+	// 	if (preferences.scenes.startup == 0) {
+	// 		gameObjects.blower->update();
+	// 		gameObjects.enemy1->update();
+	// 		gameObjects.enemy2->update();
+	// 	}
+	// }
 
 	void physicsTick() {
 		sceneManager.octree.update();
@@ -977,7 +904,7 @@ int main(int argc, char** argv) {
 			// Call gameobject physics update and ropagate physics
 			application->beforePhysics();
 			application->physicsTick();
-            application->updateAudioPosition();
+			application->updateAudioPosition();
 			accumulator -= Time.physicsDeltaTime;
 		}
 

@@ -33,6 +33,33 @@ void SceneManager::load(string sceneFile)
     scene.push_back(instance);
     octree.insert(instance->physicsObject);
 
+    // Enemy
+    if (file["enemies"])
+    {
+        auto legModel = prefabManager->modelManager->get("Robot/RobotLeg.obj");
+        auto footModel = prefabManager->modelManager->get("Robot/RobotFoot.obj");
+        for (YAML::Node object : file["enemies"])
+        {
+            auto prefab = prefabManager->get(object["prefab"].as<string>());
+            prefab->footModel = footModel;
+            prefab->legModel = legModel;
+            shared_ptr<Instance> instance = prefab->getNewInstance();
+            auto enemy = dynamic_pointer_cast<Enemy>(instance->physicsObject);
+            vector<vec3> path;
+            for (YAML::Node point : object["path"])
+            {
+                path.push_back(ARRAY_TO_VEC3(point));
+            }
+            if (path.size() > 0)
+            {
+                enemy->position = path[0];
+            }
+            enemy->curvePath->controlPoints = path;
+            scene.push_back(instance);
+            octree.insert(instance->physicsObject);
+        }
+    }
+
     for (YAML::Node object : file["track"])
     {
         shared_ptr<Instance> instance = prefabManager->get(object["prefab"].as<string>())->getNewInstance();
