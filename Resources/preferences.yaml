@@ -1,7 +1,7 @@
 --- # User preferences
 window:
     resolution: [1000, 1000]
-    maximized: false
+    maximized: true
     fullscreen: false
 shadows:
     resolution: 2

@@ -37,6 +37,7 @@ public:
     float t;
     glm::vec3 targetPos;
     std::vector<glm::vec3> controlPoints;
+    std::vector<glm::vec3> pathPoints;
 private:
     float quadBezierPoint(float p0, float p1, float p2, float t);
     float cubicBezierPoint(float p0, float p1, float p2, float p3, float t);
