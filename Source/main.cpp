@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 
+#include <cmath>
 #include <math.h>
 #include <iostream>
 #include <iomanip>
@@ -9,114 +10,85 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include <glad/glad.h>
 #include <string>
 #include <irrKlang.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Camera.h"
 #include "GLSL.h"
 #include "GLTextureWriter.h"
 #include "MatrixStack.h"
+#include "GLTextureWriter.h"
 #include "Object3D.h"
 #include "Program.h"
 #include "effects/Sound.h"
 #include "Shape.h"
 #include "Skybox.h"
 #include "WindowManager.h"
+#include "engine/Time.h"
+#include "effects/ParticleSpark.h"
+#include "gameobjects/Ball.h"
+#include "gameobjects/Goal.h"
+#include "gameobjects/Enemy.h"
+#include "gameobjects/Blower.h"
+#include "gameobjects/Beam.h"
 #include "engine/Collider.h"
 #include "engine/ColliderSphere.h"
 #include "engine/GameObject.h"
-#include "gameobjects/Ball.h"
-#include "gameobjects/Box.h"
-#include "gameobjects/Goal.h"
-#include "gameobjects/Enemy.h"
 #include "engine/ColliderSphere.h"
 #include "engine/Collider.h"
 #include "engine/Octree.h"
 #include "engine/Frustum.h"
 #include "engine/ParticleEmitter.h"
-#include "effects/ParticleSpark.h"
 #include "engine/UIObject.h"
+#include "engine/Prefab.h"
+#include "engine/SceneManager.h"
+#include "engine/ModelManager.h"
+#include "engine/TextureManager.h"
+#include "engine/SkyboxManager.h"
+#include "engine/ShaderManager.h"
+#include "engine/MaterialManager.h"
+#include "engine/PrefabManager.h"
+#include "engine/EmitterManager.h"
+#include "engine/Preferences.h"
 
-// value_ptr for glm
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-// number of skin textures to load and swap through
-#define NUMBER_OF_MARBLE_SKINS 13
-#define SHADOW_QUALITY 4 // [-1, 0, 1, 2, 3, 4] (-1: default) (0: OFF);
-#define PLAY_MUSIC false
 #define RESOURCE_DIRECTORY string("../Resources")
 
 using namespace std;
 using namespace glm;
 
+TimeData Time;
 shared_ptr<Sound> soundEngine;
 
 class Application : public EventCallbacks
 {
-
 public:
-    WindowManager *windowManager = nullptr;
+    Preferences preferences = Preferences(RESOURCE_DIRECTORY + "/preferences.yaml");
+    WindowManager *windowManager = new WindowManager();
+    ModelManager modelManager = ModelManager(RESOURCE_DIRECTORY + "/models/");
+    TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
+    SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
+    ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
+    MaterialManager materialManager = MaterialManager();
+    EmitterManager emitterManager = EmitterManager();
+    PrefabManager prefabManager = PrefabManager(RESOURCE_DIRECTORY + "/prefabs/", shared_ptr<ModelManager>(&modelManager), shared_ptr<MaterialManager>(&materialManager));
+    SceneManager sceneManager = SceneManager(shared_ptr<PrefabManager>(&prefabManager));
 
     // Game Info Globals
     bool editMode = false;
-    float START_TIME = 0.0f;
-    bool MOVING = false;
-    bool MOUSE_DOWN = false;
-    int SCORE = 0;
-    int CURRENT_SKIN = 0;
-    vec3 START_POSITION = vec3(120, 3, 7);
-    vec3 CENTER_LVL_POSITION = vec3(70, 3, 40);
+    float startTime = 0.0f;
 
-    // Shadow Globals
-    int SHADOWS = 1;
-    int SHADOW_AA = 4;
-    int DEBUG_LIGHT = 0;
-    int GEOM_DEBUG = 1;
-    GLuint SHADOW_SIZE = 0;
+    bool debugLight = 0;
+    bool debugGeometry = 1;
     GLuint depthMapFBO = 0;
     GLuint depthMap = 0;
-
-    // Light Position Globals
-    vec3 gameLight = vec3(300, 150, 250);
-    vec3 gameLightColor = vec3(250000, 250000, 250000);
-
-    struct
-    {
-        shared_ptr<Program> pbr;
-        shared_ptr<Program> sky;
-        shared_ptr<Program> circle;
-        shared_ptr<Program> cubeOutline;
-        shared_ptr<Program> depth;
-        shared_ptr<Program> depthDebug;
-        shared_ptr<Program> debug;
-        shared_ptr<Program> particle;
-		shared_ptr<Program> ui;
-    } programs;
-
-	struct
-	{
-		shared_ptr<UIObject> logo;
-		shared_ptr<UIObject> winMessage;
-	} uis;
-
-    struct
-    {
-        shared_ptr<Shape> cube;
-        shared_ptr<Shape> roboHead;
-        shared_ptr<Shape> roboLeg;
-        shared_ptr<Shape> roboFoot;
-        shared_ptr<Shape> boxModel;
-        shared_ptr<Shape> plane;
-        shared_ptr<Shape> billboard;
-        shared_ptr<Shape> goalModel;
-        shared_ptr<Shape> sphere;
-    } shapes;
-
-    // Effects
-    shared_ptr<ParticleEmitter> sparkEmitter;
-    shared_ptr<ParticleEmitter> fireworkEmitter;
+    GLuint objectMapFBO;
+    GLuint objectMapTex;
+    GLuint objectMapDepthBuf;
+    GLuint beamFBO;
+    GLuint beamDepthBuf;
+    GLuint beamWorldDepthBuf;
 
     // Camera
     shared_ptr<Camera> camera;
@@ -124,269 +96,106 @@ public:
 
     struct
     {
-        shared_ptr<Ball> ball;
+        shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
-		//shared_ptr<Enemy> billboard;
         shared_ptr<Goal> goal;
-        shared_ptr<Box> goalObject;
-        shared_ptr<Octree> octree;
+        shared_ptr<Blower> blower;
+        shared_ptr<PhysicsObject> beam;
     } gameObjects;
-    vector<shared_ptr<PhysicsObject>> boxes;
 
-    // BillBoard for rendering a texture to screen. (like the shadow map)
-    GLuint quad_VertexArrayID;
-    GLuint quad_vertexbuffer;
+	struct
+	{
+		shared_ptr<UIObject> logo;
+		shared_ptr<UIObject> winMessage;
+		shared_ptr<UIObject> powerUp;
+		shared_ptr<UIObject> Time;
+		shared_ptr<UIObject> Hundreds;
+		shared_ptr<UIObject> Tens;
+		shared_ptr<UIObject> Ones;
+		shared_ptr<UIObject> Tenths;
+		shared_ptr<UIObject> Hundredths;
+		shared_ptr<UIObject> Colon;
+	} uiObjects;
 
-    struct
+    // Billboard for rendering a texture to screen (like the shadow map)
+    GLuint fboQuadVertexArrayID;
+    GLuint fboQuadVertexBuffer;
+
+    /*
+     * Loading
+    */
+    void loadWindow()
     {
-        shared_ptr<Skybox> skybox;
-        shared_ptr<Texture> crateAlbedo;
-        shared_ptr<Texture> crateRoughness;
-        shared_ptr<Texture> crateMetallic;
-        shared_ptr<Texture> crateAO;
-        shared_ptr<Texture> panelAlbedo;
-        shared_ptr<Texture> panelRoughness;
-        shared_ptr<Texture> panelMetallic;
-        shared_ptr<Texture> panelAO;
-        shared_ptr<Texture> spark;
-        shared_ptr<Texture> firework;
-    } textures;
-    vector<shared_ptr<Texture>> marbleTextures;
+        windowManager->init(preferences.window.resolutionX, preferences.window.resolutionY, preferences.window.maximized, preferences.window.fullscreen);
+        windowManager->setEventCallbacks(this);
+    }
 
-    void init()
+    void loadCanvas()
     {
         int width, height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
         GLSL::checkVersion();
 
-        // Set background color.
-        glClearColor(.12f, .34f, .56f, 1.0f);
         // Enable z-buffer test.
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
 
         // Initialize camera
-        camera = make_shared<Camera>(windowManager, CENTER_LVL_POSITION);
+        camera = make_shared<Camera>(windowManager, vec3(0, 0, 0));
         camera->init();
+    }
 
-        sparkEmitter = make_shared<ParticleEmitter>(100);
+    void loadSounds()
+    {
         soundEngine = make_shared<Sound>();
-        #if PLAY_MUSIC
-        soundEngine->music();
-        #endif
-        glEnable(GL_BLEND);
+
+        if (preferences.sound.music) soundEngine->playPauseMusic();
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-     }
-
-    //=================================================
-    // SHADERS
-    //=================================================
-    void initShader(shared_ptr<Program> &program, string file, vector<string> attributes, vector<string> uniforms)
-    {
-        // Shader for textured models
-        program = make_shared<Program>();
-        program->setVerbose(true);
-        program->setShaderNames(RESOURCE_DIRECTORY + "/shaders/" + file + ".vert.glsl", RESOURCE_DIRECTORY + "/shaders/" + file + ".frag.glsl");
-        if (!program->init())
-        {
-            cerr << "Failed to compile " << file << " shader" << endl;
-            exit(1);
-        }
-
-        for (int i = 0; i < attributes.size(); i++)
-        {
-            program->addAttribute(attributes[i]);
-        }
-
-        for (int i = 0; i < uniforms.size(); i++)
-        {
-            program->addUniform(uniforms[i]);
-        }
     }
 
-    void initShaders()
+    void loadShaders()
     {
-        initShader(
-            programs.sky,
-            "sky",
-            {"vertPos"},
-            {"P", "V", "Texture0"});
+        vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
+        shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
+        materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
-        initShader(
-            programs.pbr,
-            "pbr",
-            {"vertPos", "vertNor", "vertTex"},
-            {"P", "V", "M", "shadows", "shadowSize", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"});
-
-        initShader(
-            programs.circle,
-            "circle",
-            {"vertPos"},
-            {"P", "V", "M", "radius"});
-
-        initShader(
-            programs.cubeOutline,
-            "cube_outline",
-            {"vertPos"},
-            {"P", "V", "M", "edge"});
-
-        initShader(
-            programs.depth,
-            "depth",
-            {"vertPos", "vertNor", "vertTex"},
-            {"LP", "LV", "M"});
-
-        initShader(
-            programs.debug,
-            "pass",
-            {"vertPos"},
-            {"texBuf"});
-
-        initShader(
-            programs.depthDebug,
-            "depth_debug",
-            {"vertPos", "vertNor", "vertTex"},
-            {"LP", "LV", "M"});
-
-        initShader(
-            programs.particle,
-            "particle",
-            {"vertPos", "vertNor", "vertTex"},
-            {"P", "V", "M", "pColor", "alphaTexture"});
-
-		initShader(
-			programs.ui,
-			"ui",
-			{ "vertPos", "vertNor", "vertTex" },
-			{"M"});
+        shaderManager.get("sky", {"vertPos"}, {"P", "V", "Texture0"});
+        shaderManager.get("circle", {"vertPos"}, {"P", "V", "M", "radius"});
+        shaderManager.get("cube_outline", {"vertPos"}, {"P", "V", "M", "edge"});
+        shaderManager.get("depth", {"vertPos"}, {"LP", "LV", "M"});
+        shaderManager.get("pass", {"vertPos"}, {"texBuf"});
+        shaderManager.get("depth_debug", {"vertPos"}, {"LP", "LV", "M"});
+        shaderManager.get("particle", {"vertPos", "vertTex"}, {"P", "V", "M", "pColor", "alphaTexture"});
+        shaderManager.get("object_map", {"vertPos"}, {"P", "V", "M", "objectIndex"});
+		shaderManager.get("ui", { "vertPos", "vertTex" }, {"M", "Texture"});
+		shaderManager.get("beam", { "vertPos" }, {"P", "V", "M", "depthBuf", "viewport", "density"});
+		shaderManager.get("world_depth", { "vertPos" }, {"P", "V", "M"});
     }
 
-    //=================================================
-    // TEXTURES
-    //=================================================
-    void initTextures()
+    void loadSkybox()
     {
-        initPBR(textures.crateAlbedo, textures.crateRoughness, textures.crateMetallic, textures.crateAO, "marble_tiles", "png");
-        initPBR(textures.panelAlbedo, textures.panelRoughness, textures.panelMetallic, textures.panelAO, "panel", "png");
-
-        initMarbleTexture();
-        initSkyBox();
-        initParticleTexture();
-        initShadow();
+        skyboxManager.get("desert_hill", 1);
     }
 
-    void initTexture(shared_ptr<Texture> &texture, string filePath, int textureUnit = 0)
+    void loadShadows()
     {
-        texture = make_shared<Texture>();
-        texture->setFilename(RESOURCE_DIRECTORY + "/textures/" + filePath);
-        texture->init();
-        texture->setUnit(textureUnit);
-        texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    }
-
-    void initPBR(shared_ptr<Texture> &albedo, shared_ptr<Texture> &roughness, shared_ptr<Texture> &metallic, shared_ptr<Texture> &ao, string fileName, string fileExt)
-    {
-        initTexture(albedo, "pbr/" + fileName + "_albedo." + fileExt, 1);
-        initTexture(roughness, "pbr/" + fileName + "_roughness." + fileExt, 2);
-        initTexture(metallic, "pbr/" + fileName + "_metallic." + fileExt, 3);
-        initTexture(ao, "pbr/" + fileName + "_ao." + fileExt, 4);
-    }
-
-    void initParticleTexture()
-    {
-        initTexture(textures.spark, "particle/star_07.png", 1);
-        initTexture(textures.firework, "particle/scorch_02.png", 1);
-    }
-
-    void initMarbleTexture()
-    {
-        // loops over the number of skin textures, initializing them and adding them to a vector
-        string textureBaseFolder, textureNumber, textureExtension, textureName;
-        double completion = 0;
-        for (int i = 1; i < NUMBER_OF_MARBLE_SKINS + 1; i++)
-        {
-            textureBaseFolder = "/textures/marble/albedo/";
-            textureNumber = to_string(i);
-            textureExtension = ".jpg";
-
-            textureName = textureBaseFolder + textureNumber + textureExtension;
-            completion = ((float)i * 100 / (float)NUMBER_OF_MARBLE_SKINS);
-            cout << setprecision(3) << "Loading Textures: " << completion << "% complete." << endl;
-
-            shared_ptr<Texture> marbleTexture = make_shared<Texture>();
-            marbleTexture->setFilename(RESOURCE_DIRECTORY + textureName);
-            marbleTexture->init();
-            marbleTexture->setUnit(1);
-            marbleTexture->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
-
-            marbleTextures.push_back(marbleTexture);
-        }
-        cout << "Loading Textures: complete." << endl;
-    }
-
-    void initSkyBox()
-    {
-        // Load skybox
-        string skyboxFilenames[] = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
-        for (int i = 0; i < 6; i++)
-        {
-            skyboxFilenames[i] = RESOURCE_DIRECTORY + "/skybox/" + skyboxFilenames[i];
-        }
-
-        textures.skybox = make_shared<Skybox>();
-        textures.skybox->setFilenames(skyboxFilenames);
-        textures.skybox->init();
-        textures.skybox->setUnit(1);
-        textures.skybox->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    }
-
-    void initShadow()
-    {
-        switch (SHADOW_QUALITY)
-        {
-        case 0:
-            SHADOWS = 0;
-            SHADOW_AA = 1;
-            SHADOW_SIZE = 256;
-            break;
-        case 1:
-            SHADOWS = 1;
-            SHADOW_SIZE = 512;
-            break;
-        case 2:
-            SHADOWS = 1;
-            SHADOW_SIZE = 1024;
-            break;
-        case 3:
-            SHADOWS = 1;
-            SHADOW_SIZE = 2048;
-            break;
-        case 4:
-            SHADOWS = 1;
-            SHADOW_SIZE = 4096;
-            break;
-        default:
-            SHADOWS = 1;
-            SHADOW_SIZE = 1024;
-            break;
-        }
-        /* set up the FBO for the light's depth */
-        // generate the FBO for the shadow depth
+        // Generate the FBO for the shadow depth
         glGenFramebuffers(1, &depthMapFBO);
 
-        // generate the texture
+        // Generate the texture
         glGenTextures(1, &depthMap);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, preferences.shadows.resolution, preferences.shadows.resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        // bind with framebuffer's depth buffer
+        // Bind with framebuffer's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
@@ -394,275 +203,312 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void setTextureMaterial(int i)
+    void loadObjectMap()
     {
-        // pulled these out of the switch since they were all identical
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
-        textures.crateAlbedo->bind(programs.pbr->getUniform("albedoMap"));
-        textures.crateRoughness->bind(programs.pbr->getUniform("roughnessMap"));
-        textures.crateMetallic->bind(programs.pbr->getUniform("metallicMap"));
+        // Generate FBO for object map
+        glGenFramebuffers(1, &objectMapFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
 
-        switch (i)
-        {
-        case 0:
-            // marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        case 1:
-            marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        case 2:
-            // marbleTextures[CURRENT_SKIN]->bind(programs.pbr->getUniform("albedoMap"));
-            break;
-        }
-    }
-    //=================================================
-    // Sounds
-    //=================================================
+        // Generate texture where IDs of objects are stored
+        glGenTextures(1, &objectMapTex);
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectMapTex, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-    //=================================================
-    // GEOMETRY
-    //=================================================
-    void initGeom()
-    {
-        loadModels();
-        loadLevel();
-        initEffects();
-        initGameObjects();
+        // Generate depth buffer
+        glGenTextures(1, &objectMapDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, objectMapDepthBuf, 0);
+
+        // Bind with framebuffer's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void loadModel(shared_ptr<Shape> &shape, string file, bool resize = false, bool findEdges = false)
+    void loadBeam()
     {
-        shape = make_shared<Shape>();
-        shape->loadMesh(RESOURCE_DIRECTORY + "/models/" + file);
-        if (resize)
-            shape->resize();
-        shape->measure();
-        if (findEdges)
-            shape->findEdges();
-        shape->init();
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
+        // Generate FBO for beam
+        glGenFramebuffers(1, &beamFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
+
+        // Generate texture where depth is stored in world units
+        glGenTextures(1, &beamWorldDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, beamWorldDepthBuf, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Generate depth buffer
+        glGenTextures(1, &beamDepthBuf);
+        glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, beamDepthBuf, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Bind with framebuffer's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void loadEffects()
+    {
+        emitterManager.get("fireworks", modelManager.get("billboard.obj"), textureManager.get("particles/scorch_02.png"), 100);
+        emitterManager.get("sparks", modelManager.get("billboard.obj"), textureManager.get("particles/star_07.png"), 100);
+        emitterManager.get("wind", modelManager.get("billboard.obj"), textureManager.get("particles/smoke_04.png"), 1000);
+    }
+
+    void loadFBOQuad()
+    {
+        glGenVertexArrays(1, &fboQuadVertexArrayID);
+        glBindVertexArray(fboQuadVertexArrayID);
+
+        static const GLfloat g_quad_vertex_buffer_data[] = {
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+
+            -1.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+        };
+
+        glGenBuffers(1, &fboQuadVertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, fboQuadVertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
     }
 
     void loadModels()
     {
-        initQuad();
-
-        loadModel(shapes.cube, "cube.obj", true);
-        loadModel(shapes.boxModel, "box.obj", false, true);
-        loadModel(shapes.plane, "plane.obj");
-        loadModel(shapes.roboHead, "Robot/RobotHead.obj", true);
-        loadModel(shapes.roboLeg, "Robot/RobotLeg.obj", true);
-        loadModel(shapes.roboFoot, "Robot/RobotFoot.obj", true);
-        loadModel(shapes.billboard, "billboard.obj", true);
-        loadModel(shapes.goalModel, "goal.obj", true);
-        loadModel(shapes.sphere, "quadSphere.obj", true);
-    }
-
-    void initEffects()
-    {
-        sparkEmitter = make_shared<ParticleEmitter>(100);
-        sparkEmitter->init(shapes.billboard, textures.spark);
-        fireworkEmitter = make_shared<ParticleEmitter>(100);
-        fireworkEmitter->init(shapes.billboard, textures.firework);
-    }
-
-    void initGameObjects()
-    {
-		//gameObjects.billboard = make_shared<GameObject>(START_POSITION, quat(1, 0, 0, 0), shapes.billboard);
-
-        gameObjects.ball = make_shared<Ball>(START_POSITION, quat(1, 0, 0, 0), shapes.sphere, 1);
-        gameObjects.ball->init(windowManager, sparkEmitter);
-        // Control points for enemy's bezier curve path
-        vector<glm::vec3> enemyPath = {
-            vec3{95.0, 2.0, 7.0},
-            vec3{100.0, 2.0, 15.0},
-            vec3{110.0, 2.0, -1.0},
-            vec3{115.0, 2.0, 7.0}};
-        gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
-        gameObjects.enemy1->init(windowManager);
-        enemyPath = {
-            vec3{125.0, 8.0, 55.0},
-            vec3{115.0, 20.0, 55.0},
-            vec3{105.0, 5.0, 55.0},
-            vec3{95.0, 8.0, 55.0}};
-        gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), shapes.roboHead, shapes.roboLeg, shapes.roboFoot, 1.5);
-        gameObjects.enemy2->init(windowManager);
-
-        gameObjects.goalObject = make_shared<Box>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), shapes.goalModel);
-        gameObjects.goalObject->scale = vec3(4);
-
-        gameObjects.goal = make_shared<Goal>(gameObjects.goalObject->position + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1);
-        gameObjects.goal->init(fireworkEmitter, &START_TIME);
-
-        // Need to add each physics object to the octree
-        gameObjects.octree = make_shared<Octree>(vec3(-200, -210, -200), vec3(200, 190, 200));
-        gameObjects.octree->init(shapes.billboard, shapes.cube);
-        gameObjects.octree->insert(gameObjects.goal);
-        gameObjects.octree->insert(gameObjects.goalObject);
-        gameObjects.octree->insert(gameObjects.ball);
-        gameObjects.octree->insert(boxes);
-        gameObjects.octree->insert(gameObjects.enemy1);
-        gameObjects.octree->insert(gameObjects.enemy2);
-		uis.logo = make_shared<UIObject>(vec3(-4.0f, 3.75f, 0), vec3(0.2f, 0.2f, 0), quat(1, 1, 1, 1), shapes.billboard, RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
-		//uis.winMessage = make_shared<UIObject>(vec3(0, 0, 0), quat(1, 1, 1, 1), shapes.billboard, RESOURCE_DIRECTORY + "/textures/ui/Level1.png");
-
+        modelManager.get("cube.obj", false, true);
+        modelManager.get("Robot/RobotHead.obj", true);
+        modelManager.get("Robot/RobotLeg.obj", true);
+        modelManager.get("Robot/RobotFoot.obj", true);
+        modelManager.get("billboard.obj", true);
+        modelManager.get("goal.obj", true);
+        modelManager.get("quadSphere.obj", true);
+        modelManager.get("cone.obj", true);
     }
 
     void loadLevel()
     {
-        ifstream inLevel(RESOURCE_DIRECTORY + "/levels/Level1.txt");
-
-        float xval, yval, zval;
-        while (inLevel >> xval)
-        {
-            inLevel >> yval >> zval;
-            auto box = make_shared<Box>(vec3(xval * 8, yval, zval * 6), normalize(quat(0, 0, 0, 0)), shapes.boxModel);
-            boxes.push_back(box);
-        }
+        sceneManager.load(RESOURCE_DIRECTORY + "/levels/" + preferences.scenes.list[preferences.scenes.startup] + ".yaml");
     }
 
-    void initQuad()
+    void loadGameObjects()
     {
-        /* set up a quad for rendering a framebuffer */
+        // Marble
+        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
+        gameObjects.marble->init(windowManager, emitterManager.get("sparks"), camera);
+        sceneManager.octree.insert(gameObjects.marble);
+        gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
+        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "jpg"));
 
-        // now set up a simple quad for rendering FBO
-        glGenVertexArrays(1, &quad_VertexArrayID);
-        glBindVertexArray(quad_VertexArrayID);
+        if (preferences.scenes.startup == 0)
+        {
+            // Blower
+            gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), (float)M_PI_4, vec3(0, 0, 1)), 3.0f, 10.0f);
+            gameObjects.blower->init(emitterManager.get("wind"));
+            sceneManager.octree.insert(gameObjects.blower);
 
-        static const GLfloat g_quad_vertex_buffer_data[] = {
-            -1.0f,
-            -1.0f,
-            0.0f,
-            1.0f,
-            -1.0f,
-            0.0f,
-            -1.0f,
-            1.0f,
-            0.0f,
+            // Enemy 1
+            vector<vec3> enemyPath = {
+                vec3{95.0, 2.0, 7.0},
+                vec3{100.0, 2.0, 15.0},
+                vec3{110.0, 2.0, -1.0},
+                vec3{115.0, 2.0, 7.0}};
+            gameObjects.enemy1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy1->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy1);
 
-            -1.0f,
-            1.0f,
-            0.0f,
-            1.0f,
-            -1.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-            0.0f,
-        };
+            // Enemy 2
+            enemyPath = {
+                vec3{125.0, 8.0, 55.0},
+                vec3{115.0, 20.0, 55.0},
+                vec3{105.0, 5.0, 55.0},
+                vec3{95.0, 8.0, 55.0}};
+            gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            gameObjects.enemy2->init(windowManager);
+            sceneManager.octree.insert(gameObjects.enemy2);
+        }
 
-        glGenBuffers(1, &quad_vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+        // Goal functionality
+        gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
+        sceneManager.octree.insert(gameObjects.goal);
+
+        // Beam
+        gameObjects.beam = make_shared<Beam>(gameObjects.goal->position + vec3(0, 10, 0), quat(0, 1, 0, 0), modelManager.get("cone.obj"));
+        gameObjects.beam->scale = vec3(10, 20, 10);
+        sceneManager.octree.insert(gameObjects.beam);
+
+        sceneManager.octree.init(modelManager.get("billboard.obj"), modelManager.get("cube.obj"));
     }
 
-    //=================================================
-    // RENDERERING
+	void loadUIObjects() {
+		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.powerUp = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SuperJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundreds = make_shared<UIObject>(vec3(-0.4f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tens = make_shared<UIObject>(vec3(-0.3f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Ones = make_shared<UIObject>(vec3(-0.2f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Colon = make_shared<UIObject>(vec3(-0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/Colon.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tenths = make_shared<UIObject>(vec3(0, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundredths = make_shared<UIObject>(vec3(0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+	}
 
+    /*
+     * Rendering
+     */
     void render()
     {
         // Get current frame buffer size.
-        int width, height;
+        int width;
+        int height;
         glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 
         mat4 LS;
 
-        if (SHADOW_QUALITY)
-        {
-            createShadowMap(&LS);
-        }
+        if (preferences.shadows.resolution > 0) drawShadowMap(&LS);
 
-        glViewport(0, 0, width, height); // frame width and height
-        glViewport(0, 0, width, height); // frame width and height
-        // Clear framebuffer.
+        glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (DEBUG_LIGHT)
-        {
-            drawDepthMap();
-        }
-        else
-        {
-            renderPlayerView(&LS);
-        }
-		auto M = make_shared<MatrixStack>();
-		//gameObjects.enemy1->drawPers(programs.ui, M);
-		//shapes.billboard->draw(programs.ui);
-		uis.logo->draw(programs.ui, M);
+        if (debugLight) drawDepthMap();
+        else renderPlayerView(&LS);
     }
 
     void drawScene(shared_ptr<Program> shader)
     {
-        // Draw textured models
-        if (shader == programs.pbr)
-        {
-            glUniform1f(shader->getUniform("shadowSize"), (float)SHADOW_SIZE);
-            glUniform1f(shader->getUniform("shadowAA"), (float)SHADOW_AA);
-            glUniform1i(shader->getUniform("shadows"), SHADOWS);
-        }
-
-        // Create the matrix stacks
+        // Create the model transformation matrix stack
         auto M = make_shared<MatrixStack>();
-
-        // Model identity
         M->pushMatrix();
         M->loadIdentity();
-        if (shader == programs.pbr)
+
+        shared_ptr<Program> pbr = shaderManager.get("pbr");
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
+
+        if (shader == pbr)
         {
+            glUniform1f(shader->getUniform("shadowResolution"), (float)preferences.shadows.resolution);
+            glUniform1f(shader->getUniform("shadowAA"), (float)preferences.shadows.samples);
+
             glUniform3fv(shader->getUniform("viewPos"), 1, value_ptr(camera->eye));
         }
 
-        // Draw plane
-        // if (shader == programs.pbr)
-        // {
-        //     setTextureMaterial(0);
-        // }
-        // M->pushMatrix();
-        // glUniformMatrix4fv(shader->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
-        // shapes.plane->draw(shader);
-        // M->popMatrix();
+        // Draw marble
+        if (shader == pbr) gameObjects.marble->getSkinMaterial()->bind();
+        gameObjects.marble->draw(shader, M);
 
-        // Draw ball
-        if (shader == programs.pbr)
+        // Draw enemies
+            if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
+        if (preferences.scenes.startup == 0)
         {
-            setTextureMaterial(1);
+            gameObjects.enemy1->draw(shader, M);
+            gameObjects.enemy2->draw(shader, M);
         }
-        gameObjects.ball->draw(shader, M);
-        gameObjects.goalObject->draw(shader, M);
-        gameObjects.enemy1->draw(shader, M);
-        gameObjects.enemy2->draw(shader, M);
 
-        // Draw Boxes
-        if (shader == programs.pbr)
+        // Draw scene instances
+        int i = 0;
+        for (shared_ptr<Instance> instance : sceneManager.scene)
         {
-            setTextureMaterial(2);
-        }
-        for (auto box : boxes)
-        {
-            box->draw(shader, M);
+            if (shader == pbr) instance->material->bind();
+            else if (shader == objectMap)
+                glUniform1i(shader->getUniform("objectIndex"), i);
+            instance->physicsObject->draw(shader, M);
+            i++;
         }
 
         // Cleanup
         M->popMatrix();
     }
 
-    void createShadowMap(mat4 *LS)
+    shared_ptr<Instance> getClickedObject(int x, int y)
     {
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+        y = height - y;
+
+        GameObject::setCulling(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, objectMapFBO);
+
+        glViewport(0, 0, width, height);
+
+        // Resize textures to current window size
+        glBindTexture(GL_TEXTURE_2D, objectMapTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, NULL);
+        glBindTexture(GL_TEXTURE_2D, objectMapDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        GLint clear = -2;
+        glClearBufferiv(GL_COLOR, 0, &clear);
+
+        shared_ptr<Program> objectMap = shaderManager.get("object_map");
+
+        // Render scene as object IDs
+        objectMap->bind();
+        setProjectionMatrix(objectMap);
+        setView(objectMap);
+        glUniform1i(objectMap->getUniform("objectIndex"), -1);
+        drawScene(objectMap);
+        objectMap->unbind();
+
+        // Get index of clicked object in sceneManager.scene
+        // -2: no object clicked
+        // -1: object clicked but not in sceneManager.scene
+        GLint index;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &index);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (index >= 0)
+        {
+            return sceneManager.scene[index];
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    void drawShadowMap(mat4 *LS)
+    {
+        GameObject::setCulling(false);
+
         // set up light's depth map
-        glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE); // shadow map width and height
+        glViewport(0, 0, preferences.shadows.resolution, preferences.shadows.resolution); // shadow map width and height
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
 
-        // set up shadow shader
-        // render scene
-        programs.depth->bind();
-        // TODO you will need to fix these
-        mat4 LP = SetOrthoMatrix(programs.depth);
-        mat4 LV = SetLightView(programs.depth, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
+        shared_ptr<Program> depth = shaderManager.get("depth");
+
+        depth->bind();
+        mat4 LP = SetOrthoMatrix(depth);
+        mat4 LV = SetLightView(depth, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
         *LS = LP * LV;
-        // SetLightView(programs.depth, gameLight, g_lookAt, vec3(0, 1, 0));
-        drawScene(programs.depth);
-        programs.depth->unbind();
+        drawScene(depth);
+        depth->unbind();
         glCullFace(GL_BACK);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -672,159 +518,278 @@ public:
     {
         // Code to draw the light depth buffer
 
-        // geometry style debug on light - test transforms, draw geometry from
-        // light perspective
-        if (GEOM_DEBUG)
+        GameObject::setCulling(true);
+
+        // geometry style debug on light - test transforms, draw geometry from light perspective
+        if (debugGeometry)
         {
-            programs.depthDebug->bind();
+            shared_ptr<Program> depthDebug = shaderManager.get("depth_debug");
+
+            depthDebug->bind();
             // render scene from light's point of view
-            SetOrthoMatrix(programs.depthDebug);
-            SetLightView(programs.depthDebug, gameLight, vec3(60, 0, 0), vec3(0, 1, 0));
-            drawScene(programs.depthDebug);
-            programs.depthDebug->unbind();
+            SetOrthoMatrix(depthDebug);
+            SetLightView(depthDebug, sceneManager.light.direction, vec3(60, 0, 0), vec3(0, 1, 0));
+            drawScene(depthDebug);
+            depthDebug->unbind();
         }
         else
         {
+            shared_ptr<Program> debug = shaderManager.get("debug");
+
             // actually draw the light depth map
-            programs.debug->bind();
+            debug->bind();
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            glUniform1i(programs.debug->getUniform("texBuf"), 0);
+            glUniform1i(debug->getUniform("texBuf"), 0);
             glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, fboQuadVertexBuffer);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glDisableVertexAttribArray(0);
-            programs.debug->unbind();
+            debug->unbind();
         }
     }
 
-    void drawSkyBox()
+    void drawBeam()
     {
-        programs.sky->bind();
-        setProjectionMatrix(programs.sky);
-        setView(programs.sky);
+        if (!gameObjects.beam->inView) return;
 
-        textures.skybox->bind(programs.sky->getUniform("Texture0"));
+        shared_ptr<Program> beam = shaderManager.get("beam");
+        shared_ptr<Program> depth = shaderManager.get("world_depth");
+
+        int width, height;
+        glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
+        // Render the depth of the scene to a texture
+        depth->bind();
+        setProjectionMatrix(depth);
+        setView(depth);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, beamFBO);
+        glDisable(GL_BLEND);
+
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);        
+        glBindTexture(GL_TEXTURE_2D, beamDepthBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+        glViewport(0, 0, width, height);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        float clear = 0;
+        glClearBufferfv(GL_COLOR, 0, &clear);
+
+        drawScene(depth);
+
+        // Render the back faces of the beam
+        glCullFace(GL_FRONT);
+        gameObjects.beam->draw(depth, make_shared<MatrixStack>());
+        glCullFace(GL_BACK);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glEnable(GL_BLEND);
+        depth->unbind();
+
+        // Render the beam using the depth data to make a volumetric effect
+        beam->bind();
+        setProjectionMatrix(beam);
+        setView(beam);
+        glUniform2f(beam->getUniform("viewport"), (float)width, (float)height);
+        glUniform1i(beam->getUniform("depthBuf"), 0);
+        glUniform1f(beam->getUniform("density"), sin(Time.timeSinceStart*3) * 0.025f + 0.075f);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, beamWorldDepthBuf);
+        gameObjects.beam->draw(beam, make_shared<MatrixStack>());
+        
+        beam->unbind();
+    }
+
+    void drawSkybox()
+    {
+        shared_ptr<Program> sky = shaderManager.get("sky");
+
+        sky->bind();
+        setProjectionMatrix(sky);
+        setView(sky);
+
+        skyboxManager.get("desert_hill", 1)->bind(sky->getUniform("Texture0"));
         glDepthMask(GL_FALSE);
         glDisable(GL_CULL_FACE);
-        shapes.cube->draw(programs.sky);
+        modelManager.get("cube.obj")->draw(sky);
         glEnable(GL_CULL_FACE);
         glDepthMask(GL_TRUE);
 
-        programs.sky->unbind();
-    }
-
-    void sendShadowMap()
-    {
-        // Also set up light depth map
-        glActiveTexture(GL_TEXTURE30);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        glUniform1i(programs.pbr->getUniform("shadowDepth"), 0);
-    }
-
-    void renderPlayerView(mat4 *LS)
-    {
-		drawSkyBox();
-
-        programs.pbr->bind();
-
-        setLight(programs.pbr);
-        setProjectionMatrix(programs.pbr);
-        setView(programs.pbr);
-
-        sendShadowMap();
-
-        glUniformMatrix4fv(programs.pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
-        drawScene(programs.pbr);
-
-        programs.pbr->unbind();
-
-        if (gameObjects.octree->debug)
-        {
-            drawOctree();
-        }
-
-        programs.particle->bind();
-        setProjectionMatrix(programs.particle);
-        setView(programs.particle);
-        sparkEmitter->draw(programs.particle);
-        fireworkEmitter->draw(programs.particle);
-        programs.particle->unbind();
+        sky->unbind();
     }
 
     void drawOctree()
     {
-        programs.circle->bind();
-        setProjectionMatrix(programs.circle);
-        setView(programs.circle);
-        gameObjects.octree->drawDebugBoundingSpheres(programs.circle);
-        programs.circle->unbind();
+        shared_ptr<Program> circle = shaderManager.get("circle");
 
-        programs.cubeOutline->bind();
-        setProjectionMatrix(programs.cubeOutline);
-        setView(programs.cubeOutline);
-        gameObjects.octree->drawDebugOctants(programs.cubeOutline);
-        programs.cubeOutline->unbind();
+        circle->bind();
+        setProjectionMatrix(circle);
+        setView(circle);
+        sceneManager.octree.drawDebugBoundingSpheres(circle);
+        circle->unbind();
+
+        shared_ptr<Program> cubeOutline = shaderManager.get("cube_outline");
+
+        cubeOutline->bind();
+        setProjectionMatrix(cubeOutline);
+        setView(cubeOutline);
+        sceneManager.octree.drawDebugOctants(cubeOutline);
+        cubeOutline->unbind();
     }
 
-    //=================================================
-    // GENERAL HELPERS
+    void drawGameplayUI()
+    {
+		auto M = make_shared<MatrixStack>();
 
+        // Current level
+		uiObjects.logo->draw(shaderManager.get("ui"), M, 1);
+
+        // Win message
+		if (gameObjects.goal->didWin) {
+			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+		} 
+		else {
+			//if player hasn't won, update time
+			changeTime();
+		}
+
+		//draw timer
+		uiObjects.Time->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundreds->draw(shaderManager.get("ui"), M);
+		uiObjects.Tens->draw(shaderManager.get("ui"), M);
+		uiObjects.Ones->draw(shaderManager.get("ui"), M);
+		uiObjects.Colon->draw(shaderManager.get("ui"), M);
+		uiObjects.Tenths->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundredths->draw(shaderManager.get("ui"), M);
+
+
+		// Powerup Test
+		// if(hasPowerup){
+			//uiObjects.powerUp->draw(shaderManager.get("ui"), M);
+		//}
+    }
+
+	void changeTime() {
+		float curT = Time.timeSinceStart;
+		int num = curT / 100;
+		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 100.0f) / 10;
+		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 10.0f) / 1;
+		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 10.0f, 10.0f) / 1;
+		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 100.0f, 10.0f) / 1;
+		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+	}
+
+    void renderPlayerView(mat4 *LS)
+    {
+        GameObject::setCulling(true);
+
+        drawSkybox();
+
+        shared_ptr<Program> pbr = shaderManager.get("pbr");
+        pbr->bind();
+
+        setLight(pbr);
+        setProjectionMatrix(pbr);
+        setView(pbr);
+
+        // Send shadow map        glActiveTexture(GL_TEXTURE30);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glUniform1i(shaderManager.get("pbr")->getUniform("shadowDepth"), 0);
+
+        glUniformMatrix4fv(pbr->getUniform("LS"), 1, GL_FALSE, value_ptr(*LS));
+
+        drawScene(pbr);
+
+        pbr->unbind();
+
+        drawBeam();
+
+        if (sceneManager.octree.debug) drawOctree();
+
+        shared_ptr<Program> particle = shaderManager.get("particle");
+        particle->bind();
+        setProjectionMatrix(particle);
+        setView(particle);
+        for (shared_ptr<ParticleEmitter> emitter : emitterManager.list())
+        {
+            emitter->draw(particle);
+        }
+        particle->unbind();
+
+        drawGameplayUI();
+    }
+
+    /*
+     * Render loop calls
+     */
     void resetPlayer()
     {
         soundEngine->reset();
 
-        gameObjects.ball->position = START_POSITION;
-        gameObjects.ball->velocity = vec3(0);
-        START_TIME = glfwGetTime();
+        gameObjects.marble->position = sceneManager.marbleStart;
+        gameObjects.marble->setVelocity(vec3(0.0f));
+        startTime = (float)glfwGetTime();
         gameObjects.goal->reset();
+        gameObjects.marble->frozen = 0;
     }
 
-    void update(float dt)
+    void beforePhysics()
     {
-        gameObjects.octree->update();
-
-        if (gameObjects.ball->position.y < -25.0)
+        gameObjects.marble->update();
+        gameObjects.goal->update();
+        if (preferences.scenes.startup == 0)
         {
-            resetPlayer();
+            gameObjects.blower->update();
+            gameObjects.enemy1->update();
+            gameObjects.enemy2->update();
+        }
+    }
+
+    void physicsTick()
+    {
+        sceneManager.octree.update();
+
+        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
+        for (shared_ptr<PhysicsObject> object : instancesToCheck)
+        {
+            object->checkCollision(gameObjects.marble.get());
         }
 
-        auto boxesToCheck = gameObjects.octree->query(gameObjects.ball);
-        for (auto box : boxesToCheck)
+        for (shared_ptr<Instance> instance : sceneManager.scene)
         {
-            box->checkCollision(gameObjects.ball.get());
+            instance->physicsObject->update();
         }
+    }
 
-        for (auto box : boxes)
-        {
-            box->update(dt);
-        }
-        //TODO:: Do Collision checks between ball and Enemy
-        /*
-        auto enemiesToCheck = gameObjects.octree->query(ball);
-        for (auto enemies : enemiesToCheck) {
-            
-        }*/
+    void beforeRender()
+    {
+        if (gameObjects.marble->position.y < sceneManager.deathBelow) resetPlayer();
 
-        gameObjects.goalObject->update(dt);
-        gameObjects.ball->update(dt, camera->dolly, camera->strafe);
-        camera->update(dt, gameObjects.ball);
-        gameObjects.goal->update(dt);
-        gameObjects.enemy1->update(dt);
-        gameObjects.enemy2->update(dt);
+        camera->update(gameObjects.marble);
 
-        sparkEmitter->update(dt);
-        fireworkEmitter->update(dt);
+        emitterManager.get("sparks")->update();
+        emitterManager.get("fireworks")->update();
+        emitterManager.get("wind")->update();
 
         viewFrustum.extractPlanes(setProjectionMatrix(nullptr), setView(nullptr));
-        gameObjects.octree->markInView(viewFrustum);
+        sceneManager.octree.markInView(viewFrustum);
     }
 
+    /*
+     * General
+     */
     void setLight(shared_ptr<Program> prog)
     {
-        glUniform3f(prog->getUniform("lightPosition"), gameLight.x, gameLight.y, gameLight.z);
-        glUniform3f(prog->getUniform("lightColor"), gameLightColor.x, gameLightColor.y, gameLightColor.z);
+        glUniform3f(prog->getUniform("lightPosition"), sceneManager.light.direction.x, sceneManager.light.direction.y, sceneManager.light.direction.z);
+        glUniform3f(prog->getUniform("lightColor"), sceneManager.light.brightness.x, sceneManager.light.brightness.y, sceneManager.light.brightness.z);
     }
 
     mat4 SetOrthoMatrix(shared_ptr<Program> curShade)
@@ -870,28 +835,22 @@ public:
         return Cam;
     }
 
+    /*
+     * User input
+     */
     void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
-        //skin switching key call back
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
-            CURRENT_SKIN = (CURRENT_SKIN + 1) % NUMBER_OF_MARBLE_SKINS;
+            gameObjects.marble->nextSkin();
         }
-        // else if (key == GLFW_KEY_I && action == GLFW_PRESS)
-        // {
-            
-        // }
-        else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+        else if (key == GLFW_KEY_P && action == GLFW_PRESS)
         {
-            SHADOW_AA = (SHADOW_AA + 1) % 9;
-            if (SHADOW_AA == 0)
-            {
-                SHADOW_AA++;
-            }
+            soundEngine->playPauseMusic();
         }
-        else if (key == GLFW_KEY_T && action == GLFW_PRESS)
+        else if (key == GLFW_KEY_L && action == GLFW_PRESS)
         {
-            SHADOWS = !SHADOWS;
+            soundEngine->nextTrackMusic();
         }
         // other call backs
         else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -911,22 +870,34 @@ public:
         {
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
-            gameObjects.ball->frozen = editMode;
-
-            if (editMode) camera->saveMarbleView();
-            else camera->restoreMarbleView();
+            gameObjects.marble->frozen = editMode;
+            if (editMode)
+            {
+                camera->saveMarbleView();
+                gameObjects.marble->playPosition = gameObjects.marble->position;
+                gameObjects.marble->position = gameObjects.marble->startPosition;
+            }
+            else
+            {
+                camera->restoreMarbleView();
+                gameObjects.marble->position = gameObjects.marble->playPosition;
+            }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
         {
-            DEBUG_LIGHT = !DEBUG_LIGHT;
+            debugLight = !debugLight;
         }
         else if (key == GLFW_KEY_H && action == GLFW_PRESS)
         {
-            gameObjects.octree->debug = !gameObjects.octree->debug;
+            sceneManager.octree.debug = !sceneManager.octree.debug;
         }
         else if (key == GLFW_KEY_R && action == GLFW_PRESS)
         {
             resetPlayer();
+        }
+        else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+        { // just a test since super bounce has no trigger yet
+            soundEngine->superBounce();
         }
         //else if (key == GLFW_KEY_C && action == GLFW_PRESS)
         //{
@@ -941,10 +912,10 @@ public:
     void scrollCallback(GLFWwindow *window, double deltaX, double deltaY)
     {
         deltaY *= -1;
-        float newDistance = deltaY + camera->distToBall;
+        float newDistance = (float)deltaY + camera->distToBall;
         if (newDistance < 20 && newDistance > 2.5)
         {
-            camera->distToBall += deltaY;
+            camera->distToBall += (float)deltaY;
         }
     }
 
@@ -954,17 +925,22 @@ public:
 
         if (action == GLFW_PRESS)
         {
-            MOUSE_DOWN = true;
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
-            cout << "" << gameObjects.ball->position.x << ", " << gameObjects.ball->position.y << ", " << gameObjects.ball->position.z << endl;
-            MOVING = true;
+            cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+
+            if (editMode)
+            {
+                shared_ptr<Instance> instance = getClickedObject((int)posX, (int)posY);
+                if (instance != nullptr)
+                {
+                    instance->physicsObject->position += vec3(0, 1, 0);
+                }
+            }
         }
 
         if (action == GLFW_RELEASE)
         {
-            MOVING = false;
-            MOUSE_DOWN = false;
         }
 
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
@@ -977,6 +953,11 @@ public:
         }
     }
 
+    void updateAudio()
+    {
+        soundEngine->updateMusic();
+    }
+
     void resizeCallback(GLFWwindow *window, int width, int height)
     {
         glViewport(0, 0, width, height);
@@ -987,57 +968,57 @@ int main(int argc, char **argv)
 {
     Application *application = new Application();
 
-    // Your main will always include a similar set up to establish your window
-    // and GL context, etc.
+    // Load game
+    application->loadWindow();
+    application->loadCanvas();
+    application->loadShaders();
+    application->loadSkybox();
+    application->loadShadows();
+    application->loadObjectMap();
+    application->loadBeam();
+    application->loadEffects();
+    application->loadFBOQuad();
+    application->loadModels();
+    application->loadLevel();
+    application->loadGameObjects();
+    application->loadSounds();
+	application->loadUIObjects();
 
-    WindowManager *windowManager = new WindowManager();
-    // windowManager->init(1280, 720);
-    windowManager->init(1920, 1080);
-    // windowManager->init(2560, 1440);
-    windowManager->setEventCallbacks(application);
-    application->windowManager = windowManager;
+    application->startTime = (float)glfwGetTime();
 
-    // This is the code that will likely change program to program as you
-    // may need to initialize or set up different data and state
-
-    application->init();
-    application->initShaders();
-    application->initTextures();
-    application->initGeom();
-
-    application->START_TIME = glfwGetTime();
-
-    double t = 0;
-    const double dt = 0.02;
-    double currentTime = application->START_TIME;
-    double accumulator = 0;
+    float startTimestamp = (float)glfwGetTime();
+    float lastFrameTimestamp = 0;
+    float lastPhysicsTimestamp = 0;
+    float rollingAverageFrameTime = 0;
+    float accumulator = 0;
+    Time.physicsDeltaTime = 0.02f;
 
     // Loop until the user closes the window.
-    while (!glfwWindowShouldClose(windowManager->getHandle()))
+    while (!glfwWindowShouldClose(application->windowManager->getHandle()))
     {
-        // Render scene.
-        double newTime = glfwGetTime();
-        double frameTime = newTime - currentTime;
-        currentTime = newTime;
+        float t = (float)glfwGetTime();
+        Time.deltaTime = t - Time.timeSinceStart - startTimestamp;
+        accumulator += Time.deltaTime;
+        Time.timeSinceStart = t - startTimestamp;
 
-        accumulator += frameTime;
-
-        while (accumulator >= dt)
+        while (accumulator >= Time.physicsDeltaTime)
         {
-            application->update(dt);
-            accumulator -= dt;
-            t += dt;
+            // Call gameobject physics update and ropagate physics
+            application->beforePhysics();
+            application->physicsTick();
+            accumulator -= Time.physicsDeltaTime;
         }
 
-        application->render();
+        rollingAverageFrameTime = rollingAverageFrameTime * (20 - 1) / 20 + (Time.deltaTime / 20);
+        // printf("FPS: %i\n", (int)(1.0 / rollingAverageFrameTime));
 
-        // Swap front and back buffers.
-        glfwSwapBuffers(windowManager->getHandle());
-        // Poll for and process events.
+        // Get user input, call gameobject update, and render visuals
         glfwPollEvents();
+        application->beforeRender();
+        application->render();
+        glfwSwapBuffers(application->windowManager->getHandle());
     }
 
-    // Quit program.
-    windowManager->shutdown();
+    application->windowManager->shutdown();
     return 0;
 }

@@ -1,46 +1,38 @@
 #include "UIObject.h"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include "math.h"
-
-#include <memory>
-#include "../Program.h"
-#include "../MatrixStack.h"
-#include <glm/glm.hpp>
-#include <iostream>
-
-using namespace std;
-using namespace glm;
-
-UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, string imgName)
+UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shape> model, shared_ptr<Texture> img)
 {
 	this->position = position;
 	this->scale = scale;
 	this->orientation = orientation;
 	this->position = position;
 	this->model = model;
-	//model->init();
+	this->img = img;
 	inView = true;
-	img = make_shared<Texture>();
-	img->setFilename(imgName);
-	img->init();
-	img->setUnit(1);
-	img->setWrapModes(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
-	//img = imgTemp;
-	cout << "object initialized" << endl;
+	t = 0;
 }
 
-void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
+void UIObject::changeImage(shared_ptr<Texture> newimg) {
+	this->img = newimg;
+}
+
+void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, int anim)
 {
+	t += 0.05f;
 	prog->bind();
+	img->bind(prog->getUniform("Texture"));
 	M->pushMatrix();
-	//M->rotate(quat(0.0f, 1.0f, 0, M_PI_2));
-	M->scale(scale);
 	M->translate(position);
+	
+	if (anim == 1) M->rotate(rotate(quat(1, 0, 0, 0), sin(t), vec3(0, 1, 0)));
+
+	if (anim == 2 && t < scale.x) M->scale(vec3(t, t/2.0f, 0.0f));
+	else M->scale(scale);
+
 	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 	M->loadIdentity();
 	model->draw(prog);
 	M->popMatrix();
+	img->unbind();
 	prog->unbind();
 }

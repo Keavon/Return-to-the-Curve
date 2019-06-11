@@ -11,44 +11,61 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <unordered_set>
+#include <iostream>
+
+#include "GLSL.h"
+#include "Program.h"
+
+using namespace std;
+using namespace glm;
+
 class Program;
 
 class Shape
 {
 
 public:
-	std::vector<glm::vec3> getFace(int i, const glm::mat4 &M);
+	vector<vec3> getFace(int i, const mat4 &M);
 	int getNumFaces();
-	glm::vec3 getVertex(int i, const glm::mat4 &M);
+	vec3 getVertex(int i, const mat4 &M);
 	int getNumVertices();
-	std::vector<glm::vec3> getEdge(int i, const glm::mat4 &M);
+	vector<vec3> getEdge(int i, const mat4 &M);
 	int getNumEdges();
 
-	void loadMesh(const std::string &meshName);
+	void loadMesh(const string &meshName);
 	void findEdges();
 	void calcNormals();
 	void init();
 	void resize();
 	void measure();
-	void draw(const std::shared_ptr<Program> prog) const;
+	void draw(const shared_ptr<Program> program) const;
 
-	glm::vec3 min;
-	glm::vec3 max;
-	glm::vec3 center;
-	glm::vec3 size;
+	vec3 min;
+	vec3 max;
+	vec3 center;
+	vec3 size;
 
-// private:
+	vector<unsigned int> edgeBuffer;
 
-	std::vector<unsigned int> eleBuf;
-	std::vector<unsigned int> edgeBuf;
-	std::vector<float> posBuf;
-	std::vector<float> norBuf;
-	std::vector<float> texBuf;
+	vector<unsigned int> indexBuffer;
+	unsigned int indexBufferID = 0;
 
-	unsigned int eleBufID = 0;
-	unsigned int posBufID = 0;
-	unsigned int norBufID = 0;
-	unsigned int texBufID = 0;
+	vector<float> positionBuffer;
+	unsigned int positionBufferID = 0;
+
+	vector<float> normalBuffer;
+	unsigned int normalBufferID = 0;
+
+	vector<float> uvBuffer;
+	unsigned int uvBufferID = 0;
+
 	unsigned int vaoID = 0;
 };
 

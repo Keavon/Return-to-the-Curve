@@ -1,34 +1,28 @@
 
 #include "Program.h"
-#include <iostream>
-#include <cassert>
-#include <fstream>
 
-#include "GLSL.h"
-
-
-std::string readFileAsString(const std::string &fileName)
+string readFileAsString(const string &fileName)
 {
-	std::string result;
-	std::ifstream fileHandle(fileName);
+	string result;
+	ifstream fileHandle(fileName);
 
 	if (fileHandle.is_open())
 	{
-		fileHandle.seekg(0, std::ios::end);
+		fileHandle.seekg(0, ios::end);
 		result.reserve((size_t) fileHandle.tellg());
-		fileHandle.seekg(0, std::ios::beg);
+		fileHandle.seekg(0, ios::beg);
 
-		result.assign((std::istreambuf_iterator<char>(fileHandle)), std::istreambuf_iterator<char>());
+		result.assign((istreambuf_iterator<char>(fileHandle)), istreambuf_iterator<char>());
 	}
 	else
 	{
-		std::cerr << "Could not open file: '" << fileName << "'" << std::endl;
+		cerr << "Could not open file: '" << fileName << "'" << endl;
 	}
 
 	return result;
 }
 
-void Program::setShaderNames(const std::string &v, const std::string &f)
+void Program::setShaderNames(const string &v, const string &f)
 {
 	vShaderName = v;
 	fShaderName = f;
@@ -43,8 +37,8 @@ bool Program::init()
 	GLuint FS = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Read shader sources
-	std::string vShaderString = readFileAsString(vShaderName);
-	std::string fShaderString = readFileAsString(fShaderName);
+	string vShaderString = readFileAsString(vShaderName);
+	string fShaderString = readFileAsString(fShaderName);
 	const char *vshader = vShaderString.c_str();
 	const char *fshader = fShaderString.c_str();
 	CHECKED_GL_CALL(glShaderSource(VS, 1, &vshader, NULL));
@@ -58,7 +52,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printShaderInfoLog(VS);
-			std::cout << "Error compiling vertex shader " << vShaderName << std::endl;
+			cout << "Error compiling vertex shader " << vShaderName << endl;
 		}
 		return false;
 	}
@@ -71,7 +65,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printShaderInfoLog(FS);
-			std::cout << "Error compiling fragment shader " << fShaderName << std::endl;
+			cout << "Error compiling fragment shader " << fShaderName << endl;
 		}
 		return false;
 	}
@@ -87,7 +81,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printProgramInfoLog(pid);
-			std::cout << "Error linking shaders " << vShaderName << " and " << fShaderName << std::endl;
+			cout << "Error linking shaders " << vShaderName << " and " << fShaderName << endl;
 		}
 		return false;
 	}
@@ -105,38 +99,46 @@ void Program::unbind()
 	CHECKED_GL_CALL(glUseProgram(0));
 }
 
-void Program::addAttribute(const std::string &name)
+void Program::addAttribute(const string &name)
 {
 	attributes[name] = GLSL::getAttribLocation(pid, name.c_str(), isVerbose());
 }
 
-void Program::addUniform(const std::string &name)
+void Program::addUniform(const string &name)
 {
 	uniforms[name] = GLSL::getUniformLocation(pid, name.c_str(), isVerbose());
 }
 
-GLint Program::getAttribute(const std::string &name) const
+bool Program::hasAttribute(string attribute) {
+    return CONTAINS(attributes, attribute);
+}
+
+bool Program::hasUniform(string uniform) {
+    return CONTAINS(uniforms, uniform);
+}
+
+GLint Program::getAttribute(const string &name) const
 {
-	std::map<std::string, GLint>::const_iterator attribute = attributes.find(name.c_str());
+	map<string, GLint>::const_iterator attribute = attributes.find(name.c_str());
 	if (attribute == attributes.end())
 	{
 		if (isVerbose())
 		{
-			std::cout << name << " is not an attribute variable" << std::endl;
+			cout << name << " is not an attribute variable" << endl;
 		}
 		return -1;
 	}
 	return attribute->second;
 }
 
-GLint Program::getUniform(const std::string &name) const
+GLint Program::getUniform(const string &name) const
 {
-	std::map<std::string, GLint>::const_iterator uniform = uniforms.find(name.c_str());
+	map<string, GLint>::const_iterator uniform = uniforms.find(name.c_str());
 	if (uniform == uniforms.end())
 	{
 		if (isVerbose())
 		{
-			std::cout << name << " is not a uniform variable" << std::endl;
+			cout << name << " is not a uniform variable" << endl;
 		}
 		return -1;
 	}

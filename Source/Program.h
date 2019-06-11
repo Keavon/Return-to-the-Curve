@@ -1,16 +1,20 @@
-
 #pragma  once
-
-#ifndef LAB471_PROGRAM_H_INCLUDED
-#define LAB471_PROGRAM_H_INCLUDED
 
 #include <map>
 #include <string>
-
+#include <vector>
+#include <iostream>
+#include <cassert>
+#include <fstream>
 #include <glad/glad.h>
 
+#include "GLSL.h"
 
-std::string readFileAsString(const std::string &fileName);
+#define CONTAINS(map, key) map.find(key) != map.end()
+
+using namespace std;
+
+string readFileAsString(const string &fileName);
 
 class Program
 {
@@ -20,28 +24,28 @@ public:
 	void setVerbose(const bool v) { verbose = v; }
 	bool isVerbose() const { return verbose; }
 
-	void setShaderNames(const std::string &v, const std::string &f);
+	void setShaderNames(const string &v, const string &f);
 	virtual bool init();
 	virtual void bind();
 	virtual void unbind();
 
-	void addAttribute(const std::string &name);
-	void addUniform(const std::string &name);
-	GLint getAttribute(const std::string &name) const;
-	GLint getUniform(const std::string &name) const;
+	void addAttribute(const string &name);
+	void addUniform(const string &name);
+	bool hasAttribute(string attribute);
+	bool hasUniform(string uniform);
+	GLint getAttribute(const string &name) const;
+	GLint getUniform(const string &name) const;
 
 protected:
 
-	std::string vShaderName;
-	std::string fShaderName;
+	string vShaderName;
+	string fShaderName;
 
 private:
 
 	GLuint pid = 0;
-	std::map<std::string, GLint> attributes;
-	std::map<std::string, GLint> uniforms;
+	map<string, GLint> attributes;
+	map<string, GLint> uniforms;
 	bool verbose = true;
 
 };
-
-#endif // LAB471_PROGRAM_H_INCLUDED

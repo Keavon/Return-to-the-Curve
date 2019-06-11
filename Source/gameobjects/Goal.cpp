@@ -1,19 +1,7 @@
 #include "Goal.h"
-#include "../engine/TriggerSphere.h"
-#include "../engine/ParticleEmitter.h"
-#include "../effects/ParticleFirework.h"
-#include "../effects/Sound.h"
-#include "Ball.h"
 
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
-
-using namespace std;
-using namespace glm;
-
-Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<TriggerSphere>(radius)),
-                                                                                     radius(radius), ballInGoal(false), didWin(false)
+Goal::Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) :
+    PhysicsObject(position, orientation, vec3(1, 1, 1), model, make_shared<TriggerSphere>(radius)), radius(radius), didWin(false)
 {
 }
 
@@ -23,41 +11,31 @@ void Goal::init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime)
     this->startTime = startTime;
 }
 
-void Goal::update(float dt)
+void Goal::update()
 {
-    for (auto collision : collider->pendingCollisions)
-    {
-        if (dynamic_cast<Ball *>(collision.other) != NULL)
-        {
-            ballInGoal = true;
-            if (!didWin)
-            {
-                didWin = true;
-                onWin();
-            }
-        }
-    }
-    collider->pendingCollisions.clear();
+    clearCollisions();
 }
 
-void Goal::onWin()
+void Goal::triggerEnter(PhysicsObject *object)
 {
-    soundEngine->win();
-
-    cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-    cout << "You win!" << endl;
-    cout << "Time: " << glfwGetTime() - *startTime << endl;
-    cout << "✼　 ҉ 　✼　 ҉ 　✼" << endl;
-
-    for (int i = 0; i < 100; i++)
+    auto ball = dynamic_cast<Ball *>(object);
+    if (ball != NULL)
     {
-        fireworkEmitter->addParticle(make_shared<ParticleFirework>(position));
+        didWin = true;
+        soundEngine->win();
+        ball->frozen = 1;
+        ball->position = position + vec3(0, 1, 0);
+
+        for (int i = 0; i < 100; i++)
+        {
+            fireworkEmitter->addParticle(make_shared<ParticleFirework>(position));
+        }
     }
 }
 
 void Goal::reset()
 {
-    ballInGoal = false;
     didWin = false;
     fireworkEmitter->stop();
+    clearCollisions();
 }

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="..\Source\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -68,9 +67,6 @@
     <ClCompile Include="..\Source\gameobjects\Blower.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\gameobjects\Box.cpp">
-      <Filter>Source\gameobjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
@@ -86,6 +82,9 @@
     <ClCompile Include="..\Source\effects\ParticleSpark.cpp">
       <Filter>Source\effects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\effects\ParticleWind.cpp">
+      <Filter>Source\effects</Filter>
+    </ClCompile>
     <ClCompile Include="..\Source\effects\Sound.cpp">
       <Filter>Source\effects</Filter>
     </ClCompile>
@@ -95,10 +94,142 @@
     <ClCompile Include="..\Source\engine\Frustum.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\engine\UIObject.h">
+    <ClCompile Include="..\Source\engine\SceneManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\binary.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\convert.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\directives.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\emit.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\emitfromevents.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\emitter.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\emitterstate.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\emitterutils.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\exceptions.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\exp.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\memory.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\node.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\node_data.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\nodebuilder.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\nodeevents.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\null.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\ostream_wrapper.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\parse.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\parser.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\regex_yaml.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\scanner.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\scanscalar.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\scantag.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\scantoken.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\simplekey.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\singledocparser.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\stream.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\tag.cpp">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
+      <Filter>Libraries\yaml-cpp\contrib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp\src\contrib\graphbuilder.cpp">
+      <Filter>Libraries\yaml-cpp\contrib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glad\src\glad.c">
+      <Filter>Libraries\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\PrefabManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\ModelManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\TextureManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\ShaderManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\SkyboxManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\EmitterManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\MaterialManager.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Material.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Prefab.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Instance.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Preferences.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\engine\UIObject.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\Beam.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\engine\Trigger.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -114,6 +245,18 @@
     </Filter>
     <Filter Include="Source\effects">
       <UniqueIdentifier>{c5490b13-a541-4379-b8b3-bbe4dd560873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{3edae912-b9bc-4ecd-8ec5-7f691986b9e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\yaml-cpp">
+      <UniqueIdentifier>{87147479-e064-4ce6-bf21-055ace27a90f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\yaml-cpp\contrib">
+      <UniqueIdentifier>{cee5056b-ee89-490a-8a46-aa0730f51182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\glad">
+      <UniqueIdentifier>{092980a7-8253-424d-adb0-7debb840c16c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,16 +284,7 @@
     <ClInclude Include="..\Source\Skybox.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\stb_image.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\stb_image_write.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Texture.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\tiny_obj_loader.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\WindowManager.h">
@@ -189,9 +323,6 @@
     <ClInclude Include="..\Source\gameobjects\Blower.h">
       <Filter>Source\gameobjects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\gameobjects\Box.h">
-      <Filter>Source\gameobjects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\gameobjects\Enemy.h">
       <Filter>Source\gameobjects</Filter>
     </ClInclude>
@@ -210,11 +341,128 @@
     <ClInclude Include="..\Source\effects\ParticleSpark.h">
       <Filter>Source\effects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\effects\ParticleWind.h">
+      <Filter>Source\effects</Filter>
+    </ClInclude>
     <ClInclude Include="..\Source\effects\Sound.h">
       <Filter>Source\effects</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\effects\ParticleFirework.h">
       <Filter>Source\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\SceneManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\collectionstack.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\directives.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\emitterstate.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\emitterutils.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\exp.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\indentation.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\nodebuilder.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\nodeevents.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\ptr_vector.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\regex_yaml.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\regeximpl.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\scanner.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\scanscalar.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\scantag.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\setting.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\singledocparser.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\stream.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\streamcharsource.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\stringsource.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\tag.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\token.h">
+      <Filter>Libraries\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp\src\contrib\graphbuilderadapter.h">
+      <Filter>Libraries\yaml-cpp\contrib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\PrefabManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ModelManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\TextureManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\ShaderManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\SkyboxManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\EmitterManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\MaterialManager.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Material.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Prefab.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Instance.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Preferences.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Time.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\UIObject.h">
+      <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\Beam.h">
+      <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Trigger.h">
+      <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

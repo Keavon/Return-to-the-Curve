@@ -1,16 +1,10 @@
 #include "Pathing.h"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <math.h>
-#include <algorithm>
-#include <cstdlib>
-
 Pathing::Pathing() {
     targetPos = vec3(0);
 }
 
-Pathing::Pathing(std::vector<glm::vec3> ctrlPts):
+Pathing::Pathing(vector<vec3> ctrlPts):
     controlPoints(ctrlPts)
 {
     targetPos = vec3(0);
@@ -57,6 +51,6 @@ void Pathing::calcCircPos(float theta, float radius, char axis, float axisValue)
     }
 }
 
-glm::vec3 Pathing::getTargetPos() {
+vec3 Pathing::getTargetPos() {
     return targetPos;
 }

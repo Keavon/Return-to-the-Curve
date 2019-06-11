@@ -1,14 +1,19 @@
 #pragma once
 
-#include "../engine/ParticleEmitter.h"
-#include <glm/glm.hpp>
-#include "../engine/Collider.h"
 #include <memory>
+#include <glm/glm.hpp>
+#include <cstdlib>
+
+#include "../engine/ParticleEmitter.h"
+#include "../engine/Collider.h"
+
+using namespace std;
+using namespace glm;
 
 class ParticleFirework : public Particle
 {
 public:
-    ParticleFirework(glm::vec3 startPosition);
+    ParticleFirework(vec3 startPosition);
     virtual void start();
-    virtual void update(float dt);
+    virtual void update();
 };

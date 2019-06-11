@@ -1,10 +1,8 @@
-build/CMakeFiles/
-build/cmake_install.cmake
-build/CMakeCache.txt
-build/curve
-build/Makefile
 x64/
 Texture_output.png
 .vscode/
 .vs/
 Debug/
+build/*
+build2/*
+!build/irrKlang.dll 

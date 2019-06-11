@@ -1,20 +1,14 @@
 #include "Camera.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
-#include <algorithm>
-#include <cstdlib>
-using namespace std;
-using namespace glm;
-
-Camera::Camera(WindowManager *windowManager, vec3 centerOfLevel) : windowManager(windowManager) {
+Camera::Camera(WindowManager *windowManager, vec3 centerOfLevel) : windowManager(windowManager)
+{
     levelCenterPoint = centerOfLevel;
 }
 
 Camera::~Camera() {}
 
-void Camera::update(float dt, shared_ptr<Ball> ball) {
+void Camera::update(shared_ptr<Ball> ball)
+{
     glfwGetFramebufferSize(windowManager->getHandle(), &windowWidth, &windowHeight);
 
     // Handle movement input
@@ -31,15 +25,19 @@ void Camera::update(float dt, shared_ptr<Ball> ball) {
 
     radPerPx = M_PI / windowHeight;
 
-    if (cameraMode == marble) marbleModeUpdate(ball);
-    else if (cameraMode == edit) editModeUpdate(dt);
+    if (cameraMode == marble)
+        marbleModeUpdate(ball);
+    else if (cameraMode == edit)
+        editModeUpdate();
     //else if (cameraMode == flythrough) flythroughModeUpdate();
 }
 
-void Camera::marbleModeUpdate(shared_ptr<Ball> ball) {
+void Camera::marbleModeUpdate(shared_ptr<Ball> ball)
+{
     glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    if (freeViewing) {
+    if (freeViewing)
+    {
         pitch -= dy * radPerPx;
         pitch = std::max(std::min(pitch, radians(89.9)), radians(0.0));
     }
@@ -47,51 +45,61 @@ void Camera::marbleModeUpdate(shared_ptr<Ball> ball) {
     lookAtPoint = ball->position;
 
     yaw += dx * radPerPx;
-    eye.x = lookAtPoint.x + distToBall * cos(pitch) * sin(yaw);
-    eye.y = lookAtPoint.y + distToBall * sin(pitch);
-    eye.z = lookAtPoint.z + distToBall * cos(pitch) * cos(M_PI - yaw);
+    eye.x = lookAtPoint.x + distToBall * (float)cos(pitch) * (float)sin(yaw);
+    eye.y = lookAtPoint.y + distToBall * (float)sin(pitch);
+    eye.z = lookAtPoint.z + distToBall * (float)cos(pitch) * (float)cos(M_PI - yaw);
 }
 
-void Camera::editModeUpdate(float dt) {
+void Camera::editModeUpdate()
+{
     float speed = moveSpeed;
     vec3 velocity = vec3(0, 0, 0);
     glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, !freeViewing ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ||
-        glfwGetKey(windowManager->getHandle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        glfwGetKey(windowManager->getHandle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
         speed *= sprintFactor;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
+    {
         velocity += dolly;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_S) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_S) == GLFW_PRESS)
+    {
         velocity -= dolly;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_D) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_D) == GLFW_PRESS)
+    {
         velocity += strafe;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS)
+    {
         velocity -= strafe;
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_Q) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+    {
         velocity += cross(dolly, strafe);
     }
-    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS) {
+    if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
+    {
         velocity -= cross(dolly, strafe);
     }
-    if (length(velocity) != 0 && length(velocity) != NAN) {
-        eye += normalize(velocity) * speed * (float)dt;
+    if (length(velocity) != 0 && length(velocity) != NAN)
+    {
+        eye += normalize(velocity) * speed * Time.deltaTime;
     }
 
-    if (freeViewing) {
+    if (freeViewing)
+    {
         pitch -= dy * radPerPx;
         pitch = std::max(std::min(pitch, radians(89.9)), -radians(89.9));
 
         yaw += dx * radPerPx;
 
-        lookAtPoint.x = eye.x + cos(-pitch) * sin(yaw + M_PI);
-        lookAtPoint.y = eye.y + sin(-pitch);
-        lookAtPoint.z = eye.z + cos(-pitch) * cos(yaw);
+        lookAtPoint.x = eye.x + (float)cos(-pitch) * (float)sin(yaw + M_PI);
+        lookAtPoint.y = eye.y + (float)sin(-pitch);
+        lookAtPoint.z = eye.z + (float)cos(-pitch) * (float)cos(yaw);
     }
 }
 
@@ -157,35 +165,38 @@ void Camera::editModeUpdate(float dt) {
 //    }
 //}
 
-void Camera::saveMarbleView() {
+void Camera::saveMarbleView()
+{
     savedPitch = pitch;
     savedYaw = yaw;
     savedDistToBall = distToBall;
 }
 
-void Camera::restoreMarbleView() {
+void Camera::restoreMarbleView()
+{
     pitch = savedPitch;
     yaw = savedYaw;
     distToBall = savedDistToBall;
 }
 
-void Camera::init() {
+void Camera::init()
+{
     glfwGetCursorPos(windowManager->getHandle(), &prevXpos, &prevYpos);
     eye = vec3(0, this->height, 0);
     lookAtPoint = eye + vec3(1, 0, 0);
     upVec = vec3(0, 1, 0);
-    pitch = radians(30.0);
+    pitch = radians(20.0);
     yaw = 10;
     distToBall = 15;
     cameraPath = new Pathing();
 
     prevTime = glfwGetTime();
     startTimer = 0;
-
 }
 
-void Camera::startLvlPreview(vec3 lvlCenterPt) {
-    pathT = 0.01;
+void Camera::startLvlPreview(vec3 lvlCenterPt)
+{
+    pathT = 0.01f;
     pointReached = true;
     cameraStartPos = eye;
     levelCenterPoint = lvlCenterPt;
