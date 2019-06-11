@@ -73,6 +73,7 @@ public:
 	// Game Info Globals
 	bool editMode = false;
 	float startTime = 0.0f;
+	float curTime = 0.0f;
 
 	bool debugLight = 0;
 	bool debugGeometry = 1;
@@ -106,7 +107,14 @@ public:
 	{
 		shared_ptr<UIObject> logo;
 		shared_ptr<UIObject> winMessage;
-		shared_ptr<UIObject> dummy;
+		shared_ptr<UIObject> powerUp;
+		shared_ptr<UIObject> Time;
+		shared_ptr<UIObject> Hundreds;
+		shared_ptr<UIObject> Tens;
+		shared_ptr<UIObject> Ones;
+		shared_ptr<UIObject> Tenths;
+		shared_ptr<UIObject> Hundredths;
+		shared_ptr<UIObject> Colon;
 	} uiObjects;
 
 	// Billboard for rendering a texture to screen (like the shadow map)
@@ -337,8 +345,16 @@ public:
 	}
 
 	void loadUIObjects() {
-		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Level" + to_string(preferences.scenes.startup + 1) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.powerUp = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SuperJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundreds = make_shared<UIObject>(vec3(-0.4f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tens = make_shared<UIObject>(vec3(-0.3f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Ones = make_shared<UIObject>(vec3(-0.2f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Colon = make_shared<UIObject>(vec3(-0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/Colon.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tenths = make_shared<UIObject>(vec3(0, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundredths = make_shared<UIObject>(vec3(0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
 	void loadSounds() {
@@ -619,18 +635,52 @@ public:
 
 	void drawGameplayUI() {
 		auto M = make_shared<MatrixStack>();
-
-		// Current level
-		uiObjects.logo->draw(shaderManager.get("ui"), M, 1);
+		shared_ptr<Program> p = shaderManager.get("ui");
+        // Current level
+		uiObjects.logo->draw(p, M, 1);
 
 		// Win message
 		if (gameObjects.goal->didWin) {
-			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+			uiObjects.winMessage->draw(p, M, 2);
+		} 
+		else {
+			//if player hasn't won, update time
+			changeTime();
 		}
+
+		//draw timer
+		uiObjects.Time->draw(p, M);
+		uiObjects.Hundreds->draw(p, M);
+		uiObjects.Tens->draw(p, M);
+		uiObjects.Ones->draw(p, M);
+		uiObjects.Colon->draw(p, M);
+		uiObjects.Tenths->draw(p, M);
+		uiObjects.Hundredths->draw(p, M);
+
+
+		// Powerup Test
+		// if(hasPowerup){
+			//uiObjects.powerUp->draw(p, M);
+		//}
+    }
+
+	void changeTime() {
+		float curT = Time.timeSinceStart - curTime;
+		int num = curT / 100;
+		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT, 100.0f) / 10;
+		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT, 10.0f) / 1;
+		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT * 10.0f, 10.0f) / 1;
+		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT * 100.0f, 10.0f) / 1;
+		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
-	void renderPlayerView(mat4* LS) {
-		GameObject::setCulling(true);
+    void renderPlayerView(mat4 *LS)
+    {
+        GameObject::setCulling(true);
 
 		drawSkybox();
 
@@ -684,6 +734,7 @@ public:
      */
 	void resetPlayer() {
 		soundEngine->reset();
+		curTime = Time.timeSinceStart;
 
 		marble->position = sceneManager.marbleStart;
 		marble->setVelocity(vec3(0.0f));
