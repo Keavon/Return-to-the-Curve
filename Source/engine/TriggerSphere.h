@@ -2,15 +2,15 @@
 
 #include <glm/glm.hpp>
 
-#include "Collider.h"
-#include "ColliderSphere.h"
-#include "ColliderMesh.h"
-#include "BoundingBox.h"
-#include "PhysicsObject.h"
+#include "Trigger.h"
 
 using namespace glm;
 
-class TriggerSphere : public Collider
+class Collider;
+class ColliderSphere;
+class PhysicsObject;
+
+class TriggerSphere : public Trigger
 {
 public:
     TriggerSphere(float radius);

@@ -1,7 +1,11 @@
 #include "TriggerSphere.h"
 
+#include "Collider.h"
+#include "ColliderSphere.h"
+#include "PhysicsObject.h"
+
 TriggerSphere::TriggerSphere(float radius) :
-    Collider(vec3(-radius), vec3(radius)), radius(radius)
+    Trigger(vec3(-radius), vec3(radius)), radius(radius)
 {
 }
 

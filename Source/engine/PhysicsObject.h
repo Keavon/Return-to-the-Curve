@@ -57,12 +57,13 @@ public:
     virtual void lateUpdate();
     virtual void physicsUpdate();
     virtual void latePhysicsUpdate();
-    virtual void triggerEnter();
-    virtual void triggerStay();
-    virtual void triggerExit();
+    virtual void triggerEnter(PhysicsObject *object);
+    virtual void triggerStay(PhysicsObject *object);
+    virtual void triggerExit(PhysicsObject *object);
     virtual void onHardCollision(float impactVel, Collision &collision);
 
     void checkCollision(PhysicsObject *other);
+    void clearCollisions();
     float getRadius(); // get radius of bounding sphere
     void applyImpulse(vec3 impulse);
     void setMass(float mass);
