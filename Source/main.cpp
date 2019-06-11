@@ -626,13 +626,13 @@ public:
 
 	void drawGameplayUI() {
 		auto M = make_shared<MatrixStack>();
-
-		// Current level
-		uiObjects.logo->draw(shaderManager.get("ui"), M, 1);
+		shared_ptr<Program> p = shaderManager.get("ui");
+        // Current level
+		uiObjects.logo->draw(p, M, 1);
 
 		// Win message
 		if (gameObjects.goal->didWin) {
-			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+			uiObjects.winMessage->draw(p, M, 2);
 		} 
 		else {
 			//if player hasn't won, update time
@@ -640,33 +640,33 @@ public:
 		}
 
 		//draw timer
-		uiObjects.Time->draw(shaderManager.get("ui"), M);
-		uiObjects.Hundreds->draw(shaderManager.get("ui"), M);
-		uiObjects.Tens->draw(shaderManager.get("ui"), M);
-		uiObjects.Ones->draw(shaderManager.get("ui"), M);
-		uiObjects.Colon->draw(shaderManager.get("ui"), M);
-		uiObjects.Tenths->draw(shaderManager.get("ui"), M);
-		uiObjects.Hundredths->draw(shaderManager.get("ui"), M);
+		uiObjects.Time->draw(p, M);
+		uiObjects.Hundreds->draw(p, M);
+		uiObjects.Tens->draw(p, M);
+		uiObjects.Ones->draw(p, M);
+		uiObjects.Colon->draw(p, M);
+		uiObjects.Tenths->draw(p, M);
+		uiObjects.Hundredths->draw(p, M);
 
 
 		// Powerup Test
 		// if(hasPowerup){
-			//uiObjects.powerUp->draw(shaderManager.get("ui"), M);
+			//uiObjects.powerUp->draw(p, M);
 		//}
     }
 
 	void changeTime() {
 		float curT = Time.timeSinceStart;
 		int num = curT / 100;
-		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
-		num = fmod(curT, 100.0f) / 10;
-		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
-		num = fmod(curT, 10.0f) / 1;
-		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
-		num = fmod(curT * 10.0f, 10.0f) / 1;
-		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
-		num = fmod(curT * 100.0f, 10.0f) / 1;
-		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT, 100.0f) / 10;
+		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT, 10.0f) / 1;
+		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT * 10.0f, 10.0f) / 1;
+		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		num = (int)fmod(curT * 100.0f, 10.0f) / 1;
+		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
     void renderPlayerView(mat4 *LS)
