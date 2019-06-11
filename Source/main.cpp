@@ -99,7 +99,6 @@ public:
 
     struct
     {
-        shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Goal> goal;
@@ -312,7 +311,6 @@ public:
         // Marble
         marble = dynamic_pointer_cast<Ball>(sceneManager.findInstance("Marble")->physicsObject);
         marble->init(sceneManager.marbleStart, windowManager, emitterManager.get("sparks"), camera);
-        sceneManager.octree.insert(marble);
         marble->addSkin(materialManager.get("brown_rock", "jpg"));
         marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
         marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));

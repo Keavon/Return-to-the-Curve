@@ -6,6 +6,7 @@ light:
     color: [1, 1, 1]
     intensity: 250000
 marble:
+    prefab: Marble
     location: [0, 0.125, 0]
     # location: [0, -4.875, -13.5]
     # location: [-10, 0, -1]
