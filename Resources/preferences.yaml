@@ -1,11 +1,11 @@
 --- # User preferences
 window:
-    resolution: [1000, 1000]
+    resolution: [2560, 1440]
     maximized: false
     fullscreen: false
 shadows:
-    resolution: 2
-    samples: 2
+    resolution: 4
+    samples: 4
 sound:
     music: true
 scenes:

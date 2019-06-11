@@ -29,6 +29,7 @@ public:
         irrklang::ISoundSource *jumpSoundSource;
         irrklang::ISoundSource *winSoundSource;
         irrklang::ISoundSource *superBounceSoundSource;
+        irrklang::ISoundSource *fanSoundSource;
     } sfxSources;
 
     struct
@@ -38,6 +39,7 @@ public:
         irrklang::ISound *jumpSound;
         irrklang::ISound *winSound;
         irrklang::ISound *superBounceSound;
+        irrklang::ISound *fanSound;
     } sfxSounds;
 
     vector<irrklang::ISoundSource *> musicSources;
@@ -50,10 +52,12 @@ public:
     void jump();
     void reset();
     void win();
+    void fan(float x, float y, float z);
     void superBounce();
     void playPauseMusic();
     void nextTrackMusic();
     void updateMusic();
+    void update3dAudio(irrklang::vec3df pos, irrklang::vec3df look, irrklang::vec3df up);
 };
 
 extern shared_ptr<Sound> soundEngine;

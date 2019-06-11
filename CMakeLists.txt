@@ -17,6 +17,7 @@ set(IRRKLANG_LIB_DIR ${CMAKE_SOURCE_DIR}/irrKlang/lib)
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 
+include_directories("glm")
 include_directories("glad/include")
 include_directories("irrKlang/include")
 include_directories("Source")
