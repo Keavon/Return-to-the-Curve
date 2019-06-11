@@ -229,6 +229,9 @@
     <ClCompile Include="..\Source\gameobjects\Beam.cpp">
       <Filter>Source\gameobjects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\engine\Trigger.cpp">
+      <Filter>Source\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -457,6 +460,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\gameobjects\Beam.h">
       <Filter>Source\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\engine\Trigger.h">
+      <Filter>Source\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
