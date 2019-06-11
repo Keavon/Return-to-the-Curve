@@ -317,7 +317,7 @@ public:
         if (preferences.scenes.startup == 0)
         {
             // Blower
-            gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), 3.14f/4, vec3(0, 0, 1)), 3, 10);
+            gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), (float)M_PI_4, vec3(0, 0, 1)), 3.0f, 10.0f);
             gameObjects.blower->init(emitterManager.get("wind"));
             sceneManager.octree.insert(gameObjects.blower);
 
@@ -579,7 +579,7 @@ public:
         beam->bind();
         setProjectionMatrix(beam);
         setView(beam);
-        glUniform2f(beam->getUniform("viewport"), width, height);
+        glUniform2f(beam->getUniform("viewport"), (float)width, (float)height);
         glUniform1i(beam->getUniform("depthBuf"), 0);
         glUniform1f(beam->getUniform("density"), sin(Time.timeSinceStart*3) * 0.025f + 0.075f);
         glActiveTexture(GL_TEXTURE0);
