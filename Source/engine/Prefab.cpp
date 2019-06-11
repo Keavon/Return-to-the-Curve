@@ -1,7 +1,8 @@
 #include "Prefab.h"
 
-Prefab::Prefab(shared_ptr<Shape> model, shared_ptr<Material> material)
+Prefab::Prefab(string name, shared_ptr<Shape> model, shared_ptr<Material> material)
 {
+    this->name = name;
     this->model = model;
     this->material = material;
 }

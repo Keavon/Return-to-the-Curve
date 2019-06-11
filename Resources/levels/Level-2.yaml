@@ -6,58 +6,74 @@ light:
     color: [1, 1, 1]
     intensity: 250000
 marble:
-    location: [-5, 1, 2]
+    prefab: Marble
+    location: [-40, 16, 16]
     scale: [1, 1, 1]
     material: lava
     lookDirection: 0
     deathBelow: -10
-globalScale: [8, 8, 8]
+globalScale: [1, 1, 1]
 track:
     -   prefab: Pillar Hexagon
-        location: [-5, 0, 2]
+        location: [-40, 0, 16]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [-2, 0, 2]
+        location: [-16, 0, 16]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [0, 0, 2]
+        location: [0, 0, 16]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [2, 0, 3]
+        location: [16, 0, 24]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [2, 0, 1]
+        location: [16, 0, 8]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [4, 0, 2]
+        location: [32, 0, 16]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [6, 0, 3]
+        location: [48, 0, 24]
+        scale: [8, 8, 8]
     -   prefab: Trap Diamond
-        location: [6, 0, 1]
+        location: [48, 0, 8]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [9, 0, 2]
+        location: [72, 0, 16]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [11, 0.5, 2]
+        location: [88, 4, 16]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [13, 1, 2]
+        location: [104, 8, 16]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [14, 1.5, 3.7]
+        location: [112, 12, 29.6]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [13, 2, 5.4]
+        location: [104, 16, 43.2]
+        scale: [8, 8, 8]
     -   prefab: Pillar Hexagon
-        location: [11, 2.5, 5.4]
+        location: [88, 20, 43.2]
+        scale: [8, 8, 8]
     -   prefab: Unit Cube
-        location: [8.45, 2.5, 5.4]
-        scale: [2.9, 0.2, 1]
+        location: [67.6, 20, 43.2]
+        scale: [23.2, 1.6, 8]
     -   prefab: Unit Cube
-        location: [5.5, 2.5, 5.4]
-        scale: [1, 0.2, 0.5]
+        location: [44, 20, 43.2]
+        scale: [8, 1.6, 4]
     -   prefab: Unit Cube
-        location: [3.5, 2.5, 5.4]
-        scale: [1, 0.2, 0.25]
+        location: [28, 20, 43.2]
+        scale: [8, 1.6, 2]
     -   prefab: Unit Cube
-        location: [1.5, 2.5, 5.4]
-        scale: [1, 0.2, 0.5]
+        location: [12, 20, 43.2]
+        scale: [8, 1.6, 4]
     -   prefab: Unit Cube
-        location: [-1.45, 2.5, 5.4]
-        scale: [2.9, 0.2, 1]
+        location: [-11.6, 20, 43.2]
+        scale: [23.2, 1.6, 8]
     -   prefab: Pillar Hexagon
-        location: [-4, 3, 5.4]
+        location: [-32, 24, 43.2]
+        scale: [8, 8, 8]
     -   prefab: Finish
-        location: [-4, 3, 5.4]
-        scale: [0.5, 0.5, 0.5]
+        location: [-32, 24, 43.2]
+        scale: [4, 4, 4]

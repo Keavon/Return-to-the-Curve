@@ -1,0 +1,5 @@
+---
+model: halfpipe.obj
+material: [seaside_rocks, jpg]
+physics:
+    elasticity: 0.5

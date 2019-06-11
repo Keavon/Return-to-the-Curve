@@ -9,7 +9,7 @@ shared_ptr<Shape> loadShape(string relativePath, string file, bool resize, bool 
     shape->loadMesh(relativePath + file);
     if (resize) shape->resize();
     shape->measure();
-    if (findEdges) shape->findEdges();
+    /*if (findEdges)*/ shape->findEdges();
     shape->init();
     return shape;
 }

@@ -24,25 +24,30 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
 
     JUMPED_AT_TIME = 0.0f;
     JUST_JUMPED = 0;
-    this->startPosition = position;
+    
     this->moveForce = 200;
     this->jumpForce = 150;
     this->frozen = false;
+    this->initialized = false;
 
     setMass(5);
     setElasticity(0.5);
     setFriction(0.25);
 }
 
-void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera)
+void Ball::init(vec3 startPosition, WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera)
 {
+    this->startPosition = position;
     this->windowManager = windowManager;
     this->sparkEmitter = sparkEmitter;
     this->camera = camera;
+    this->initialized = true;
 }
 
 void Ball::update()
 {
+    if (!initialized) return;
+
     if (frozen)
         return;
 
@@ -140,6 +145,8 @@ void Ball::update()
 
 void Ball::onHardCollision(float impactVel, Collision &collision)
 {
+    if (!initialized) return;
+    
     if (impactVel > 4.0)
     {
         soundEngine->impact(impactVel);

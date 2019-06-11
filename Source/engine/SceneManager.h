@@ -13,6 +13,7 @@
 #include "Instance.h"
 #include "PrefabManager.h"
 #include "Octree.h"
+#include "../gameobjects/Enemy.h"
 
 using namespace std;
 using namespace glm;
@@ -36,6 +37,7 @@ public:
     } light;
 
     SceneManager(shared_ptr<PrefabManager> prefabManager);
+    shared_ptr<Instance> findInstance(string name);
     void load(string sceneFile);
     void save(string sceneFile);
 };
