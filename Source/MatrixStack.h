@@ -14,7 +14,7 @@ using namespace glm;
 
 class MatrixStack
 {
-	stack<mat4> stack;
+	stack<mat4> myStack;
 
 public:
 
