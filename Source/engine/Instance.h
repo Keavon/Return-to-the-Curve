@@ -12,8 +12,8 @@ class Prefab;
 class Instance {
 public:
     Prefab& definition;
-    std::shared_ptr<Material> material;
-    std::shared_ptr<PhysicsObject> physicsObject;
+    shared_ptr<Material> material;
+    shared_ptr<PhysicsObject> physicsObject;
 
     Instance(Prefab& definition);
 };

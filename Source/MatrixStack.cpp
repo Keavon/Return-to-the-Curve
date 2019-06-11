@@ -5,75 +5,75 @@ static const int MaxMatrixSize = 100;
 
 MatrixStack::MatrixStack()
 {
-	stack.push(glm::mat4(1.0));
+	myStack.push(mat4(1.0));
 }
 
 void MatrixStack::pushMatrix()
 {
-	const glm::mat4 &top = stack.top();
-	stack.push(top);
-	assert(stack.size() < MaxMatrixSize);
+	const mat4 &top = myStack.top();
+	myStack.push(top);
+	assert(myStack.size() < MaxMatrixSize);
 }
 
 void MatrixStack::popMatrix()
 {
-	assert(!stack.empty());
-	stack.pop();
+	assert(!myStack.empty());
+	myStack.pop();
 
 	// There should always be one matrix left.
-	assert(!stack.empty());
+	assert(!myStack.empty());
 }
 
 void MatrixStack::loadIdentity()
 {
-	glm::mat4 &top = stack.top();
-	top = glm::mat4(1.f);
+	mat4 &top = myStack.top();
+	top = mat4(1.f);
 }
 
  void MatrixStack::perspective(float fovy, float aspect, float zNear, float zFar)
 {
-	glm::mat4 &top = stack.top();
+	mat4 &top = myStack.top();
 	top *= glm::perspective(fovy, aspect, zNear, zFar);
 }
 
-void MatrixStack::translate(const glm::vec3 &offset)
+void MatrixStack::translate(const vec3 &offset)
 {
-	glm::mat4 &top = stack.top();
-	glm::mat4 t = glm::translate(glm::mat4(1.f), offset);
+	mat4 &top = myStack.top();
+	mat4 t = glm::translate(mat4(1.f), offset);
 	top *= t;
 }
 
-void MatrixStack::scale(const glm::vec3 &scaleV)
+void MatrixStack::scale(const vec3 &scaleV)
 {
-	glm::mat4 &top = stack.top();
-	glm::mat4 s = glm::scale(glm::mat4(1.f), scaleV);
+	mat4 &top = myStack.top();
+	mat4 s = glm::scale(mat4(1.f), scaleV);
 	top *= s;
 }
 
 void MatrixStack::scale(float size)
 {
-	glm::mat4 &top = stack.top();
-	glm::mat4 s = glm::scale(glm::mat4(1.f), glm::vec3(size));
+	mat4 &top = myStack.top();
+	mat4 s = glm::scale(mat4(1.f), vec3(size));
 	top *= s;
 }
 
-void MatrixStack::rotate(float angle, const glm::vec3 &axis)
+void MatrixStack::rotate(float angle, const vec3 &axis)
 {
-	glm::mat4 &top = stack.top();
-	glm::mat4 r = glm::rotate(glm::mat4(1.0), angle, axis);
+	mat4 &top = myStack.top();
+	mat4 r = glm::rotate(mat4(1.0), angle, axis);
 	top *= r;
 }
 
-void MatrixStack::rotate(glm::quat q)
+void MatrixStack::rotate(quat q)
 {
-	glm::mat4 &top = stack.top();
-	glm::mat4 r = glm::mat4_cast(q);
+	mat4 &top = myStack.top();
+	mat4 r = mat4_cast(q);
 	top *= r;
 }
 
-void MatrixStack::multMatrix(const glm::mat4 &matrix)
+void MatrixStack::multMatrix(const mat4 &matrix)
 {
-	glm::mat4 &top = stack.top();
+	mat4 &top = myStack.top();
 	top *= matrix;
 }
 
@@ -83,28 +83,28 @@ void MatrixStack::ortho(float left, float right, float bottom, float top, float 
 	assert(bottom != top);
 	assert(zFar != zNear);
 
-	glm::mat4 &ctm = stack.top();
+	mat4 &ctm = myStack.top();
 	ctm *= glm::ortho(left, right, bottom, top, zNear, zFar);
 }
 
 void MatrixStack::frustum(float left, float right, float bottom, float top, float zNear, float zFar)
 {
-	glm::mat4 &ctm = stack.top();
+	mat4 &ctm = myStack.top();
 	ctm *= glm::frustum(left, right, bottom, top, zNear, zFar);
 }
 
-void MatrixStack::lookAt(const glm::vec3 &eye, const glm::vec3 &target, const glm::vec3 &up)
+void MatrixStack::lookAt(const vec3 &eye, const vec3 &target, const vec3 &up)
 {
-	glm::mat4 &top = stack.top();
+	mat4 &top = myStack.top();
 	top *= glm::lookAt(eye, target, up);
 }
 
-const glm::mat4 &MatrixStack::topMatrix() const
+const mat4 &MatrixStack::topMatrix() const
 {
-	return stack.top();
+	return myStack.top();
 }
 
-void MatrixStack::print(const glm::mat4 &mat, const char *name)
+void MatrixStack::print(const mat4 &mat, const char *name)
 {
 	if (name)
 	{
@@ -129,5 +129,5 @@ void MatrixStack::print(const glm::mat4 &mat, const char *name)
 
 void MatrixStack::print(const char *name) const
 {
-	print(stack.top(), name);
+	print(myStack.top(), name);
 }

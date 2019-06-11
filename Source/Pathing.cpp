@@ -4,7 +4,7 @@ Pathing::Pathing() {
     targetPos = vec3(0);
 }
 
-Pathing::Pathing(std::vector<glm::vec3> ctrlPts):
+Pathing::Pathing(vector<vec3> ctrlPts):
     controlPoints(ctrlPts)
 {
     targetPos = vec3(0);

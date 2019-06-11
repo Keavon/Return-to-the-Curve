@@ -25,6 +25,7 @@ class ColliderMesh;
 class ColliderSphere;
 class TriggerSphere;
 class TriggerCylinder;
+class Trigger;
 class PhysicsObject;
 
 enum ColGeom {FACE, EDGE, VERT, SPHERE};
@@ -32,17 +33,17 @@ enum ColGeom {FACE, EDGE, VERT, SPHERE};
 struct Collision {
     PhysicsObject *other;
     float penetration;
-    glm::vec3 normal;
+    vec3 normal;
     ColGeom geom;
 
-    glm::vec3 v[3];
-    glm::vec3 pos;
+    vec3 v[3];
+    vec3 pos;
 };
 
 class Collider
 {
 public:
-    Collider(glm::vec3 min, glm::vec3 max);
+    Collider(vec3 min, vec3 max);
     Collider(float radius);
 
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, Collider *col) = 0;
@@ -51,25 +52,24 @@ public:
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col) {};
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col) {};
 
-    virtual float getRadius(glm::vec3 scale) = 0;
+    virtual void clearCollisions(PhysicsObject *owner);
+    virtual float getRadius(vec3 scale) = 0;
 
     BoundingBox bbox;
 
-    std::vector<Collision> pendingCollisions;
+    vector<Collision> pendingCollisions;
 };
 
 void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *mesh, ColliderMesh *meshCol);
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2);
-void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphereCol, PhysicsObject *tSphere, TriggerSphere *tSphereTrig);
-void checkColSphereTriggerCylinder(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *cylinder, TriggerCylinder *cylinderTrig);
 
 
 // Used for inserting pairs of vertices into a hash set
 struct Edge
 {
-    glm::vec3 v0, v1;
+    vec3 v0, v1;
 
-    Edge(glm::vec3 v0, glm::vec3 v1) : v0(v0), v1(v1)
+    Edge(vec3 v0, vec3 v1) : v0(v0), v1(v1)
     {
     }
 
@@ -85,6 +85,6 @@ class EdgeHash
 public:
     size_t operator()(const Edge &e) const
     {
-        return std::hash<glm::vec3>()(e.v0) ^ std::hash<glm::vec3>()(e.v1);
+        return hash<vec3>()(e.v0) ^ hash<vec3>()(e.v1);
     }
 };

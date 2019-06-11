@@ -29,7 +29,6 @@ void PowerUp::update()
         {
             //cout << "Collide with ball" << endl;
             destroyed = true;
-            collidable = false;
         }
     }
     //cout << "Destroyed: " << destroyed << endl;

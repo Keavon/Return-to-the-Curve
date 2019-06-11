@@ -9,9 +9,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+using namespace std;
+using namespace glm;
+
 class MatrixStack
 {
-	std::stack<glm::mat4> stack;
+	stack<mat4> myStack;
 
 public:
 
@@ -27,26 +30,25 @@ public:
 	void loadIdentity();
 
 	// glMultMatrix(): Right multiplies the top matrix
-	void multMatrix(const glm::mat4 &matrix);
+	void multMatrix(const mat4 &matrix);
 
 
 	// Right multiplies the top matrix by a translation matrix
-	void translate(const glm::vec3 &offset);
+	void translate(const vec3 &offset);
 
 	// Right multiplies the top matrix by a scaling matrix
-	void scale(const glm::vec3 &scaleV);
+	void scale(const vec3 &scaleV);
 
 	//  Right multiplies the top matrix by a scaling matrix
 	void scale(float size);
 
 	// Right multiplies the top matrix by a rotation matrix (angle in deg)
-	void rotate(float angle, const glm::vec3 &axis);
+	void rotate(float angle, const vec3 &axis);
 
-	void rotate(glm::quat q);
-
+	void rotate(quat q);
 
 	// Gets the top matrix
-	const glm::mat4 &topMatrix() const;
+	const mat4 &topMatrix() const;
 
 	// Sets the top matrix to be an orthogonal projection matrix
 	void ortho(float left, float right, float bottom, float top, float zNear, float zFar);
@@ -61,10 +63,10 @@ public:
 	void frustum(float Right, float right, float bottom, float top, float zNear, float zFar);
 
 	// Sets the top matrix to be a viewing matrix
-	void lookAt(const glm::vec3 &eye, const glm::vec3 &target, const glm::vec3 &up);
+	void lookAt(const vec3 &eye, const vec3 &target, const vec3 &up);
 
 	// Prints out the specified matrix
-	static void print(const glm::mat4 &mat, const char *name = 0);
+	static void print(const mat4 &mat, const char *name = 0);
 
 	// Prints out the top matrix
 	void print(const char *name = 0) const;

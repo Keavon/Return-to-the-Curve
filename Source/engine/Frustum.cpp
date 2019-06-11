@@ -42,7 +42,7 @@ void Frustum::extractPlanes(mat4 P, mat4 V)
     planes[5] = far / length(vec3(far));
 }
 
-bool Frustum::checkAABB(const glm::vec3 &mins, const glm::vec3 &maxs)
+bool Frustum::checkAABB(const vec3 &mins, const vec3 &maxs)
 {
     // https://gist.github.com/Kinwailo/d9a07f98d8511206182e50acda4fbc9b
 
@@ -86,7 +86,7 @@ bool Frustum::checkAABB(const glm::vec3 &mins, const glm::vec3 &maxs)
     return true;
 }
 
-bool Frustum::checkSphere(const glm::vec3 &center, float radius)
+bool Frustum::checkSphere(const vec3 &center, float radius)
 {
     for (int i = 0; i < 6; i++)
     {

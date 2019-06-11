@@ -19,15 +19,14 @@ using namespace glm;
 class Goal : public PhysicsObject
 {
 public:
-    Goal(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, float radius);
-    void update();
-    void init(std::shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime);
-    void onWin();
+    Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
+    virtual void update();
+    void init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime);
+    virtual void triggerEnter(PhysicsObject *object);
     void reset();
 
     float radius;
-    std::shared_ptr<ParticleEmitter> fireworkEmitter;
-    bool ballInGoal;
+    shared_ptr<ParticleEmitter> fireworkEmitter;
     bool didWin;
     float *startTime;
 };

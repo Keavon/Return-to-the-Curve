@@ -16,6 +16,11 @@ Collider::Collider(float radius) :
 {
 }
 
+void Collider::clearCollisions(PhysicsObject *owner)
+{
+    pendingCollisions.clear();
+}
+
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2)
 {
     float d = distance(sphere1->position, sphere2->position);
@@ -47,7 +52,7 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
     // Check bounding spheres
     if (distance2(sphere->getCenterPos(), mesh->getCenterPos()) <= pow(sphere->getRadius() + mesh->getRadius(), 2))
     {
-        mat4 M = glm::translate(glm::mat4(1.f), mesh->position) * glm::mat4_cast(mesh->orientation) * glm::scale(glm::mat4(1.f), mesh->scale);
+        mat4 M = translate(mat4(1.f), mesh->position) * mat4_cast(mesh->orientation) * scale(mat4(1.f), mesh->scale);
 
         unordered_set<Edge, EdgeHash> edgeSet;
         unordered_set<vec3> vertSet;
@@ -136,36 +141,6 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
                 collision.pos = v;
                 sphereCol->pendingCollisions.push_back(collision);
             }
-        }
-    }
-}
-
-void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphereCol, PhysicsObject *tSphere, TriggerSphere *tSphereTrig)
-{
-    if (distance2(cSphere->position, tSphere->position) < powf(cSphere->getRadius() + tSphere->getRadius(), 2))
-    {
-        Collision collision;
-        collision.other = cSphere;
-        collision.geom = SPHERE;
-        tSphereTrig->pendingCollisions.push_back(collision);
-    }
-}
-
-void checkColSphereTriggerCylinder(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *cylinder, TriggerCylinder *cylinderTrig)
-{
-    if (distance2(sphere->getCenterPos(), cylinder->getCenterPos()) <= pow(sphere->getRadius() + cylinder->getRadius(), 2))
-    {
-        mat4 M = translate(mat4(1), -cylinder->position) * mat4_cast(inverse(cylinder->orientation));
-        vec3 transformedSpherePos = vec3(M * vec4(sphere->position, 1));
-        float d2 = length2(vec2(transformedSpherePos.x, transformedSpherePos.z));
-        if (d2 < pow(cylinderTrig->radius + sphere->getRadius(), 2) &&
-            transformedSpherePos.y > -cylinderTrig->length/2 - sphere->getRadius() &&
-            transformedSpherePos.y < cylinderTrig->length/2 + sphere->getRadius())
-        {
-            Collision collision;
-            collision.other = sphere;
-            collision.geom = SPHERE;
-            cylinderTrig->pendingCollisions.push_back(collision);
         }
     }
 }

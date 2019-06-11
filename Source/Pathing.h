@@ -23,7 +23,7 @@ class Pathing
 {
 public:
     Pathing();
-    Pathing(std::vector<glm::vec3> ctrlPts);
+    Pathing(vector<vec3> ctrlPts);
     ~Pathing();
     void init();
     void calcBezierCurveTarget(float t);

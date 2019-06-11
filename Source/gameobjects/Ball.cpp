@@ -1,5 +1,7 @@
 #include "Ball.h"
 
+#include "../Camera.h"
+
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
     speed = 0;
@@ -35,13 +37,14 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     powerUpReady = false;
 }
 
-void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter)
+void Ball::init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera)
 {
     this->windowManager = windowManager;
     this->sparkEmitter = sparkEmitter;
+    this->camera = camera;
 }
 
-void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
+void Ball::update()
 {
     if (frozen)
         return;
@@ -74,19 +77,19 @@ void Ball::update(glm::vec3 dolly, glm::vec3 strafe)
     vec3 direction = vec3(0);
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_W) == GLFW_PRESS)
     {
-        direction += vec3(dolly.x, 0.0f, dolly.z);
+        direction += vec3(camera->dolly.x, 0.0f, camera->dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_S) == GLFW_PRESS)
     {
-        direction -= vec3(dolly.x, 0.0f, dolly.z);
+        direction -= vec3(camera->dolly.x, 0.0f, camera->dolly.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_A) == GLFW_PRESS)
     {
-        direction -= vec3(strafe.x, 0.0f, strafe.z);
+        direction -= vec3(camera->strafe.x, 0.0f, camera->strafe.z);
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_D) == GLFW_PRESS)
     {
-        direction += vec3(strafe.x, 0.0f, strafe.z);
+        direction += vec3(camera->strafe.x, 0.0f, camera->strafe.z);
     }
 
     //===============================================================================
@@ -193,7 +196,7 @@ void Ball::onHardCollision(float impactVel, Collision &collision)
     }
 }
 
-void Ball::addSkin(std::shared_ptr<Material> newSkin)
+void Ball::addSkin(shared_ptr<Material> newSkin)
 {
     marbleSkins.push_back(newSkin);
 }

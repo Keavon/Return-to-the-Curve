@@ -13,6 +13,6 @@ using namespace glm;
 class ParticleSpark : public Particle
 {
 public:
-    ParticleSpark(glm::vec3 position, float impactVel, glm::vec3 impactNormal);
+    ParticleSpark(vec3 position, float impactVel, vec3 impactNormal);
     virtual void update();
 };

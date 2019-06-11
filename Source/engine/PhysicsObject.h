@@ -37,29 +37,41 @@ private:
 protected:
     float invMass;
     float speed;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
-    std::shared_ptr<Collider> collider;
-    glm::vec3 impulse;
-    glm::vec3 normForce;
-    glm::vec3 netForce; // net forces acting on ball, calculated each frame
+    vec3 velocity;
+    vec3 acceleration;
+    shared_ptr<Collider> collider;
+    vec3 impulse;
+    vec3 normForce;
+    vec3 netForce; // net forces acting on ball, calculated each frame
 
 public:
 	PhysicsObject();
-    PhysicsObject(glm::vec3 position, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
-    PhysicsObject(glm::vec3 position, glm::quat orientation, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
-    PhysicsObject(glm::vec3 position, glm::quat orientation, glm::vec3 scale, std::shared_ptr<Shape> model, std::shared_ptr<Collider> collider = nullptr);
-    void resolveCollision();
-    void checkCollision(PhysicsObject *other);
-    void update();
+    PhysicsObject(vec3 position, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
+    PhysicsObject(vec3 position, quat orientation, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
+    PhysicsObject(vec3 position, quat orientation, vec3 scale, shared_ptr<Shape> model, shared_ptr<Collider> collider = nullptr);
+
+    // standard interface
+    /* GameObject.h: virtual void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)); */
+    virtual void start();
+    virtual void update();
+    virtual void lateUpdate();
+    virtual void physicsUpdate();
+    virtual void latePhysicsUpdate();
+    virtual void triggerEnter(PhysicsObject *object);
+    virtual void triggerStay(PhysicsObject *object);
+    virtual void triggerExit(PhysicsObject *object);
     virtual void onHardCollision(float impactVel, Collision &collision);
+
+    void checkCollision(PhysicsObject *other);
+    void clearCollisions();
     float getRadius(); // get radius of bounding sphere
-    void applyImpulse(glm::vec3 impulse);
+    void applyImpulse(vec3 impulse);
     void setMass(float mass);
     void setFriction(float friction);
     void setElasticity(float elasticity);
-    void setVelocity(glm::vec3 velocity);
-    glm::vec3 getCenterPos();
-    glm::vec3 getVelocity();
-    bool collidable;
+    void setVelocity(vec3 velocity);
+    vec3 getCenterPos();
+    vec3 getVelocity();
+    bool ignoreCollision;
+    bool solid;
 };

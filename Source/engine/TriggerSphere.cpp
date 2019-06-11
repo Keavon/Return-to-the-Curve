@@ -1,7 +1,11 @@
 #include "TriggerSphere.h"
 
+#include "Collider.h"
+#include "ColliderSphere.h"
+#include "PhysicsObject.h"
+
 TriggerSphere::TriggerSphere(float radius) :
-    Collider(vec3(-radius), vec3(radius)), radius(radius)
+    Trigger(vec3(-radius), vec3(radius)), radius(radius)
 {
 }
 
@@ -15,7 +19,7 @@ void TriggerSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Col
     checkColSphereTriggerSphere(obj, col, owner, this);
 }
 
-float TriggerSphere::getRadius(glm::vec3 scale)
+float TriggerSphere::getRadius(vec3 scale)
 {
     return bbox.radius * scale.x;
 }

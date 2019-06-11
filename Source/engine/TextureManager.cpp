@@ -7,7 +7,7 @@ TextureManager::TextureManager(string relativePath) {
 shared_ptr<Texture> loadTexture(string relativePath, string file, int textureUnit, GLenum wrapX, GLenum wrapY) {
     shared_ptr<Texture> texture = make_shared<Texture>();
     texture->setFilename(relativePath + file);
-    texture->init();
+    texture->init(wrapX, wrapY);
     texture->setUnit(textureUnit);
     texture->setWrapModes(wrapX, wrapY);
     return texture;

@@ -6,6 +6,8 @@
 
 #include "GLSL.h"
 
+using namespace std;
+
 // This interface let's us write our own class that can be notified by input
 // events, such as key presses and mouse movement.
 class EventCallbacks

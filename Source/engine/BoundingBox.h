@@ -8,11 +8,11 @@ using namespace glm;
 class BoundingBox
 {
 public:
-    BoundingBox(glm::vec3 min, glm::vec3 max);
+    BoundingBox(vec3 min, vec3 max);
     BoundingBox(float radius);
 
-    glm::vec3 min;
-    glm::vec3 max;
+    vec3 min;
+    vec3 max;
     float radius;
-    glm::vec3 center;
+    vec3 center;
 };

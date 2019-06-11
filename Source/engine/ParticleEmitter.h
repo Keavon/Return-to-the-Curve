@@ -20,13 +20,13 @@ public:
     Particle();
     virtual void update();
     virtual void start();
-    void draw(std::shared_ptr<Program> prog, std::shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard);
+    void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, shared_ptr<Shape> billboard);
 
-    glm::vec3 startPosition;
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
-    glm::vec4 color;
+    vec3 startPosition;
+    vec3 position;
+    vec3 velocity;
+    vec3 acceleration;
+    vec4 color;
     float t;
     float scale;
     float rotation;
@@ -38,17 +38,17 @@ public:
 class ParticleEmitter
 {
 public:
-    ParticleEmitter(std::shared_ptr<Shape> billboard, std::shared_ptr<Texture> texture, int maxParticles);
+    ParticleEmitter(shared_ptr<Shape> billboard, shared_ptr<Texture> texture, int maxParticles);
     void update();
-    void draw(std::shared_ptr<Program> prog);
-    void addParticle(std::shared_ptr<Particle> p);
+    void draw(shared_ptr<Program> prog);
+    void addParticle(shared_ptr<Particle> p);
     void stop();
 
     int maxParticles;
     int numActiveParticles;
-    std::vector<std::shared_ptr<Particle>> particles;
+    vector<shared_ptr<Particle>> particles;
 
 private:
-    std::shared_ptr<Shape> billboard;
-    std::shared_ptr<Texture> texture;
+    shared_ptr<Shape> billboard;
+    shared_ptr<Texture> texture;
 };

@@ -10,13 +10,13 @@ using namespace glm;
 
 class Prefab {
 public:
-    std::shared_ptr<Shape> model;
-    std::shared_ptr<Material> material;
+    shared_ptr<Shape> model;
+    shared_ptr<Material> material;
     float mass = -1;
     float friction = -1;
     float elasticity = -1;
 
-    Prefab(std::shared_ptr<Shape> model, std::shared_ptr<Material> material);
+    Prefab(shared_ptr<Shape> model, shared_ptr<Material> material);
 
-    std::shared_ptr<Instance> getNewInstance();
+    shared_ptr<Instance> getNewInstance();
 };

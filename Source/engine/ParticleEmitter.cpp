@@ -67,7 +67,7 @@ void ParticleEmitter::stop()
     particles.clear();
 }
 
-void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, std::shared_ptr<Shape> billboard)
+void Particle::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, shared_ptr<Shape> billboard)
 {
     M->pushMatrix();
         M->translate(position);

@@ -17,7 +17,7 @@ Sound::Sound()
     sfxSounds.superBounceSound = 0;
 
     // loops over the number of tracks, initializing them and adding them to a vector
-    double completion = 0.0;
+    // double completion = 0.0;
     for (int i = 1; i < NUMBER_OF_MUSIC_TRACKS + 1; i++)
     {
         string file = "../Resources/sounds/music/" + to_string(i) + ".wav";
@@ -29,8 +29,8 @@ Sound::Sound()
         irrklang::ISound *musicSound = sfxEngine->play2D(musicSources[i - 1], false, true);
         musicSounds.push_back(musicSound);
 
-        completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
-        cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
+        // completion = ((float)i * 100 / (float)NUMBER_OF_MUSIC_TRACKS);
+        // cout << setprecision(3) << "Loading Music: " << completion << "% complete." << endl;
     }
 
     srand((int)static_cast<int>(time(0)));

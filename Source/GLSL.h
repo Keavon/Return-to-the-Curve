@@ -8,8 +8,11 @@
 #include <glad/glad.h>
 #include <string>
 
+
 namespace GLSL
 {
+	using namespace std;
+	
 	void printOpenGLErrors(char const * const Function, char const * const File, int const Line);
 	void checkError(const char *str = 0);
 	void printProgramInfoLog(GLuint program);

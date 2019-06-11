@@ -161,6 +161,7 @@
     <ClCompile Include="..\Source\Camera.cpp" />
     <ClCompile Include="..\Source\effects\ParticleFirework.cpp" />
     <ClCompile Include="..\Source\effects\ParticleSpark.cpp" />
+    <ClCompile Include="..\Source\effects\ParticleWind.cpp" />
     <ClCompile Include="..\Source\effects\Sound.cpp" />
     <ClCompile Include="..\Source\engine\BoundingBox.cpp" />
     <ClCompile Include="..\Source\engine\Collider.cpp" />
@@ -183,9 +184,12 @@
     <ClCompile Include="..\Source\engine\ShaderManager.cpp" />
     <ClCompile Include="..\Source\engine\SkyboxManager.cpp" />
     <ClCompile Include="..\Source\engine\TextureManager.cpp" />
+    <ClCompile Include="..\Source\engine\Trigger.cpp" />
     <ClCompile Include="..\Source\engine\TriggerCylinder.cpp" />
     <ClCompile Include="..\Source\engine\TriggerSphere.cpp" />
+    <ClCompile Include="..\Source\engine\UIObject.cpp" />
     <ClCompile Include="..\Source\gameobjects\Ball.cpp" />
+    <ClCompile Include="..\Source\gameobjects\Beam.cpp" />
     <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
     <ClCompile Include="..\Source\gameobjects\Goal.cpp" />
@@ -235,6 +239,7 @@
     <ClInclude Include="..\Source\Camera.h" />
     <ClInclude Include="..\Source\effects\ParticleFirework.h" />
     <ClInclude Include="..\Source\effects\ParticleSpark.h" />
+    <ClInclude Include="..\Source\effects\ParticleWind.h" />
     <ClInclude Include="..\Source\effects\Sound.h" />
     <ClInclude Include="..\Source\engine\BoundingBox.h" />
     <ClInclude Include="..\Source\engine\Collider.h" />
@@ -258,9 +263,12 @@
     <ClInclude Include="..\Source\engine\SkyboxManager.h" />
     <ClInclude Include="..\Source\engine\TextureManager.h" />
     <ClInclude Include="..\Source\engine\Time.h" />
+    <ClInclude Include="..\Source\engine\Trigger.h" />
     <ClInclude Include="..\Source\engine\TriggerCylinder.h" />
     <ClInclude Include="..\Source\engine\TriggerSphere.h" />
+    <ClInclude Include="..\Source\engine\UIObject.h" />
     <ClInclude Include="..\Source\gameobjects\Ball.h" />
+    <ClInclude Include="..\Source\gameobjects\Beam.h" />
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />
     <ClInclude Include="..\Source\gameobjects\Goal.h" />

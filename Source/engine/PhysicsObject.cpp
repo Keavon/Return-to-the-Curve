@@ -24,7 +24,8 @@ PhysicsObject::PhysicsObject(vec3 position, quat orientation, vec3 scale, shared
     this->friction = 0;
     this->elasticity = 0;
     this->speed = 0;
-    collidable = true;
+    this->ignoreCollision = false;
+    this->solid = true;
 }
 
 void PhysicsObject::update()
@@ -81,6 +82,9 @@ void PhysicsObject::update()
     {
         // resolve collision
         PhysicsObject *other = collision.other;
+
+        if (!solid || !other->solid) continue;
+
         vec3 relVel = other->velocity - velocity;
         float velAlongNormal = dot(relVel, collision.normal);
         if (velAlongNormal < 0)
@@ -130,7 +134,7 @@ void PhysicsObject::update()
     {
         onHardCollision(maxImpact, maxImpactCollision);
     }
-    collider->pendingCollisions.clear();
+    clearCollisions();
 
     netForce += normForce;
 
@@ -162,9 +166,44 @@ void PhysicsObject::update()
     netForce = vec3(0);
 }
 
+void PhysicsObject::start()
+{
+
+}
+
+void PhysicsObject::lateUpdate()
+{
+
+}
+
+void PhysicsObject::physicsUpdate()
+{
+
+}
+
+void PhysicsObject::latePhysicsUpdate()
+{
+
+}
+
+void PhysicsObject::triggerEnter(PhysicsObject *object)
+{
+
+}
+
+void PhysicsObject::triggerStay(PhysicsObject *object)
+{
+
+}
+
+void PhysicsObject::triggerExit(PhysicsObject *object)
+{
+
+}
+
 void PhysicsObject::checkCollision(PhysicsObject *other)
 {
-    if (other->collider != NULL)
+    if (other->collider != NULL && collider != NULL && !other->ignoreCollision && !ignoreCollision)
     {
         collider->checkCollision(this, other, other->collider.get());
     }
@@ -238,4 +277,12 @@ void PhysicsObject::setVelocity(vec3 velocity)
 vec3 PhysicsObject::getVelocity()
 {
     return this->velocity;
+}
+
+void PhysicsObject::clearCollisions()
+{
+    if (collider != nullptr)
+    {
+        collider->clearCollisions(this);
+    }
 }

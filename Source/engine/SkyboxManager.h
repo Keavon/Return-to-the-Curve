@@ -16,11 +16,11 @@ using namespace glm;
 class SkyboxManager
 {
 private:
-    std::map<std::string, std::shared_ptr<Skybox>> loadedSkyboxes;
-    std::string relativePath;
+    map<string, shared_ptr<Skybox>> loadedSkyboxes;
+    string relativePath;
 
 public:
-    SkyboxManager(std::string relativePath);
-    std::shared_ptr<Skybox> get(std::string skyboxName, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
-    std::shared_ptr<Skybox> get(std::string skyboxName, std::vector<std::string> textureFile, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
+    SkyboxManager(string relativePath);
+    shared_ptr<Skybox> get(string skyboxName, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
+    shared_ptr<Skybox> get(string skyboxName, vector<string> textureFile, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
 };

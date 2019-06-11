@@ -30,7 +30,7 @@ void ColliderSphere::checkCollision(PhysicsObject *owner, PhysicsObject *obj, Tr
     checkColSphereTriggerCylinder(owner, this, obj, col);
 }
 
-float ColliderSphere::getRadius(glm::vec3 scale)
+float ColliderSphere::getRadius(vec3 scale)
 {
     return bbox.radius * scale.x;
 }

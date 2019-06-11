@@ -21,7 +21,7 @@ public:
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, ColliderSphere *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col);
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col);
-    virtual float getRadius(glm::vec3 scale);
+    virtual float getRadius(vec3 scale);
 
     float radius;
 };
