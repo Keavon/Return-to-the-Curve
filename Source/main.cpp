@@ -780,7 +780,6 @@ public:
 
     void beforePhysics()
     {
-        marble->update();
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {
