@@ -27,3 +27,13 @@ shared_ptr<Skybox> SkyboxManager::get(string skyboxName, vector<string> skyboxFi
 
     return loadedSkyboxes[skyboxName];
 }
+
+shared_ptr<Skybox> SkyboxManager::getCurrent()
+{
+    return SkyboxManager::get(currentName, currentUnit);
+}
+
+void SkyboxManager::setCurrent(string name, int unit) {
+    currentName = name;
+    currentUnit = unit;
+}

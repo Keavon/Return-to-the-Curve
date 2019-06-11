@@ -8,6 +8,9 @@ in vec2 TexCoords;
 // Shadow
 uniform sampler2D shadowDepth;
 
+// Environment map
+uniform samplerCube skybox;
+
 // Textures
 uniform sampler2D albedoMap;
 uniform sampler2D roughnessMap;
@@ -127,6 +130,11 @@ void main() {
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
 
+	// Reflection part
+	vec3 I = normalize(WorldPos - viewPos);
+	vec3 R = reflect(I, N);
+	vec3 reflection = texture(skybox, R).rgb;
+
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
 	// Calculate the light's radiance
@@ -149,6 +157,7 @@ void main() {
 	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
 	vec3 specular = numerator / max(denominator, 0.001);
 	specular *= getShadeValue();
+	specular *= reflection;
 
 	// Add to outgoing radiance Lo
 	float NdotL = max(dot(N, L), 0.0);

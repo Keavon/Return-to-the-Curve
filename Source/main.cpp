@@ -65,7 +65,7 @@ public:
 	TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
 	SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
 	ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
-	MaterialManager materialManager = MaterialManager();
+	MaterialManager materialManager = MaterialManager(shared_ptr<SkyboxManager>(&skyboxManager));
 	EmitterManager emitterManager = EmitterManager();
 	PrefabManager prefabManager = PrefabManager(RESOURCE_DIRECTORY + "/prefabs/", shared_ptr<ModelManager>(&modelManager), shared_ptr<MaterialManager>(&materialManager));
 	SceneManager sceneManager = SceneManager(shared_ptr<PrefabManager>(&prefabManager));
@@ -144,7 +144,7 @@ public:
 	}
 
 	void loadShaders() {
-		vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
+		vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos", "skybox"};
 		shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
 		materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
@@ -165,6 +165,7 @@ public:
         skyboxManager.get("blue_clouds", 1);
         skyboxManager.get("clouds", 1);
         skyboxManager.get("stormy_clouds", 1);
+        skyboxManager.setCurrent("blue_clouds", 1);
 	}
 
 	void loadShadows() {
@@ -607,9 +608,7 @@ public:
 		setProjectionMatrix(sky);
 		setView(sky);
 
-        if (preferences.scenes.startup == 0) skyboxManager.get("blue_clouds", 1)->bind(sky->getUniform("Texture0"));
-        if (preferences.scenes.startup == 1) skyboxManager.get("clouds", 1)->bind(sky->getUniform("Texture0"));
-        if (preferences.scenes.startup == 2) skyboxManager.get("stormy_clouds", 1)->bind(sky->getUniform("Texture0"));
+        skyboxManager.getCurrent()->bind(sky->getUniform("Texture0"));
 		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
 		modelManager.get("cube.obj")->draw(sky);
@@ -731,6 +730,10 @@ public:
         loadGameObjects();
         loadUIObjects();
         resetPlayer();
+
+        if (preferences.scenes.startup == 0) skyboxManager.setCurrent("blue_clouds", 1);
+        if (preferences.scenes.startup == 1) skyboxManager.setCurrent("clouds", 1);
+        if (preferences.scenes.startup == 2) skyboxManager.setCurrent("stormy_clouds", 1);
     }
 
 	/*

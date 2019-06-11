@@ -18,9 +18,13 @@ class SkyboxManager
 private:
     map<string, shared_ptr<Skybox>> loadedSkyboxes;
     string relativePath;
+    int currentUnit;
+    string currentName;
 
 public:
     SkyboxManager(string relativePath);
     shared_ptr<Skybox> get(string skyboxName, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
     shared_ptr<Skybox> get(string skyboxName, vector<string> textureFile, int textureUnit = 0, GLenum wrapX = GL_CLAMP_TO_EDGE, GLenum wrapY = GL_CLAMP_TO_EDGE);
+    shared_ptr<Skybox> getCurrent();
+    void setCurrent(string name, int unit);
 };

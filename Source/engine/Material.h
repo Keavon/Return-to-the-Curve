@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "TextureManager.h"
 #include "Program.h"
+#include "SkyboxManager.h"
 
 using namespace std;
 using namespace glm;
@@ -15,6 +16,7 @@ class Material
 private:
     shared_ptr<TextureManager> textureManager;
     shared_ptr<Program> pbr;
+    shared_ptr<SkyboxManager> skyboxManager;
 
 public:
     shared_ptr<Texture> albedo;
@@ -22,8 +24,8 @@ public:
     shared_ptr<Texture> metallic;
     shared_ptr<Texture> ao;
 
-    Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager);
-    Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, string materialName, string extension);
+    Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, shared_ptr<SkyboxManager> skyboxManager);
+    Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, shared_ptr<SkyboxManager> skyboxManager, string materialName, string extension);
 
     void load(string materialName, string extension);
     void bind();
