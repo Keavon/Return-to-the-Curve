@@ -102,6 +102,7 @@ public:
         shared_ptr<Goal> goal;
         shared_ptr<Blower> blower;
         shared_ptr<PhysicsObject> beam;
+        vector<shared_ptr<PhysicsObject>> general;
     } gameObjects;
 
 	struct
@@ -340,10 +341,87 @@ public:
             gameObjects.enemy2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
             gameObjects.enemy2->init(windowManager);
             sceneManager.octree.insert(gameObjects.enemy2);
+
+            gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        }
+        else if (preferences.scenes.startup == 1)
+        {
+            gameObjects.goal = make_shared<Goal>(vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        }
+        else if (preferences.scenes.startup == 2)
+        {
+            gameObjects.goal = make_shared<Goal>(vec3(0, 0, 60), quat(1, 0, 0, 0), nullptr, 1.50f);     
+
+            // Enemy 1
+            vector<vec3> enemyPath = {
+                vec3(16.0, -37, -76.0),
+                vec3(6.0, -37, -100.0),
+                vec3(-6.0, -37, -100.0),
+                vec3(-16.0, -37, -76.0),
+            };
+            auto enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 2
+            enemyPath = {
+                vec3(-16.0, -37, -76.0),
+                vec3(-6.0, -37, -52.0),
+                vec3(6.0, -37, -52.0),
+                vec3(16.0, -37, -76.0),
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 3
+            enemyPath = {
+                vec3(0, -40, -76.0),
+                vec3(0, -47, -76.0),
+                vec3(0, -53, -76.0),
+                vec3(0, -60, -76.0)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 4
+            enemyPath = {
+                vec3(-84, -10, -108.0),
+                vec3(-84, -3, -108.0),
+                vec3(-84, 3, -108.0),
+                vec3(-84, 10, -108.0)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 5
+            enemyPath = {
+                vec3(-40, 10, 30),
+                vec3(-40, 13, 30),
+                vec3(-40, 16, 30),
+                vec3(-40, 19, 30)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Blower 1
+            auto blower = make_shared<Blower>(vec3(0, -35, -108), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 3.0f, 10.0f);
+            blower->force = 200;
+            blower->init(emitterManager.get("wind"));
+            sceneManager.octree.insert(blower);
+            gameObjects.general.push_back(blower);
+
+            // Blower 2
+            blower = make_shared<Blower>(vec3(-80, 4, 2), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 1.0f, 30.0f);
+            blower->force = 500;
+            sceneManager.octree.insert(blower);
+            gameObjects.general.push_back(blower);
         }
 
         // Goal functionality
-        gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
 
@@ -420,6 +498,11 @@ public:
                 glUniform1i(shader->getUniform("objectIndex"), i);
             instance->physicsObject->draw(shader, M);
             i++;
+        }
+
+        for (auto obj : gameObjects.general)
+        {
+            obj->draw(shader, M);
         }
 
         // Cleanup
@@ -719,6 +802,11 @@ public:
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             instance->physicsObject->update();
+        }
+
+        for (auto obj : gameObjects.general)
+        {
+            obj->update();
         }
     }
 

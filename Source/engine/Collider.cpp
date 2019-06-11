@@ -68,7 +68,7 @@ void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsOb
             float d;
             bool rayDidIntersect = intersectRayTriangle(sphere->position, dir, v[0], v[1], v[2], bary, d);
 
-            if (rayDidIntersect && fabs(d) < sphere->getRadius())
+            if (rayDidIntersect && d > 0 && d < sphere->getRadius())
             {
                 Collision collision;
                 collision.other = mesh;

@@ -1,0 +1,179 @@
+--- # Level 3
+name: Horseshoe
+skybox: desert_hilltop
+light:
+    direction: [300, 250, -150]
+    color: [1, 1, 1]
+    intensity: 250000
+marble:
+    location: [0, 0.125, 0]
+    # location: [0, -4.875, -13.5]
+    # location: [-10, 0, -1]
+    scale: [1, 1, 1]
+    material: lava
+    lookDirection: 0
+    deathBelow: -60
+globalScale: [8, 8, 8]
+track:
+    -   prefab: Pillar Hexagon
+        location: [0, 0, 0]
+    -   prefab: Pipe
+        location: [0, -2, -3]
+        scale: [0.5, 0.5, 3]
+        rotation: [2.12, 0, 0]
+    -   prefab: Pipe
+        location: [0, -4.8, -5.5]
+        scale: [0.5, 0.5, 1]
+
+    -   prefab: Halfpipe
+        location: [2.0, -5, -9.5]
+        rotation: [0, 6.28, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [1.41, -5, -8.09]
+        rotation: [0, 5.5, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Quarterpipe
+        location: [0.0, -5.25, -7.5]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.5, 1]
+    -   prefab: Halfpipe
+        location: [-1.41, -5, -8.09]
+        rotation: [0, 3.93, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-2.0, -5, -9.5]
+        rotation: [0, 3.14, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-1.41, -5, -10.91]
+        rotation: [0, 2.36, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Unit Cube
+        location: [-0.0, -5, -11.5]
+        rotation: [0, 0.79, 0]
+        scale: [1, 0.5, 1]
+    -   prefab: Halfpipe
+        location: [1.41, -5, -10.91]
+        rotation: [0, 0.79, 0]
+        scale: [0.5, 0.5, 0.5]
+
+    -   prefab: Trap Diamond
+        location: [0, -4, -12.5]
+        scale: [0.5, 0.5, 0.5]
+        rotation: [1.57, 0, 0]
+    -   prefab: Pillar Hexagon
+        location: [0, -5, -13.5]
+        scale: [1, 0.25, 1]
+
+    -   prefab: Trap Diamond
+        location: [0, 0, -13.5]
+        scale: [0.5, 0.5, 0.5]
+        rotation: [0, 0, 0]
+    -   prefab: Halfpipe
+        location: [-1, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-2, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-3, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-4, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-5, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-6, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-7, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-8, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-9, 0, -13.5]
+        rotation: [0, 1.57, 0]
+        scale: [0.5, 0.5, 0.5]
+    
+    -   prefab: Halfpipe
+        location: [-10, 0, -12.25]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.5, 0.75]
+    -   prefab: Halfpipe
+        location: [-10, 0, -11]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-10, 0, -10]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Halfpipe
+        location: [-10, 0, -9]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Unit Cube
+        location: [-10, -0.25, -8]
+        rotation: [0, 0, 0]
+        scale: [0.5, 0.25, 1]
+    -   prefab: Unit Cube
+        location: [-9.5, 0, -7]
+        rotation: [0, 0, 0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-10.5, 0, -7]
+        rotation: [0, 0, -0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-9.5, 0, -5.5]
+        rotation: [0, 0, 0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-10.5, 0, -5.5]
+        rotation: [0, 0, -0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-9.5, 0, -4]
+        rotation: [0, 0, 0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-10.5, 0, -4]
+        rotation: [0, 0, -0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-9.5, 0, -2.5]
+        rotation: [0, 0, 0.79]
+        scale: [0.75, 0.25, 0.75]
+    -   prefab: Unit Cube
+        location: [-10.5, 0, -2.5]
+        rotation: [0, 0, -0.79]
+        scale: [0.75, 0.25, 0.75]
+
+    -   prefab: Halfpipe
+        location: [-10, 0, -1]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+    -   prefab: Pillar Hexagon
+        location: [-10, -0.25, 0.25]
+        scale: [0.5, 0.5, 0.5]
+    -   prefab: Pipe
+        location: [-10, 2.5, 0.25]
+        scale: [0.25, 0.25, 2]
+        rotation: [1.57, 0, 0]
+
+    -   prefab: Pillar Hexagon
+        location: [0, 0, 7.5]
+    -   prefab: Finish
+        location: [0, 0, 7.5]
+        scale: [0.5, 0.5, 0.5]

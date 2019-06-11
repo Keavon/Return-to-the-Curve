@@ -1,0 +1,5 @@
+---
+model: pipe.obj
+material: [rusted_metal, jpg]
+physics:
+    elasticity: 0.5
