@@ -73,6 +73,7 @@ public:
 	// Game Info Globals
 	bool editMode = false;
 	float startTime = 0.0f;
+	float curTime = 0.0f;
 
 	bool debugLight = 0;
 	bool debugGeometry = 1;
@@ -664,7 +665,7 @@ public:
     }
 
 	void changeTime() {
-		float curT = Time.timeSinceStart;
+		float curT = Time.timeSinceStart - curTime;
 		int num = curT / 100;
 		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		num = (int)fmod(curT, 100.0f) / 10;
@@ -733,6 +734,7 @@ public:
      */
 	void resetPlayer() {
 		soundEngine->reset();
+		curTime = Time.timeSinceStart;
 
 		marble->position = sceneManager.marbleStart;
 		marble->setVelocity(vec3(0.0f));
