@@ -13,6 +13,7 @@
 #include "Instance.h"
 #include "PrefabManager.h"
 #include "Octree.h"
+#include "../gameobjects/Enemy.h"
 
 using namespace std;
 using namespace glm;
