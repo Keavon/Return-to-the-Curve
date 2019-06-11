@@ -108,7 +108,7 @@ public:
 	{
 		shared_ptr<UIObject> logo;
 		shared_ptr<UIObject> winMessage;
-		shared_ptr<UIObject> dummy;
+		shared_ptr<UIObject> powerUp;
 	} uiObjects;
 
     // Billboard for rendering a texture to screen (like the shadow map)
@@ -358,6 +358,7 @@ public:
 	void loadUIObjects() {
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.powerUp = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SuperJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
     /*
@@ -637,6 +638,11 @@ public:
 		if (gameObjects.goal->didWin) {
 			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
 		}
+
+		// Powerup Test
+		// if(hasPowerup){
+			uiObjects.powerUp->draw(shaderManager.get("ui"), M, 3);
+		//}
     }
 
     void renderPlayerView(mat4 *LS)
