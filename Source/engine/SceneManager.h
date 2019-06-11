@@ -36,6 +36,7 @@ public:
     } light;
 
     SceneManager(shared_ptr<PrefabManager> prefabManager);
+    shared_ptr<Instance> findInstance(string name);
     void load(string sceneFile);
     void save(string sceneFile);
 };

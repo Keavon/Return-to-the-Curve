@@ -94,6 +94,9 @@ public:
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
 
+    // Marble
+    shared_ptr<Ball> marble;
+
     struct
     {
         shared_ptr<Ball> marble;
@@ -307,13 +310,13 @@ public:
     void loadGameObjects()
     {
         // Marble
-        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
-        gameObjects.marble->init(windowManager, emitterManager.get("sparks"), camera);
-        sceneManager.octree.insert(gameObjects.marble);
-        gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "jpg"));
+        marble = dynamic_pointer_cast<Ball>(sceneManager.findInstance("Marble")->physicsObject);
+        marble->init(sceneManager.marbleStart, windowManager, emitterManager.get("sparks"), camera);
+        sceneManager.octree.insert(marble);
+        marble->addSkin(materialManager.get("brown_rock", "jpg"));
+        marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
+        marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
+        marble->addSkin(materialManager.get("marble_tiles", "jpg"));
 
         if (preferences.scenes.startup == 0)
         {
@@ -478,8 +481,8 @@ public:
         }
 
         // Draw marble
-        if (shader == pbr) gameObjects.marble->getSkinMaterial()->bind();
-        gameObjects.marble->draw(shader, M);
+        if (shader == pbr) marble->getSkinMaterial()->bind();
+        marble->draw(shader, M);
 
         // Draw enemies
             if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
@@ -770,16 +773,16 @@ public:
     {
         soundEngine->reset();
 
-        gameObjects.marble->position = sceneManager.marbleStart;
-        gameObjects.marble->setVelocity(vec3(0.0f));
+        marble->position = sceneManager.marbleStart;
+        marble->setVelocity(vec3(0.0f));
         startTime = (float)glfwGetTime();
         gameObjects.goal->reset();
-        gameObjects.marble->frozen = 0;
+        marble->frozen = 0;
     }
 
     void beforePhysics()
     {
-        gameObjects.marble->update();
+        marble->update();
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {
@@ -793,10 +796,10 @@ public:
     {
         sceneManager.octree.update();
 
-        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
+        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(marble);
         for (shared_ptr<PhysicsObject> object : instancesToCheck)
         {
-            object->checkCollision(gameObjects.marble.get());
+            object->checkCollision(marble.get());
         }
 
         for (shared_ptr<Instance> instance : sceneManager.scene)
@@ -812,9 +815,9 @@ public:
 
     void beforeRender()
     {
-        if (gameObjects.marble->position.y < sceneManager.deathBelow) resetPlayer();
+        if (marble->position.y < sceneManager.deathBelow) resetPlayer();
 
-        camera->update(gameObjects.marble);
+        camera->update(marble);
 
         emitterManager.get("sparks")->update();
         emitterManager.get("fireworks")->update();
@@ -883,7 +886,7 @@ public:
     {
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
-            gameObjects.marble->nextSkin();
+            marble->nextSkin();
         }
         else if (key == GLFW_KEY_P && action == GLFW_PRESS)
         {
@@ -911,17 +914,17 @@ public:
         {
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
-            gameObjects.marble->frozen = editMode;
+            marble->frozen = editMode;
             if (editMode)
             {
                 camera->saveMarbleView();
-                gameObjects.marble->playPosition = gameObjects.marble->position;
-                gameObjects.marble->position = gameObjects.marble->startPosition;
+                marble->playPosition = marble->position;
+                marble->position = marble->startPosition;
             }
             else
             {
                 camera->restoreMarbleView();
-                gameObjects.marble->position = gameObjects.marble->playPosition;
+                marble->position = marble->playPosition;
             }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
@@ -968,7 +971,7 @@ public:
         {
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
-            cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+            cout << "" << marble->position.x << ", " << marble->position.y << ", " << marble->position.z << endl;
 
             if (editMode)
             {

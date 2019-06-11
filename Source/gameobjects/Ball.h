@@ -31,7 +31,7 @@ class Ball : public PhysicsObject
 {
 public:
     Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
-    void init(WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera);
+    void init(vec3 startPosition, WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera);
     virtual void update();
     virtual void onHardCollision(float impactVel, Collision &collision);
     void addSkin(shared_ptr<Material> newSkin);
@@ -46,6 +46,7 @@ public:
     float moveForce;
     float jumpForce;
     bool frozen;
+    bool initialized;
 
     float JUMP_TIME;
     int WANTS_JUMP;
