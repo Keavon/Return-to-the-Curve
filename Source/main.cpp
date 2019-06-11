@@ -106,7 +106,7 @@ public:
 	{
 		shared_ptr<UIObject> logo;
 		shared_ptr<UIObject> winMessage;
-		shared_ptr<UIObject> dummy;
+		shared_ptr<UIObject> powerUp;
 	} uiObjects;
 
 	// Billboard for rendering a texture to screen (like the shadow map)
@@ -627,7 +627,12 @@ public:
 		if (gameObjects.goal->didWin) {
 			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
 		}
-	}
+
+		// Powerup Test
+		// if(hasPowerup){
+			uiObjects.powerUp->draw(shaderManager.get("ui"), M, 3);
+		//}
+    }
 
 	void renderPlayerView(mat4* LS) {
 		GameObject::setCulling(true);
