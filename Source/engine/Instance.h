@@ -3,6 +3,7 @@
 #include "Shape.h"
 #include "Material.h"
 #include "PhysicsObject.h"
+#include "../gameobjects/Ball.h"
 
 using namespace std;
 using namespace glm;

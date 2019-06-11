@@ -94,9 +94,11 @@ public:
     shared_ptr<Camera> camera;
     Frustum viewFrustum;
 
+    // Marble
+    shared_ptr<Ball> marble;
+
     struct
     {
-        shared_ptr<Ball> marble;
         shared_ptr<Enemy> enemy1;
         shared_ptr<Enemy> enemy2;
         shared_ptr<Enemy> sentry1;
@@ -106,6 +108,7 @@ public:
         shared_ptr<PowerUp> powerUp2;
         shared_ptr<Blower> blower;
         shared_ptr<PhysicsObject> beam;
+        vector<shared_ptr<PhysicsObject>> general;
     } gameObjects;
 
 	struct
@@ -311,13 +314,12 @@ public:
     void loadGameObjects()
     {
         // Marble
-        gameObjects.marble = make_shared<Ball>(sceneManager.marbleStart, quat(1, 0, 0, 0), modelManager.get("quadSphere.obj"), 1.0f);
-        gameObjects.marble->init(windowManager, emitterManager.get("sparks"), camera);
-        sceneManager.octree.insert(gameObjects.marble);
-        gameObjects.marble->addSkin(materialManager.get("brown_rock", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
-        gameObjects.marble->addSkin(materialManager.get("marble_tiles", "jpg"));
+        marble = dynamic_pointer_cast<Ball>(sceneManager.findInstance("Marble")->physicsObject);
+        marble->init(sceneManager.marbleStart, windowManager, emitterManager.get("sparks"), camera);
+        marble->addSkin(materialManager.get("brown_rock", "jpg"));
+        marble->addSkin(materialManager.get("seaside_rocks", "jpg"));
+        marble->addSkin(materialManager.get("coal_matte_tiles", "jpg"));
+        marble->addSkin(materialManager.get("marble_tiles", "jpg"));
 
         if (preferences.scenes.startup == 0)
         {
@@ -368,10 +370,86 @@ public:
             gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
             gameObjects.powerUp2->init();
             sceneManager.octree.insert(gameObjects.powerUp2);
+            gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        }
+        else if (preferences.scenes.startup == 1)
+        {
+            gameObjects.goal = make_shared<Goal>(vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
+        }
+        else if (preferences.scenes.startup == 2)
+        {
+            gameObjects.goal = make_shared<Goal>(vec3(0, 0, 60), quat(1, 0, 0, 0), nullptr, 1.50f);     
+
+            // Enemy 1
+            vector<vec3> enemyPath = {
+                vec3(16.0, -37, -76.0),
+                vec3(6.0, -37, -100.0),
+                vec3(-6.0, -37, -100.0),
+                vec3(-16.0, -37, -76.0),
+            };
+            auto enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 2
+            enemyPath = {
+                vec3(-16.0, -37, -76.0),
+                vec3(-6.0, -37, -52.0),
+                vec3(6.0, -37, -52.0),
+                vec3(16.0, -37, -76.0),
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 3
+            enemyPath = {
+                vec3(0, -40, -76.0),
+                vec3(0, -47, -76.0),
+                vec3(0, -53, -76.0),
+                vec3(0, -60, -76.0)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 4
+            enemyPath = {
+                vec3(-84, -10, -108.0),
+                vec3(-84, -3, -108.0),
+                vec3(-84, 3, -108.0),
+                vec3(-84, 10, -108.0)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Enemy 5
+            enemyPath = {
+                vec3(-40, 10, 30),
+                vec3(-40, 13, 30),
+                vec3(-40, 16, 30),
+                vec3(-40, 19, 30)
+            };
+            enemy = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f);
+            sceneManager.octree.insert(enemy);
+            gameObjects.general.push_back(enemy);
+
+            // Blower 1
+            auto blower = make_shared<Blower>(vec3(0, -35, -108), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 3.0f, 10.0f);
+            blower->force = 200;
+            blower->init(emitterManager.get("wind"));
+            sceneManager.octree.insert(blower);
+            gameObjects.general.push_back(blower);
+
+            // Blower 2
+            blower = make_shared<Blower>(vec3(-80, 4, 2), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 1.0f, 30.0f);
+            blower->force = 500;
+            sceneManager.octree.insert(blower);
+            gameObjects.general.push_back(blower);
         }
 
         // Goal functionality
-        gameObjects.goal = make_shared<Goal>(preferences.scenes.startup == 0 ? vec3(0, 11.5, 0) : vec3(-4 * 8, 3 * 8, 5.4 * 8) + vec3(0, 1, 0), quat(1, 0, 0, 0), nullptr, 1.50f);
         gameObjects.goal->init(emitterManager.get("fireworks"), &startTime);
         sceneManager.octree.insert(gameObjects.goal);
 
@@ -428,8 +506,8 @@ public:
         }
 
         // Draw marble
-        if (shader == pbr) gameObjects.marble->getSkinMaterial()->bind();
-        gameObjects.marble->draw(shader, M);
+        if (shader == pbr) marble->getSkinMaterial()->bind();
+        marble->draw(shader, M);
 
         // Draw enemies
             if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
@@ -458,6 +536,11 @@ public:
                 glUniform1i(shader->getUniform("objectIndex"), i);
             instance->physicsObject->draw(shader, M);
             i++;
+        }
+
+        for (auto obj : gameObjects.general)
+        {
+            obj->draw(shader, M);
         }
 
         // Cleanup
@@ -725,23 +808,22 @@ public:
     {
         soundEngine->reset();
 
-        gameObjects.marble->position = sceneManager.marbleStart;
-        gameObjects.marble->setVelocity(vec3(0.0f));
+        marble->position = sceneManager.marbleStart;
+        marble->setVelocity(vec3(0.0f));
         startTime = (float)glfwGetTime();
         gameObjects.goal->reset();
-        gameObjects.marble->frozen = 0;
+        marble->frozen = 0;
     }
 
     void beforePhysics()
     {
-        gameObjects.marble->update();
         gameObjects.goal->update();
         if (preferences.scenes.startup == 0)
         {
-            gameObjects.enemy1->update(gameObjects.marble->position);
-            gameObjects.enemy2->update(gameObjects.marble->position);
-            gameObjects.sentry1->update(gameObjects.marble->position);
-            gameObjects.sentry2->update(gameObjects.marble->position);
+            gameObjects.enemy1->update(marble->position);
+            gameObjects.enemy2->update(marble->position);
+            gameObjects.sentry1->update(marble->position);
+            gameObjects.sentry2->update(marble->position);
             if (!gameObjects.powerUp1->destroyed){
                 gameObjects.powerUp1->update();
             }
@@ -757,24 +839,28 @@ public:
     {
         sceneManager.octree.update();
 
-        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(gameObjects.marble);
+        vector<shared_ptr<PhysicsObject>> instancesToCheck = sceneManager.octree.query(marble);
         for (shared_ptr<PhysicsObject> object : instancesToCheck)
         {
-            
-            object->checkCollision(gameObjects.marble.get());
+            object->checkCollision(marble.get());
         }
 
         for (shared_ptr<Instance> instance : sceneManager.scene)
         {
             instance->physicsObject->update();
         }
+
+        for (auto obj : gameObjects.general)
+        {
+            obj->update();
+        }
     }
 
     void beforeRender()
     {
-        if (gameObjects.marble->position.y < sceneManager.deathBelow) resetPlayer();
+        if (marble->position.y < sceneManager.deathBelow) resetPlayer();
 
-        camera->update(gameObjects.marble);
+        camera->update(marble);
 
         emitterManager.get("sparks")->update();
         emitterManager.get("fireworks")->update();
@@ -843,7 +929,7 @@ public:
     {
         if (key == GLFW_KEY_O && action == GLFW_PRESS)
         {
-            gameObjects.marble->nextSkin();
+            marble->nextSkin();
         }
         else if (key == GLFW_KEY_P && action == GLFW_PRESS)
         {
@@ -871,17 +957,17 @@ public:
         {
             editMode = !editMode;
             camera->cameraMode = editMode ? Camera::edit : Camera::marble;
-            gameObjects.marble->frozen = editMode;
+            marble->frozen = editMode;
             if (editMode)
             {
                 camera->saveMarbleView();
-                gameObjects.marble->playPosition = gameObjects.marble->position;
-                gameObjects.marble->position = gameObjects.marble->startPosition;
+                marble->playPosition = marble->position;
+                marble->position = marble->startPosition;
             }
             else
             {
                 camera->restoreMarbleView();
-                gameObjects.marble->position = gameObjects.marble->playPosition;
+                marble->position = marble->playPosition;
             }
         }
         else if (key == GLFW_KEY_U && action == GLFW_PRESS)
@@ -936,7 +1022,7 @@ public:
         {
             glfwGetCursorPos(window, &posX, &posY);
             cout << "Pos X " << posX << " Pos Y " << posY << endl;
-            cout << "" << gameObjects.marble->position.x << ", " << gameObjects.marble->position.y << ", " << gameObjects.marble->position.z << endl;
+            cout << "" << marble->position.x << ", " << marble->position.y << ", " << marble->position.z << endl;
 
             if (editMode)
             {

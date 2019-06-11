@@ -1,0 +1,5 @@
+---
+model: quarterpipe.obj
+material: [painted_metal, jpg]
+physics:
+    elasticity: 0.5

@@ -20,13 +20,16 @@ Blower::Blower(vec3 position, quat orientation, float radius, float length) :
 
 void Blower::update()
 {
-    t += Time.physicsDeltaTime;
-    float volume = (float)M_PI * radius * radius * length;
-    float particleInterval = 2.f / volume;
-    while (t > particleInterval)
+    if (windEmitter != nullptr)
     {
-        t -= particleInterval;
-        windEmitter->addParticle(make_shared<ParticleWind>(position, orientation, radius, length));
+        t += Time.physicsDeltaTime;
+        float volume = (float)M_PI * radius * radius * length;
+        float particleInterval = 2.f / volume;
+        while (t > particleInterval)
+        {
+            t -= particleInterval;
+            windEmitter->addParticle(make_shared<ParticleWind>(position, orientation, radius, length));
+        }
     }
     clearCollisions();
 }
