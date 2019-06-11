@@ -154,7 +154,7 @@ public:
 	}
 
 	void loadSkybox() {
-		skyboxManager.get("desert_hill", 1);
+		skyboxManager.get("clouds", 1);
 	}
 
 	void loadShadows() {
@@ -589,7 +589,7 @@ public:
 		setProjectionMatrix(sky);
 		setView(sky);
 
-		skyboxManager.get("desert_hill", 1)->bind(sky->getUniform("Texture0"));
+		skyboxManager.get("clouds", 1)->bind(sky->getUniform("Texture0"));
 		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
 		modelManager.get("cube.obj")->draw(sky);
