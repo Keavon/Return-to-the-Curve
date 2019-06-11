@@ -346,6 +346,14 @@ public:
 	void loadUIObjects() {
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.powerUp = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SuperJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundreds = make_shared<UIObject>(vec3(-0.4f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tens = make_shared<UIObject>(vec3(-0.3f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Ones = make_shared<UIObject>(vec3(-0.2f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Colon = make_shared<UIObject>(vec3(-0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/Colon.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tenths = make_shared<UIObject>(vec3(0, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundredths = make_shared<UIObject>(vec3(0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
 	void loadSounds() {
