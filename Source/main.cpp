@@ -162,7 +162,9 @@ public:
 	}
 
 	void loadSkybox() {
-		skyboxManager.get("clouds", 1);
+        skyboxManager.get("blue_clouds", 1);
+        skyboxManager.get("clouds", 1);
+        skyboxManager.get("stormy_clouds", 1);
 	}
 
 	void loadShadows() {
@@ -605,7 +607,9 @@ public:
 		setProjectionMatrix(sky);
 		setView(sky);
 
-		skyboxManager.get("clouds", 1)->bind(sky->getUniform("Texture0"));
+        if (preferences.scenes.startup == 0) skyboxManager.get("blue_clouds", 1)->bind(sky->getUniform("Texture0"));
+        if (preferences.scenes.startup == 1) skyboxManager.get("clouds", 1)->bind(sky->getUniform("Texture0"));
+        if (preferences.scenes.startup == 2) skyboxManager.get("stormy_clouds", 1)->bind(sky->getUniform("Texture0"));
 		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
 		modelManager.get("cube.obj")->draw(sky);
