@@ -2,7 +2,7 @@
 name: Horseshoe
 skybox: desert_hilltop
 light:
-    direction: [300, 250, -150]
+    direction: [300, 150, 150]
     color: [1, 1, 1]
     intensity: 250000
 marble:
