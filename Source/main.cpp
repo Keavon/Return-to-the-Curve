@@ -350,6 +350,17 @@ public:
 			soundEngine->fan(gameObjects.blower->position.x, gameObjects.blower->position.y, gameObjects.blower->position.z);
 		}
 
+		if (preferences.scenes.startup == 2)
+		{
+			if (gameObjects.general[0]) {
+				soundEngine->fan(gameObjects.general[0]->position.x, gameObjects.general[0]->position.y, gameObjects.general[0]->position.z);
+			}
+
+			if (gameObjects.general[1]) {
+				soundEngine->fan(gameObjects.general[1]->position.x, gameObjects.general[1]->position.y, gameObjects.general[1]->position.z);
+			}
+		}
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
