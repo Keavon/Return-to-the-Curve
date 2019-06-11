@@ -22,12 +22,11 @@ public:
     Goal(vec3 position, quat orientation, shared_ptr<Shape> model, float radius);
     virtual void update();
     void init(shared_ptr<ParticleEmitter> fireworkEmitter, float *startTime);
-    void onWin();
+    virtual void triggerEnter(PhysicsObject *object);
     void reset();
 
     float radius;
     shared_ptr<ParticleEmitter> fireworkEmitter;
-    bool ballInGoal;
     bool didWin;
     float *startTime;
 };

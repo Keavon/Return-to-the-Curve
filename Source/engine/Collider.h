@@ -25,6 +25,7 @@ class ColliderMesh;
 class ColliderSphere;
 class TriggerSphere;
 class TriggerCylinder;
+class Trigger;
 class PhysicsObject;
 
 enum ColGeom {FACE, EDGE, VERT, SPHERE};
@@ -51,6 +52,7 @@ public:
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerSphere *col) {};
     virtual void checkCollision(PhysicsObject *owner, PhysicsObject *obj, TriggerCylinder *col) {};
 
+    virtual void clearCollisions(PhysicsObject *owner);
     virtual float getRadius(vec3 scale) = 0;
 
     BoundingBox bbox;
@@ -60,8 +62,6 @@ public:
 
 void checkSphereMesh(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *mesh, ColliderMesh *meshCol);
 void checkSphereSphere(PhysicsObject *sphere1, ColliderSphere *sphereCol1, PhysicsObject *sphere2, ColliderSphere *sphereCol2);
-void checkColSphereTriggerSphere(PhysicsObject *cSphere, ColliderSphere *cSphereCol, PhysicsObject *tSphere, TriggerSphere *tSphereTrig);
-void checkColSphereTriggerCylinder(PhysicsObject *sphere, ColliderSphere *sphereCol, PhysicsObject *cylinder, TriggerCylinder *cylinderTrig);
 
 
 // Used for inserting pairs of vertices into a hash set

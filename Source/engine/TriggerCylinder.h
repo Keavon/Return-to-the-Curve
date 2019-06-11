@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Collider.h"
-#include "ColliderSphere.h"
-#include "ColliderMesh.h"
+#include "Trigger.h"
 #include "BoundingBox.h"
 #include "PhysicsObject.h"
 
@@ -10,7 +8,11 @@
 
 using namespace glm;
 
-class TriggerCylinder : public Collider
+class PhysicsObject;
+class Collider;
+class ColliderSphere;
+
+class TriggerCylinder : public Trigger
 {
 public:
     TriggerCylinder(float radius, float length);

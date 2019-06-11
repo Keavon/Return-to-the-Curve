@@ -1,7 +1,11 @@
 #include "TriggerCylinder.h"
 
+#include "Collider.h"
+#include "ColliderSphere.h"
+#include "ColliderMesh.h"
+
 TriggerCylinder::TriggerCylinder(float radius, float length) :
-    Collider(vec3(-radius, 0, -radius), vec3(radius, length, radius)), radius(radius), length(length)
+    Trigger(vec3(-radius, 0, -radius), vec3(radius, length, radius)), radius(radius), length(length)
 {
 }
 

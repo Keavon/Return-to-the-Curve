@@ -23,7 +23,7 @@ void Enemy::init(WindowManager *windowManager)
 
 void Enemy::update()
 {
-	collider->pendingCollisions.clear();
+	clearCollisions();
 
 	if (pointReached)
 	{

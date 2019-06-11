@@ -15,6 +15,7 @@ public:
     Blower(vec3 position, quat orientation, float radius, float length);
     void init(std::shared_ptr<ParticleEmitter> windEmitter);
     virtual void update();
+    virtual void triggerStay(PhysicsObject *object);
 
     float radius;
     float length;

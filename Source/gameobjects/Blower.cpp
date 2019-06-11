@@ -28,12 +28,12 @@ void Blower::update()
         t -= particleInterval;
         windEmitter->addParticle(make_shared<ParticleWind>(position, orientation, radius, length));
     }
+    clearCollisions();
+}
 
-    for (auto collision : collider->pendingCollisions)
-    {
-        collision.other->applyImpulse(vec3(mat4_cast(orientation) * vec4(0, 1, 0, 0)) * force);
-    }
-    collider->pendingCollisions.clear();
+void Blower::triggerStay(PhysicsObject *object)
+{
+    object->applyImpulse(vec3(mat4_cast(orientation) * vec4(0, 1, 0, 0)) * force);
 }
 
 void Blower::init(shared_ptr<ParticleEmitter> windEmitter)

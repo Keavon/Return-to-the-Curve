@@ -134,7 +134,7 @@ void PhysicsObject::update()
     {
         onHardCollision(maxImpact, maxImpactCollision);
     }
-    collider->pendingCollisions.clear();
+    clearCollisions();
 
     netForce += normForce;
 
@@ -186,17 +186,17 @@ void PhysicsObject::latePhysicsUpdate()
 
 }
 
-void PhysicsObject::triggerEnter()
+void PhysicsObject::triggerEnter(PhysicsObject *object)
 {
 
 }
 
-void PhysicsObject::triggerStay()
+void PhysicsObject::triggerStay(PhysicsObject *object)
 {
 
 }
 
-void PhysicsObject::triggerExit()
+void PhysicsObject::triggerExit(PhysicsObject *object)
 {
 
 }
@@ -277,4 +277,12 @@ void PhysicsObject::setVelocity(vec3 velocity)
 vec3 PhysicsObject::getVelocity()
 {
     return this->velocity;
+}
+
+void PhysicsObject::clearCollisions()
+{
+    if (collider != nullptr)
+    {
+        collider->clearCollisions(this);
+    }
 }
