@@ -55,6 +55,7 @@ public:
     std::vector<PowerUp *> storedPowerUp;
     bool initialized;
 
+    float POWER_UP_START_TIME;
     float JUMP_TIME;
     int WANTS_JUMP;
 

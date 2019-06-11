@@ -367,7 +367,7 @@ public:
 
 
             // Power Up 2
-            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 2, 7.0), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
+            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1, 1);
             gameObjects.powerUp2->init();
             sceneManager.octree.insert(gameObjects.powerUp2);
             gameObjects.goal = make_shared<Goal>(vec3(0, 11.5, 0), quat(1, 0, 0, 0), nullptr, 1.50f);

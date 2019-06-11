@@ -70,7 +70,7 @@ void Ball::update()
                 storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
             }
             //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : to_string(storedPowerUp[0]->powerUpType).c_str());
+            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : storedPowerUp[0]->powerUpType == 1 ? "Super Speed" : to_string(storedPowerUp[0]->powerUpType).c_str());
             printf("Press 'E' to activate\n");
             //cout << "Stored size: " << storedPowerUp.size() << endl;
             hasPowerUp = true;
@@ -117,7 +117,7 @@ void Ball::update()
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
     {
-        /*printf("Num of power ups stored: %d \n", storedPowerUp.size());
+        /* printf("Num of power ups stored: %d \n", storedPowerUp.size());
         for (PowerUp* p : storedPowerUp){
             printf("Power Up type: %d ", p->powerUpType);
             printf("Activatable: %s\n", p->activatable ? "true" : "false");
@@ -163,12 +163,23 @@ void Ball::update()
                 cout << "Used Super Jump powerUp" << endl;
                 jumpForce = 150;
                 activePowerUp->activatable = false;
-                //prepNextPowerUp();
+                prepNextPowerUp();
             }
         }
     }
-    //===============================================================================
-
+    
+    //printf("Move Force: %f\n", moveForce);
+    if (powerUpReady){
+        if (activePowerUp->powerUpType == 1 ){
+            //printf("Time: %f\n", currentTime - POWER_UP_START_TIME);
+            if (currentTime - POWER_UP_START_TIME > 3){
+                powerUpReady = false;
+                moveForce = 200;
+                activePowerUp->activatable = false;
+                prepNextPowerUp();
+            }
+        }
+    }
     // calculate forces
     if (direction != vec3(0))
     {
@@ -234,6 +245,12 @@ void Ball::activatePowerUp()
     if (activePowerUp->powerUpType == 0){
         printf("Press 'Space' to use Super Jump\n");
         jumpForce = 500;
+        powerUpReady = true;
+    }
+    else if (activePowerUp->powerUpType == 1) 
+    {
+        POWER_UP_START_TIME = glfwGetTime();
+        moveForce = 300;
         powerUpReady = true;
     }
     else {
