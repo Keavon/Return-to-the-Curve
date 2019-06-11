@@ -109,6 +109,13 @@ public:
 		shared_ptr<UIObject> logo;
 		shared_ptr<UIObject> winMessage;
 		shared_ptr<UIObject> powerUp;
+		shared_ptr<UIObject> Time;
+		shared_ptr<UIObject> Hundreds;
+		shared_ptr<UIObject> Tens;
+		shared_ptr<UIObject> Ones;
+		shared_ptr<UIObject> Tenths;
+		shared_ptr<UIObject> Hundredths;
+		shared_ptr<UIObject> Colon;
 	} uiObjects;
 
     // Billboard for rendering a texture to screen (like the shadow map)
@@ -359,6 +366,13 @@ public:
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get(preferences.scenes.startup == 0 ? "hud/Level1.png" : "hud/Level2.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.powerUp = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SuperJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundreds = make_shared<UIObject>(vec3(-0.4f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tens = make_shared<UIObject>(vec3(-0.3f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Ones = make_shared<UIObject>(vec3(-0.2f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Colon = make_shared<UIObject>(vec3(-0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/Colon.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Tenths = make_shared<UIObject>(vec3(0, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Hundredths = make_shared<UIObject>(vec3(0.1f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 	}
 
     /*
@@ -637,13 +651,41 @@ public:
         // Win message
 		if (gameObjects.goal->didWin) {
 			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+		} 
+		else {
+			//if player hasn't won, update time
+			changeTime();
 		}
+
+		//draw timer
+		uiObjects.Time->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundreds->draw(shaderManager.get("ui"), M);
+		uiObjects.Tens->draw(shaderManager.get("ui"), M);
+		uiObjects.Ones->draw(shaderManager.get("ui"), M);
+		uiObjects.Colon->draw(shaderManager.get("ui"), M);
+		uiObjects.Tenths->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundredths->draw(shaderManager.get("ui"), M);
+
 
 		// Powerup Test
 		// if(hasPowerup){
-			uiObjects.powerUp->draw(shaderManager.get("ui"), M, 3);
+			//uiObjects.powerUp->draw(shaderManager.get("ui"), M);
 		//}
     }
+
+	void changeTime() {
+		float curT = Time.timeSinceStart;
+		int num = curT / 100;
+		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 100.0f) / 10;
+		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 10.0f) / 1;
+		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 10.0f, 10.0f) / 1;
+		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 100.0f, 10.0f) / 1;
+		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+	}
 
     void renderPlayerView(mat4 *LS)
     {
@@ -658,8 +700,7 @@ public:
         setProjectionMatrix(pbr);
         setView(pbr);
 
-        // Send shadow map
-        glActiveTexture(GL_TEXTURE30);
+        // Send shadow map        glActiveTexture(GL_TEXTURE30);
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glUniform1i(shaderManager.get("pbr")->getUniform("shadowDepth"), 0);
 
