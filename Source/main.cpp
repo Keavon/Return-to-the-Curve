@@ -107,6 +107,13 @@ public:
 		shared_ptr<UIObject> logo;
 		shared_ptr<UIObject> winMessage;
 		shared_ptr<UIObject> powerUp;
+		shared_ptr<UIObject> Time;
+		shared_ptr<UIObject> Hundreds;
+		shared_ptr<UIObject> Tens;
+		shared_ptr<UIObject> Ones;
+		shared_ptr<UIObject> Tenths;
+		shared_ptr<UIObject> Hundredths;
+		shared_ptr<UIObject> Colon;
 	} uiObjects;
 
 	// Billboard for rendering a texture to screen (like the shadow map)
@@ -626,16 +633,45 @@ public:
 		// Win message
 		if (gameObjects.goal->didWin) {
 			uiObjects.winMessage->draw(shaderManager.get("ui"), M, 2);
+		} 
+		else {
+			//if player hasn't won, update time
+			changeTime();
 		}
+
+		//draw timer
+		uiObjects.Time->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundreds->draw(shaderManager.get("ui"), M);
+		uiObjects.Tens->draw(shaderManager.get("ui"), M);
+		uiObjects.Ones->draw(shaderManager.get("ui"), M);
+		uiObjects.Colon->draw(shaderManager.get("ui"), M);
+		uiObjects.Tenths->draw(shaderManager.get("ui"), M);
+		uiObjects.Hundredths->draw(shaderManager.get("ui"), M);
+
 
 		// Powerup Test
 		// if(hasPowerup){
-			uiObjects.powerUp->draw(shaderManager.get("ui"), M, 3);
+			//uiObjects.powerUp->draw(shaderManager.get("ui"), M);
 		//}
     }
 
-	void renderPlayerView(mat4* LS) {
-		GameObject::setCulling(true);
+	void changeTime() {
+		float curT = Time.timeSinceStart;
+		int num = curT / 100;
+		uiObjects.Hundreds->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 100.0f) / 10;
+		uiObjects.Tens->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT, 10.0f) / 1;
+		uiObjects.Ones->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 10.0f, 10.0f) / 1;
+		uiObjects.Tenths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+		num = fmod(curT * 100.0f, 10.0f) / 1;
+		uiObjects.Hundredths->changeImage(textureManager.get("/hud/numbers/" + to_string(num) + ".png"));
+	}
+
+    void renderPlayerView(mat4 *LS)
+    {
+        GameObject::setCulling(true);
 
 		drawSkybox();
 
