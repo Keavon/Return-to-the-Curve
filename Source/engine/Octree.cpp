@@ -294,6 +294,7 @@ void Octree::drawDebugOctants(shared_ptr<Program> prog)
 void Octree::clear()
 {
     root = nullptr;
+    objects.clear();
 }
 
 void Octree::update()

@@ -657,6 +657,17 @@ public:
 		drawGameplayUI();
 	}
 
+    void nextLevel()
+    {
+        preferences.scenes.startup = (preferences.scenes.startup + 1) % preferences.scenes.list.size();
+        sceneManager.octree.clear();
+        sceneManager.scene.clear();
+        loadLevel();
+        loadGameObjects();
+        loadUIObjects();
+        resetPlayer();
+    }
+
 	/*
      * Render loop calls
      */
@@ -798,6 +809,8 @@ public:
 			sceneManager.octree.debug = !sceneManager.octree.debug;
 		} else if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 			resetPlayer();
+        } else if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+			nextLevel();
 		} else if (key == GLFW_KEY_M && action == GLFW_PRESS) {  // just a test since super bounce has no trigger yet
 			soundEngine->superBounce();
 		}
