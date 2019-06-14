@@ -10,6 +10,8 @@ Prefab::Prefab(string name, shared_ptr<Shape> model, shared_ptr<Material> materi
 shared_ptr<Instance> Prefab::getNewInstance()
 {
     shared_ptr<Instance> instance = make_shared<Instance>(*this);
+    
+    instance->physicsObject->scale *= scale;
 
     if (mass != -1) instance->physicsObject->setMass(mass);
     if (friction != -1) instance->physicsObject->setFriction(friction);

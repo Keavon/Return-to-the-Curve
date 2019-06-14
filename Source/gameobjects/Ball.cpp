@@ -71,9 +71,9 @@ void Ball::update()
                 storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
             }
             //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == 0)
+            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Super Jump")
                 printf("Picked up power up of type: Super Jump\n");
-            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == 1)
+            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Lightning Speed")
                 printf("Picked up power up of type: Super Speed\n");
             printf("Press 'E' to activate\n");
             //cout << "Stored size: " << storedPowerUp.size() << endl;
@@ -161,27 +161,24 @@ void Ball::update()
         JUST_JUMPED = 1;
         JUMPED_AT_TIME = currentTime;
 
-        if (powerUpReady){
-            if (activePowerUp->powerUpType == 0 && activePowerUp->activatable){
-                soundEngine->superBounce();
-                cout << "Used Super Jump powerUp" << endl;
-                jumpForce = 150;
-                activePowerUp->activatable = false;
-                prepNextPowerUp();
-            }
+        if (powerUpReady && activePowerUp->powerUpType == "Super Jump" && activePowerUp->activatable)
+        {
+            soundEngine->superBounce();
+            cout << "Used Super Jump powerUp" << endl;
+            jumpForce = 150;
+            activePowerUp->activatable = false;
+            prepNextPowerUp();
         }
     }
     
     //printf("Move Force: %f\n", moveForce);
-    if (powerUpReady){
-        if (activePowerUp->powerUpType == 1 ){
-            //printf("Time: %f\n", currentTime - POWER_UP_START_TIME);
-            if (currentTime - POWER_UP_START_TIME > 3){
-                powerUpReady = false;
-                moveForce = 200;
-                activePowerUp->activatable = false;
-                prepNextPowerUp();
-            }
+    if (powerUpReady && activePowerUp->powerUpType == "Lightning Speed"){
+        //printf("Time: %f\n", currentTime - POWER_UP_START_TIME);
+        if (currentTime - POWER_UP_START_TIME > 3){
+            powerUpReady = false;
+            moveForce = 200;
+            activePowerUp->activatable = false;
+            prepNextPowerUp();
         }
     }
     // calculate forces
@@ -246,18 +243,21 @@ void Ball::activatePowerUp()
     activePowerUp = storedPowerUp[0];
     //cout << "Power up Type: "<< activePowerUp->powerUpType << endl;
     cout << "Power up ready" << endl;
-    if (activePowerUp->powerUpType == 0){
+    printf("%s\n", activePowerUp->powerUpType.c_str());
+
+    if (activePowerUp->powerUpType == "Super Jump") {
         printf("Press 'Space' to use Super Jump\n");
         jumpForce = 500;
         powerUpReady = true;
     }
-    else if (activePowerUp->powerUpType == 1) 
+    else if (activePowerUp->powerUpType == "Lightning Speed")
     {
         POWER_UP_START_TIME = glfwGetTime();
         moveForce = 400;
         powerUpReady = true;
     }
-    else {
+    else
+    {
         activePowerUp->activatable = false;
     }
 }

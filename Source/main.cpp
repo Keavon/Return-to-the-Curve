@@ -323,17 +323,18 @@ public:
 			gameObjects.blower->init(emitterManager.get("wind"));
 			sceneManager.octree.insert(gameObjects.blower);
 
-            //Power Up 1
-            gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("Super_Jump.obj"), 1);
-            gameObjects.powerUp1->init();
-            sceneManager.octree.insert(gameObjects.powerUp1);
-            gameObjects.general.push_back(gameObjects.powerUp1);
+			
+            // //Power Up 1
+            // gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("Super_Jump.obj"), 1);
+            // gameObjects.powerUp1->init();
+            // sceneManager.octree.insert(gameObjects.powerUp1);
+            // gameObjects.general.push_back(gameObjects.powerUp1);
 
-            // Power Up 2
-            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("Lightning_Speed.obj"), 1);
-            gameObjects.powerUp2->init();
-            sceneManager.octree.insert(gameObjects.powerUp2);
-            gameObjects.general.push_back(gameObjects.powerUp2);
+            // // Power Up 2
+            // gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("Lightning_Speed.obj"), 1);
+            // gameObjects.powerUp2->init();
+            // sceneManager.octree.insert(gameObjects.powerUp2);
+            // gameObjects.general.push_back(gameObjects.powerUp2);
 
 		} else if (preferences.scenes.startup == 2) {
 			// Blower 1

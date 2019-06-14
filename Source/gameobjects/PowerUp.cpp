@@ -14,7 +14,7 @@ using namespace std;
 using namespace glm;
 
 
-PowerUp::PowerUp(vec3 position, int powerUpType, quat orientation, shared_ptr<Shape> model, float radius) :
+PowerUp::PowerUp(vec3 position, quat orientation, shared_ptr<Shape> model, float radius, string powerUpType) :
     PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
     radius(radius), length(length), powerUpType(powerUpType)
 {

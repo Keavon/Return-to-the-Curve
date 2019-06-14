@@ -29,10 +29,28 @@ void SceneManager::load(string sceneFile)
     if (rotation) instance->physicsObject->orientation = quat(ARRAY_TO_VEC3(rotation));
 
     YAML::Node scale = marble["scale"];
-    if (scale) instance->physicsObject->scale = ARRAY_TO_VEC3(scale);
+    if (scale) instance->physicsObject->scale *= ARRAY_TO_VEC3(scale);
 
     scene.push_back(instance);
     octree.insert(instance->physicsObject);
+
+    // Power-ups
+    if (file["powerups"])
+    {
+        YAML::Node powerups = file["powerups"];
+
+        for (YAML::Node object : powerups)
+        {
+            shared_ptr<Prefab> prefab = prefabManager->get(object["prefab"].as<string>());
+            shared_ptr<Instance> instance = prefab->getNewInstance();
+
+            YAML::Node location = object["location"];
+            if (location) instance->physicsObject->position = ARRAY_TO_VEC3(location);
+
+            scene.push_back(instance);
+            octree.insert(instance->physicsObject);
+        }
+    }
 
     // Enemy
     if (file["enemies"])
@@ -79,7 +97,7 @@ void SceneManager::load(string sceneFile)
         if (rotation) instance->physicsObject->orientation = quat(ARRAY_TO_VEC3(rotation));
 
         YAML::Node scale = object["scale"];
-        if (scale) instance->physicsObject->scale = ARRAY_TO_VEC3(scale);
+        if (scale) instance->physicsObject->scale *= ARRAY_TO_VEC3(scale);
 
         scene.push_back(instance);
         octree.insert(instance->physicsObject);

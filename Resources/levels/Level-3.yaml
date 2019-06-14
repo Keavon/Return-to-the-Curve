@@ -215,4 +215,3 @@ track:
         scale: [8, 8, 8]
     -   prefab: Finish
         location: [0.0, 0.0, 60.0]
-        scale: [4.0, 4.0, 4.0]
