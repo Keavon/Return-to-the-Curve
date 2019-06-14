@@ -65,7 +65,7 @@ public:
 	TextureManager textureManager = TextureManager(RESOURCE_DIRECTORY + "/textures/");
 	SkyboxManager skyboxManager = SkyboxManager(RESOURCE_DIRECTORY + "/skyboxes/");
 	ShaderManager shaderManager = ShaderManager(RESOURCE_DIRECTORY + "/shaders/");
-	MaterialManager materialManager = MaterialManager();
+	MaterialManager materialManager = MaterialManager(shared_ptr<SkyboxManager>(&skyboxManager));
 	EmitterManager emitterManager = EmitterManager();
 	PrefabManager prefabManager = PrefabManager(RESOURCE_DIRECTORY + "/prefabs/", shared_ptr<ModelManager>(&modelManager), shared_ptr<MaterialManager>(&materialManager));
 	SceneManager sceneManager = SceneManager(shared_ptr<PrefabManager>(&prefabManager), shared_ptr<MaterialManager>(&materialManager));
@@ -145,7 +145,7 @@ public:
 	}
 
 	void loadShaders() {
-		vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos"};
+		vector<string> pbrUniforms = {"P", "V", "M", "shadowResolution", "shadowAA", "shadowDepth", "LS", "albedoMap", "roughnessMap", "metallicMap", "aoMap", "lightPosition", "lightColor", "viewPos", "skybox"};
 		shared_ptr<Program> pbr = shaderManager.get("pbr", {"vertPos", "vertNor", "vertTex"}, pbrUniforms);
 		materialManager.init(pbr, shared_ptr<TextureManager>(&textureManager));
 
@@ -166,6 +166,7 @@ public:
         skyboxManager.get("blue_clouds", 1);
         skyboxManager.get("clouds", 1);
         skyboxManager.get("stormy_clouds", 1);
+        skyboxManager.setCurrent("blue_clouds", 1);
 	}
 
 	void loadShadows() {
@@ -297,7 +298,6 @@ public:
 		modelManager.get("goal.obj", true);
 		modelManager.get("quadSphere.obj", true);
 		modelManager.get("cone.obj", true);
-        modelManager.get("bunny.obj", true);
 		modelManager.get("Lightning_Speed.obj");
 		modelManager.get("Super_Jump.obj");
 	}
@@ -323,20 +323,6 @@ public:
 			gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), (float)M_PI_4, vec3(0, 0, 1)), 3.0f, 10.0f);
 			gameObjects.blower->init(emitterManager.get("wind"));
 			sceneManager.octree.insert(gameObjects.blower);
-
-			
-            // //Power Up 1
-            // gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("Super_Jump.obj"), 1);
-            // gameObjects.powerUp1->init();
-            // sceneManager.octree.insert(gameObjects.powerUp1);
-            // gameObjects.general.push_back(gameObjects.powerUp1);
-
-            // // Power Up 2
-            // gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("Lightning_Speed.obj"), 1);
-            // gameObjects.powerUp2->init();
-            // sceneManager.octree.insert(gameObjects.powerUp2);
-            // gameObjects.general.push_back(gameObjects.powerUp2);
-
 		} else if (preferences.scenes.startup == 2) {
 			// Blower 1
 			auto blower = make_shared<Blower>(vec3(0, -35, -108), rotate(quat(1, 0, 0, 0), 0.0f, vec3(0, 0, 1)), 3.0f, 10.0f);
@@ -368,8 +354,8 @@ public:
 		uiObjects.logo = make_shared<UIObject>(vec3(-0.78f, 0.78f, 0), vec3(0.4f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Level" + to_string(preferences.scenes.startup + 1) + ".png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.winMessage = make_shared<UIObject>(vec3(0, 0, 0), vec3(0.8f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/YouWin.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.springJump = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/SpringJump.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
-        uiObjects.lightningSpeed = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/LightningSpeed.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
-        uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.lightningSpeed = make_shared<UIObject>(vec3(0.88, -0.78, 0), vec3(0.2f, 0.4f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/LightningSpeed.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+		uiObjects.Time = make_shared<UIObject>(vec3(-0.7f, -0.78f, 0), vec3(0.5f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/Time.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.Hundreds = make_shared<UIObject>(vec3(-0.4f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.Tens = make_shared<UIObject>(vec3(-0.3f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 		uiObjects.Ones = make_shared<UIObject>(vec3(-0.2f, -0.78f, 0), vec3(0.1f, 0.15f, 0), quat(1, 1, 1, 1), modelManager.get("billboard.obj"), textureManager.get("hud/numbers/0.png", 0, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
@@ -626,9 +612,7 @@ public:
 		setProjectionMatrix(sky);
 		setView(sky);
 
-        if (preferences.scenes.startup == 0) skyboxManager.get("blue_clouds", 1)->bind(sky->getUniform("Texture0"));
-        if (preferences.scenes.startup == 1) skyboxManager.get("clouds", 1)->bind(sky->getUniform("Texture0"));
-        if (preferences.scenes.startup == 2) skyboxManager.get("stormy_clouds", 1)->bind(sky->getUniform("Texture0"));
+        skyboxManager.getCurrent()->bind(sky->getUniform("Texture0"));
 		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
 		modelManager.get("cube.obj")->draw(sky);
@@ -681,14 +665,14 @@ public:
 		uiObjects.Hundredths->draw(p, M);
 
 
-		//Powerup Test
+		// Powerup Test
 		if (marble->powerups.size() > 0 && marble->powerups.front() == "Super Jump"){
 			uiObjects.springJump->draw(p, M);
 		}
-        if (marble->powerups.size() > 0 && marble->powerups.front() == "Lightning Speed") {
-            uiObjects.lightningSpeed->draw(p, M);
-        }
-    }
+		if (marble->powerups.size() > 0 && marble->powerups.front() == "Lightning Speed") {
+			uiObjects.lightningSpeed->draw(p, M);
+		}
+	}
 
 	void changeTime() {
 		float curT = Time.timeSinceStart - curTime;
@@ -746,9 +730,6 @@ public:
 
     void nextLevel()
     {
-		for (int i = 0 ; i < gameObjects.general.size(); i++){
-			gameObjects.general.erase(gameObjects.general.begin() + i);
-		}
         preferences.scenes.startup = (preferences.scenes.startup + 1) % preferences.scenes.list.size();
         sceneManager.octree.clear();
         sceneManager.scene.clear();
@@ -756,6 +737,10 @@ public:
         loadGameObjects();
         loadUIObjects();
         resetPlayer();
+
+        if (preferences.scenes.startup == 0) skyboxManager.setCurrent("blue_clouds", 1);
+        if (preferences.scenes.startup == 1) skyboxManager.setCurrent("clouds", 1);
+        if (preferences.scenes.startup == 2) skyboxManager.setCurrent("stormy_clouds", 1);
     }
 
 	/*
@@ -770,7 +755,7 @@ public:
 		startTime = (float)glfwGetTime();
 		gameObjects.goal->reset();
 		marble->frozen = 0;
-        while (!marble->powerups.empty()) marble->powerups.pop();
+		while (!marble->powerups.empty()) marble->powerups.pop();
 	}
 
 	void beforePhysics() {
@@ -779,6 +764,7 @@ public:
 			gameObjects.blower->update();
 		}
 	}
+
 	void physicsTick() {
 		sceneManager.octree.update();
 

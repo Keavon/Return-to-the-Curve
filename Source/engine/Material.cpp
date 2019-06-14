@@ -1,14 +1,15 @@
 #include "Material.h"
 
-Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager)
+Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, shared_ptr<SkyboxManager> skyboxManager)
 {
     this->pbr = pbr;
     this->textureManager = textureManager;
 }
 
-Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, string materialName, string extension) {
+Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, shared_ptr<SkyboxManager> skyboxManager, string materialName, string extension) {
     this->pbr = pbr;
     this->textureManager = textureManager;
+    this->skyboxManager = skyboxManager;
     load(materialName, extension);
 }
 
@@ -25,4 +26,5 @@ void Material::bind() {
     roughness->bind(pbr->getUniform("roughnessMap"));
     metallic->bind(pbr->getUniform("metallicMap"));
     ao->bind(pbr->getUniform("aoMap"));
+    skyboxManager->getCurrent()->bind(pbr->getUniform("skybox"));
 }

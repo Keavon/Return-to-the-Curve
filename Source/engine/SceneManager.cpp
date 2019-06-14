@@ -78,9 +78,11 @@ void SceneManager::load(string sceneFile)
             {
                 enemy->position = path[0];
             }
+
             enemy->referenceMarble(dynamic_pointer_cast<Ball>(findInstance("Marble")->physicsObject));
             enemy->curvePath->controlPoints = path;
             enemy->defaultPath = path;
+
             scene.push_back(instance);
             octree.insert(instance->physicsObject);
         }
