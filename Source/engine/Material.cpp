@@ -4,6 +4,7 @@ Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureMa
 {
     this->pbr = pbr;
     this->textureManager = textureManager;
+    this->skyboxManager = skyboxManager;
 }
 
 Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureManager, shared_ptr<SkyboxManager> skyboxManager, string materialName, string extension) {
@@ -15,10 +16,10 @@ Material::Material(shared_ptr<Program> pbr, shared_ptr<TextureManager> textureMa
 
 void Material::load(string materialName, string extension)
 {
-    albedo = textureManager->get("materials/" + materialName + "/albedo." + extension, 1);
-    roughness = textureManager->get("materials/" + materialName + "/roughness." + extension, 2);
-    metallic = textureManager->get("materials/" + materialName + "/metallic." + extension, 3);
-    ao = textureManager->get("materials/" + materialName + "/ao." + extension, 4);
+    albedo = textureManager->get("materials/" + materialName + "/albedo." + extension, 2);
+    roughness = textureManager->get("materials/" + materialName + "/roughness." + extension, 3);
+    metallic = textureManager->get("materials/" + materialName + "/metallic." + extension, 4);
+    ao = textureManager->get("materials/" + materialName + "/ao." + extension, 5);
 }
 
 void Material::bind() {

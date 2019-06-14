@@ -132,8 +132,9 @@ void main() {
 
 	// Reflection part
 	vec3 I = normalize(WorldPos - viewPos);
-	vec3 R = reflect(I, N);
-	vec3 reflection = texture(skybox, R).rgb;
+	vec3 R = normalize(reflect(I, N));
+	vec3 reflection = texture(skybox, R, roughness * 6).rgb;
+	reflection = vec3(pow(reflection.r, 2.2), pow(reflection.g, 2.2), pow(reflection.b, 2.2));
 
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
@@ -149,15 +150,18 @@ void main() {
 	float G = GeometrySmith(N, V, L, roughness);
 	vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
+	// Combining specular and diffuse
 	vec3 kS = F;
 	vec3 kD = vec3(1.0) - kS;
 	kD *= 1.0 - metallic;
 
+	// Specular brightness
 	vec3 numerator = NDF * G * F;
 	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-	vec3 specular = numerator / max(denominator, 0.001);
+	vec3 specular = numerator / max(denominator, 0.001) + (0.5 * albedo + 0.5 * reflection * (0.01 + 0.99 * metallic));
+
+	// Apply shadows to block specular reflection
 	specular *= getShadeValue();
-	specular *= reflection;
 
 	// Add to outgoing radiance Lo
 	float NdotL = max(dot(N, L), 0.0);

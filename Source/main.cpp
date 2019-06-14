@@ -430,9 +430,6 @@ public:
 		if (shader == pbr) marble->getSkinMaterial()->bind();
 		marble->draw(shader, M);
 
-		// Draw enemies
-		if (shader == pbr) materialManager.get("rusted_metal", "jpg")->bind();
-
 		// Draw scene instances
 		int i = 0;
 		for (shared_ptr<Instance> instance : sceneManager.scene) {
