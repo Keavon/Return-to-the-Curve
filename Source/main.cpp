@@ -95,8 +95,6 @@ public:
 
 	struct
 	{
-		shared_ptr<Enemy> enemy1;
-		shared_ptr<Enemy> enemy2;
         shared_ptr<PowerUp> powerUp1;
         shared_ptr<PowerUp> powerUp2;
 		shared_ptr<Goal> goal;
@@ -299,6 +297,8 @@ public:
 		modelManager.get("quadSphere.obj", true);
 		modelManager.get("cone.obj", true);
         modelManager.get("bunny.obj", true);
+		modelManager.get("Lightning_Speed.obj");
+		modelManager.get("Super_Jump.obj");
 	}
 
 	void loadLevel() {
@@ -324,13 +324,13 @@ public:
 			sceneManager.octree.insert(gameObjects.blower);
 
             //Power Up 1
-            gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1);
+            gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("Super_Jump.obj"), 1);
             gameObjects.powerUp1->init();
             sceneManager.octree.insert(gameObjects.powerUp1);
             gameObjects.general.push_back(gameObjects.powerUp1);
 
             // Power Up 2
-            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1);
+            gameObjects.powerUp2 = make_shared<PowerUp>(vec3(80, 10, 55.0), 1, quat(1, 0, 0, 0), modelManager.get("Lightning_Speed.obj"), 1);
             gameObjects.powerUp2->init();
             sceneManager.octree.insert(gameObjects.powerUp2);
             gameObjects.general.push_back(gameObjects.powerUp2);
@@ -678,10 +678,10 @@ public:
 		uiObjects.Hundredths->draw(p, M);
 
 
-		// Powerup Test
-		// if(hasPowerup){
-			//uiObjects.powerUp->draw(p, M);
-		//}
+		//Powerup Test
+		if(marble->hasPowerUp){
+			uiObjects.powerUp->draw(p, M);
+		}
     }
 
 	void changeTime() {
@@ -740,6 +740,9 @@ public:
 
     void nextLevel()
     {
+		for (int i = 0 ; i < gameObjects.general.size(); i++){
+			gameObjects.general.erase(gameObjects.general.begin() + i);
+		}
         preferences.scenes.startup = (preferences.scenes.startup + 1) % preferences.scenes.list.size();
         sceneManager.octree.clear();
         sceneManager.scene.clear();
