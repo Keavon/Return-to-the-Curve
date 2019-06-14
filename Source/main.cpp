@@ -97,8 +97,6 @@ public:
 	{
 		shared_ptr<Enemy> enemy1;
 		shared_ptr<Enemy> enemy2;
-        shared_ptr<Enemy> sentry1;
-        shared_ptr<Enemy> sentry2;
         shared_ptr<PowerUp> powerUp1;
         shared_ptr<PowerUp> powerUp2;
 		shared_ptr<Goal> goal;
@@ -324,21 +322,6 @@ public:
 			gameObjects.blower = make_shared<Blower>(vec3(112, -3, 21), rotate(quat(1, 0, 0, 0), (float)M_PI_4, vec3(0, 0, 1)), 3.0f, 10.0f);
 			gameObjects.blower->init(emitterManager.get("wind"));
 			sceneManager.octree.insert(gameObjects.blower);
-            // // Sentry 1
-            // vector<vec3> enemyPath = { vec3{65.0, 7.0, 32.0} };
-            // gameObjects.sentry1 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f, true);
-            // gameObjects.sentry1->init(windowManager);
-			// gameObjects.sentry1->referenceMarble(marble);
-            // sceneManager.octree.insert(gameObjects.sentry1);
-            // gameObjects.general.push_back(gameObjects.sentry1);
-
-            // // Sentry 2
-            // enemyPath = { vec3{90.0, 2.0, 32.0} };
-            // gameObjects.sentry2 = make_shared<Enemy>(enemyPath, quat(1, 0, 0, 0), modelManager.get("Robot/RobotHead.obj"), modelManager.get("Robot/RobotLeg.obj"), modelManager.get("Robot/RobotFoot.obj"), 1.75f, true);
-            // gameObjects.sentry2->init(windowManager);
-			// gameObjects.sentry2->referenceMarble(marble);
-            // sceneManager.octree.insert(gameObjects.sentry2);
-            // gameObjects.general.push_back(gameObjects.sentry2);
 
             //Power Up 1
             gameObjects.powerUp1 = make_shared<PowerUp>(vec3(120, 2, 30), 0, quat(1, 0, 0, 0), modelManager.get("bunny.obj", true), 1);
