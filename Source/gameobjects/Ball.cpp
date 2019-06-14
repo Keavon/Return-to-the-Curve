@@ -1,6 +1,7 @@
 #include "Ball.h"
 
 #include "../Camera.h"
+#include "Enemy.h"
 
 Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radius) : PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)), radius(radius)
 {
@@ -70,7 +71,10 @@ void Ball::update()
                 storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
             }
             //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-            printf("Picked up power up of type: %s\n" , storedPowerUp[0]->powerUpType == 0 ? "Super Jump" : storedPowerUp[0]->powerUpType == 1 ? "Super Speed" : to_string(storedPowerUp[0]->powerUpType).c_str());
+            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == 0)
+                printf("Picked up power up of type: Super Jump\n");
+            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == 1)
+                printf("Picked up power up of type: Super Speed\n");
             printf("Press 'E' to activate\n");
             //cout << "Stored size: " << storedPowerUp.size() << endl;
             hasPowerUp = true;
@@ -250,7 +254,7 @@ void Ball::activatePowerUp()
     else if (activePowerUp->powerUpType == 1) 
     {
         POWER_UP_START_TIME = glfwGetTime();
-        moveForce = 300;
+        moveForce = 400;
         powerUpReady = true;
     }
     else {

@@ -1,8 +1,9 @@
 #include "SceneManager.h"
 
-SceneManager::SceneManager(shared_ptr<PrefabManager> prefabManager) : octree(vec3(-100), vec3(100))
+SceneManager::SceneManager(shared_ptr<PrefabManager> prefabManager, shared_ptr<MaterialManager> materialManager) : octree(vec3(-100), vec3(100))
 {
     this->prefabManager = prefabManager;
+    this->materialManager = materialManager;
 }
 
 void SceneManager::load(string sceneFile)
@@ -32,6 +33,40 @@ void SceneManager::load(string sceneFile)
 
     scene.push_back(instance);
     octree.insert(instance->physicsObject);
+
+    // Enemy
+    if (file["enemies"])
+    {
+        auto legModel = prefabManager->modelManager->get("Robot/RobotLeg.obj");
+        auto footModel = prefabManager->modelManager->get("Robot/RobotFoot.obj");
+        for (YAML::Node object : file["enemies"])
+        {
+            shared_ptr<Prefab> prefab = prefabManager->get(object["prefab"].as<string>());
+            prefab->footModel = footModel;
+            prefab->legModel = legModel;
+            shared_ptr<Instance> instance = prefab->getNewInstance();
+            auto enemy = dynamic_pointer_cast<Enemy>(instance->physicsObject);
+            vector<vec3> path;
+            if (object["behavior"] && object["behavior"].as<string>() == "sentry")
+            {
+                enemy->sentry = true;
+                instance->material = materialManager->get("rusted_metal", "jpg");
+            }
+            for (YAML::Node point : object["path"])
+            {
+                path.push_back(ARRAY_TO_VEC3(point));
+            }
+            if (path.size() > 0)
+            {
+                enemy->position = path[0];
+            }
+            enemy->referenceMarble(dynamic_pointer_cast<Ball>(findInstance("Marble")->physicsObject));
+            enemy->curvePath->controlPoints = path;
+            enemy->defaultPath = path;
+            scene.push_back(instance);
+            octree.insert(instance->physicsObject);
+        }
+    }
 
     for (YAML::Node object : file["track"])
     {

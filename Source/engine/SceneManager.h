@@ -12,7 +12,9 @@
 #include "Prefab.h"
 #include "Instance.h"
 #include "PrefabManager.h"
+#include "MaterialManager.h"
 #include "Octree.h"
+#include "../gameobjects/Enemy.h"
 
 using namespace std;
 using namespace glm;
@@ -23,6 +25,7 @@ class SceneManager
 {
 private:
     shared_ptr<PrefabManager> prefabManager;
+    shared_ptr<MaterialManager> materialManager;
 
 public:
     vector<shared_ptr<Instance>> scene;
@@ -35,7 +38,7 @@ public:
         vec3 brightness;
     } light;
 
-    SceneManager(shared_ptr<PrefabManager> prefabManager);
+    SceneManager(shared_ptr<PrefabManager> prefabManager, shared_ptr<MaterialManager> materialManager);
     shared_ptr<Instance> findInstance(string name);
     void load(string sceneFile);
     void save(string sceneFile);

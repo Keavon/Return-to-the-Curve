@@ -14,6 +14,7 @@
 #include "../Shape.h"
 #include "../WindowManager.h"
 #include "../engine/Time.h"
+#include "Ball.h"
 
 using namespace glm;
 using namespace std;
@@ -22,14 +23,17 @@ class Enemy : public PhysicsObject
 {
 public:
     Enemy(vector<vec3> enemyPath, quat orientation, shared_ptr<Shape> model,
-          shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius);
+          shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius, bool isSentry);
     void init(WindowManager *windowManager);
-    virtual void update(vec3 ballPosition);
+    void referenceMarble(shared_ptr<Ball> marble);
+    virtual void update();
+    virtual void updateSentry();
     virtual void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M);
     MatrixStack setlLeg(MatrixStack uLeg, float offset, float t);
     MatrixStack setFoot(MatrixStack lLeg, float offset, float t);
     Pathing *curvePath;
     WindowManager *windowManager;
+    shared_ptr<Ball> marble;
     float moveSpeed;
     float radius;
     float t = 0.1f;
@@ -37,14 +41,13 @@ public:
     float targetX;
     float targetZ;
     float targetY;
-    int state; // 0 - idle 1 - following player 2 - return home 3 - nonSentry
+    int state; // 0 - idle 1 - following player 2 - return home
     bool ballInRange;
     bool forward;
     bool pointReached;
     bool sentry;
     vec3 direction;
     vec3 sentryHome;
-    vector<vec3> sentryIdlePath;
     vector<vec3> sentryFollowPath;
     vector<vec3> sentryPathHome;
     vector<vec3> defaultPath;

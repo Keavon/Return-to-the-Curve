@@ -20,7 +20,7 @@
 #include "../engine/Time.h"
 #include "../Shape.h"
 #include "../WindowManager.h"
-#include "Enemy.h"
+
 #include "PowerUp.h"
 
 using namespace glm;

@@ -1,27 +1,21 @@
 #include "Enemy.h"
 
-Enemy::Enemy(vector<vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius) : PhysicsObject(enemyPath[0], orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
+Enemy::Enemy(vector<vec3> enemyPath, quat orientation, shared_ptr<Shape> model, shared_ptr<Shape> legmodel, shared_ptr<Shape> footmodel, float radius, bool isSentry) : PhysicsObject(vec3(0, 0, 0), orientation, vec3(1, 1, 1), model, make_shared<ColliderSphere>(radius)), radius(radius), legModel(legmodel), footModel(footmodel)
 {
-	if (enemyPath.size() < 2)
+	for (glm::vec3 pathVect : enemyPath)
 	{
-		sentry = true;
-		ballInRange = false;
-		sentryIdlePath = curvePath->calcLinearPath( vec3(enemyPath[0].x, enemyPath[0].y + 3.0f, enemyPath[0].z) , 
-													vec3(enemyPath[0].x + 6.0f, enemyPath[0].y + 3.0f, enemyPath[0].z)); 
-		curvePath = new Pathing(sentryIdlePath);
-		sentryHome = sentryIdlePath[0];
+		defaultPath.push_back(vec3(pathVect.x, pathVect.y + 3.0f, pathVect.z));
+	}
+	curvePath = new Pathing(defaultPath);	
+	sentry = isSentry;
+	if (isSentry)
+	{
 		state = 0;
 	}
 	else {
-		sentry = false;
-		ballInRange = false;
-		state = 3;
-		for (glm::vec3 pathVect : enemyPath)
-		{
-			defaultPath.push_back(vec3(pathVect.x, pathVect.y + 3.0f, pathVect.z));
-		}
-		curvePath = new Pathing(defaultPath);
+		state = -1;
 	}
+	ballInRange = false;
     speed = 0;
     material = 0;
 
@@ -39,35 +33,14 @@ void Enemy::init(WindowManager *windowManager)
 {
 	this->windowManager = windowManager;
 }
-
-void Enemy::update(vec3 ballPosition)
+void Enemy::referenceMarble(shared_ptr<Ball> marble) {
+	this->marble = marble;
+}
+void Enemy::update()
 {
-	clearCollisions();
 	if (sentry)
 	{
-		//cout << "State : " << state << endl;
-		if (distance(sentryHome, ballPosition) < 20)
-		{
-			ballInRange = true;
-			//cout<< "Ball In Range" << endl;
-			state = 1;
-		}
-		else{
-			if (ballInRange)
-			{
-				sentryPathHome = curvePath->calcLinearPath(position, sentryHome);
-				curvePath = new Pathing(sentryPathHome);
-				state = 2;
-				t = 0.1;
-			}
-			ballInRange = false;
-		}
-	}
-	if (state == 1){ // Follow Player
-		//cout << "Following Player" << endl; 
-		sentryFollowPath = curvePath->calcLinearPath(position, vec3(ballPosition.x, ballPosition.y + 3.0f, ballPosition.z));
-		curvePath = new Pathing(sentryFollowPath);
-		t = 0.1;
+		updateSentry();
 	}
     if (pointReached) {
 		curvePath->calcBezierCurveTarget(t);
@@ -83,7 +56,7 @@ void Enemy::update(vec3 ballPosition)
 		{
 			if (state == 2){
 				state = 0;
-				curvePath = new Pathing(sentryIdlePath);
+				curvePath = new Pathing(defaultPath);
 				t = 0.1;
 			}
             forward = false;
@@ -108,17 +81,45 @@ void Enemy::update(vec3 ballPosition)
 	velocity.x = 0;
 	velocity.z = 0;
 	velocity.y = 0;
-	//vec3 axis = vec3{0,1,0};
-	//quat q = rotate(, axis);
-	//orientation = q * orientation;
 	velocity = direction * moveSpeed;
-	//printf("Velocity: %f, %f, %f", velocity.x,velocity.y,velocity.z);
 	position += velocity * Time.physicsDeltaTime;
-	//printf("Position of Enemy: (%f,%f,%f)\n", position.x,position.y,position.z);
 	if (sqrt(pow((targetX - position.x), 2) +
 			 pow((targetZ - position.z), 2)) < 1.02)
 	{
 		pointReached = true;
+	}
+}
+
+void Enemy::updateSentry() 
+{
+	if (sentry && marble == nullptr) return;
+	clearCollisions();
+	if (sentry)
+	{
+		//cout << distance(defaultPath[0], marble->position) << endl;
+		//cout << "State : " << state << endl;
+		if (distance(defaultPath[0], marble->position) < 20)
+		{
+			ballInRange = true;
+			//cout<< "Ball In Range" << endl;
+			state = 1;
+		}
+		else{
+			if (ballInRange)
+			{
+				sentryPathHome = curvePath->calcLinearPath(position, defaultPath[0]);
+				curvePath = new Pathing(sentryPathHome);
+				state = 2;
+				t = 0.1;
+			}
+			ballInRange = false;
+		}
+	}
+	if (state == 1){ // Follow Player
+		//cout << "Following Player" << endl; 
+		sentryFollowPath = curvePath->calcLinearPath(position, vec3(marble->position.x, marble->position.y + 3.0f, marble->position.z));
+		curvePath = new Pathing(sentryFollowPath);
+		t = 0.1;
 	}
 }
 

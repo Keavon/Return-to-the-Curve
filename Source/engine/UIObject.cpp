@@ -12,6 +12,10 @@ UIObject::UIObject(vec3 position, vec3 scale,  quat orientation, shared_ptr<Shap
 	t = 0;
 }
 
+void UIObject::changeImage(shared_ptr<Texture> newimg) {
+	this->img = newimg;
+}
+
 void UIObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, int anim)
 {
 	t += 0.05f;

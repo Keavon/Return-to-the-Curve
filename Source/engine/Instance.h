@@ -4,6 +4,9 @@
 #include "Material.h"
 #include "PhysicsObject.h"
 #include "../gameobjects/Ball.h"
+#include "../gameobjects/Enemy.h"
+#include <vector>
+#include <glm/glm.hpp>
 
 using namespace std;
 using namespace glm;

@@ -23,7 +23,8 @@ public:
 	//UIObject();
 	//UIObject(vec3 position, vec3 scale, quat orientation, shared_ptr<Shape> model, string imgName, int unit);
 	UIObject(vec3 position, vec3 scale, quat orientation, shared_ptr<Shape> model, shared_ptr<Texture> img);
-	virtual void update(float dt) {};
+	virtual void update(float dt){};
+	void changeImage(shared_ptr<Texture> newimg);
 	void draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M, int anim = 0);
 
 	vec3 position;
