@@ -1,4 +1,4 @@
 ---
 model: Robot/RobotHead.obj
-material: [painted_metal, jpg]
+material: [rusted_metal, jpg]
 physics:

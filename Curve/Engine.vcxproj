@@ -193,6 +193,7 @@
     <ClCompile Include="..\Source\gameobjects\Blower.cpp" />
     <ClCompile Include="..\Source\gameobjects\Enemy.cpp" />
     <ClCompile Include="..\Source\gameobjects\Goal.cpp" />
+    <ClCompile Include="..\Source\gameobjects\PowerUp.cpp" />
     <ClCompile Include="..\Source\GLSL.cpp" />
     <ClCompile Include="..\Source\GLTextureWriter.cpp" />
     <ClCompile Include="..\Source\main.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="..\Source\gameobjects\Blower.h" />
     <ClInclude Include="..\Source\gameobjects\Enemy.h" />
     <ClInclude Include="..\Source\gameobjects\Goal.h" />
+    <ClInclude Include="..\Source\gameobjects\PowerUp.h" />
     <ClInclude Include="..\Source\GLSL.h" />
     <ClInclude Include="..\Source\GLTextureWriter.h" />
     <ClInclude Include="..\Source\MatrixStack.h" />

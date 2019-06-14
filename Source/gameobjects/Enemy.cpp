@@ -57,7 +57,7 @@ void Enemy::update()
 			if (state == 2){
 				state = 0;
 				curvePath = new Pathing(defaultPath);
-				t = 0.1;
+				t = 0.1f;
 			}
             forward = false;
 			//printf("Switch to backward\n");
@@ -110,7 +110,7 @@ void Enemy::updateSentry()
 				sentryPathHome = curvePath->calcLinearPath(position, defaultPath[0]);
 				curvePath = new Pathing(sentryPathHome);
 				state = 2;
-				t = 0.1;
+				t = 0.1f;
 			}
 			ballInRange = false;
 		}
@@ -119,7 +119,7 @@ void Enemy::updateSentry()
 		//cout << "Following Player" << endl; 
 		sentryFollowPath = curvePath->calcLinearPath(position, vec3(marble->position.x, marble->position.y + 3.0f, marble->position.z));
 		curvePath = new Pathing(sentryFollowPath);
-		t = 0.1;
+		t = 0.1f;
 	}
 }
 

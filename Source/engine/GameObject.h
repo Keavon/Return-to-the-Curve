@@ -29,6 +29,7 @@ public:
     shared_ptr<Shape> model;
     int material;
     bool inView;
+    bool hidden;
 
     static bool cull;
 };

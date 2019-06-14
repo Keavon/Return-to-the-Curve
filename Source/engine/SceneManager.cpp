@@ -68,7 +68,7 @@ void SceneManager::load(string sceneFile)
             if (object["behavior"] && object["behavior"].as<string>() == "sentry")
             {
                 enemy->sentry = true;
-                instance->material = materialManager->get("rusted_metal", "jpg");
+                instance->material = materialManager->get("painted_metal", "jpg");
             }
             for (YAML::Node point : object["path"])
             {

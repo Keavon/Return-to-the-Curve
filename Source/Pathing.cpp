@@ -61,7 +61,7 @@ std::vector<glm::vec3> Pathing::calcBezierPath(std::vector<glm::vec3> controls, 
         {
 			//quad
 			for ( double j = 0; j < 1; j += detail){
-				renderingPoints.push_back(quadBezier(a0, a1, a2, j));
+				renderingPoints.push_back(quadBezier(a0, a1, a2, (float)j));
 			}
 		}
         else
@@ -69,10 +69,9 @@ std::vector<glm::vec3> Pathing::calcBezierPath(std::vector<glm::vec3> controls, 
 			//cubic
 			a3 = controlPoints.at(i+3);
 			for ( double j = 0; j < 1; j += detail){
-				renderingPoints.push_back(cubicBezier(a0,a1,a2,a3,j));
+				renderingPoints.push_back(cubicBezier(a0, a1, a2, a3, (float)j));
 			}
 		}
-
 	}
 
     return renderPoints;

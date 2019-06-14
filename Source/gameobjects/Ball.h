@@ -10,6 +10,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <vector>
+#include <queue>
 
 #include "../effects/ParticleSpark.h"
 #include "../engine/Material.h"
@@ -39,25 +40,23 @@ public:
     void setSkin(int skinIndex);
     void nextSkin();
     void activatePowerUp();
-    void prepNextPowerUp();
+    void collectedPowerUp(string type);
     shared_ptr<Material> getSkinMaterial();
 
 	WindowManager *windowManager;
-    PowerUp *activePowerUp;
     shared_ptr<ParticleEmitter> sparkEmitter;
-    shared_ptr<Camera> camera;;
+    shared_ptr<Camera> camera;
     float radius;
     float moveForce;
     float jumpForce;
     bool frozen;
-    bool hasPowerUp;
-    bool powerUpReady;
-    std::vector<PowerUp *> storedPowerUp;
+    queue<string> powerups;
     bool initialized;
 
     float POWER_UP_START_TIME;
     float JUMP_TIME;
     int WANTS_JUMP;
+    float lastPowerupActivationTime = 0;
 
     float LAND_TIME;
     int CAN_JUMP;

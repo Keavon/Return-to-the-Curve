@@ -11,11 +11,12 @@ GameObject::GameObject(vec3 position, quat orientation, vec3 scale, shared_ptr<S
     this->scale = scale;
     this->model = model;
     this->inView = true;
+    this->hidden = false;
 }
 
 void GameObject::draw(shared_ptr<Program> prog, shared_ptr<MatrixStack> M)
 {
-    if (model != NULL && (inView || !cull))
+    if (model != NULL && (inView || !cull) && !hidden)
     {
         M->pushMatrix();
             M->translate(position);

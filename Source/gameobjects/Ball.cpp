@@ -34,9 +34,6 @@ Ball::Ball(vec3 position, quat orientation, shared_ptr<Shape> model, float radiu
     setMass(5);
     setElasticity(0.5);
     setFriction(0.25);
-
-    hasPowerUp = false;
-    powerUpReady = false;
 }
 
 void Ball::init(vec3 startPosition, WindowManager *windowManager, shared_ptr<ParticleEmitter> sparkEmitter, shared_ptr<Camera> camera)
@@ -48,12 +45,18 @@ void Ball::init(vec3 startPosition, WindowManager *windowManager, shared_ptr<Par
     this->initialized = true;
 }
 
+void Ball::collectedPowerUp(string type)
+{
+    powerups.push(type);
+}
+
 void Ball::update()
 {
     if (!initialized) return;
 
-    if (frozen)
-        return;
+    if (frozen) return;
+
+    printf("(%f, %f, %f)\n", position.x, position.y, position.z);
 
     for (auto collision : collider->pendingCollisions)
     {
@@ -61,24 +64,24 @@ void Ball::update()
         {
             applyImpulse(-collision.normal * 300.0f);
         }
-        if (dynamic_cast<PowerUp *>(collision.other) != NULL)
-        {
-            if (storedPowerUp.size() < 2){
-                storedPowerUp.push_back(dynamic_cast<PowerUp *>(collision.other) );
-            }
-            else
-            {
-                storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
-            }
-            //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Super Jump")
-                printf("Picked up power up of type: Super Jump\n");
-            if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Lightning Speed")
-                printf("Picked up power up of type: Super Speed\n");
-            printf("Press 'E' to activate\n");
-            //cout << "Stored size: " << storedPowerUp.size() << endl;
-            hasPowerUp = true;
-        }
+        //if (dynamic_cast<PowerUp *>(collision.other) != NULL)
+        //{
+        //    if (storedPowerUp.size() < 2){
+        //        storedPowerUp.push_back(dynamic_cast<PowerUp *>(collision.other) );
+        //    }
+        //    else
+        //    {
+        //        storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
+        //    }
+        //    //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
+        //    if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Super Jump")
+        //        printf("Picked up power up of type: Super Jump\n");
+        //    if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Lightning Speed")
+        //        printf("Picked up power up of type: Super Speed\n");
+        //    printf("Press 'E' to activate\n");
+        //    //cout << "Stored size: " << storedPowerUp.size() << endl;
+        //    hasPowerUp = true;
+        //}
     }
 
     PhysicsObject::update();
@@ -121,20 +124,10 @@ void Ball::update()
     }
     if (glfwGetKey(windowManager->getHandle(), GLFW_KEY_E) == GLFW_PRESS)
     {
-        /* printf("Num of power ups stored: %d \n", storedPowerUp.size());
-        for (PowerUp* p : storedPowerUp){
-            printf("Power Up type: %d ", p->powerUpType);
-            printf("Activatable: %s\n", p->activatable ? "true" : "false");
-        }
-        printf("Have Power Up? %s\n",hasPowerUp ? "true" : "false"); */
-        if (hasPowerUp){
-            //printf("storedPowerUp[0]->activatable: %s\n", storedPowerUp[0]->activatable ? "true" : "false");
-            if (storedPowerUp[0]->activatable)
-                activatePowerUp();
-            else {
-                prepNextPowerUp();
-            }
-        }
+        activatePowerUp();
+    }
+    if (glfwGetMouseButton(windowManager->getHandle(), GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+        activatePowerUp();
     }
     // Any of the three timers expire?
     if (WANTS_JUMP && (currentTime - JUMP_TIME) >= 0.125)
@@ -161,24 +154,20 @@ void Ball::update()
         JUST_JUMPED = 1;
         JUMPED_AT_TIME = currentTime;
 
-        if (powerUpReady && activePowerUp->powerUpType == "Super Jump" && activePowerUp->activatable)
+        if (jumpForce > 150)
         {
             soundEngine->superBounce();
             cout << "Used Super Jump powerUp" << endl;
             jumpForce = 150;
-            activePowerUp->activatable = false;
-            prepNextPowerUp();
         }
     }
     
     //printf("Move Force: %f\n", moveForce);
-    if (powerUpReady && activePowerUp->powerUpType == "Lightning Speed"){
+    if (moveForce > 200)
+    {
         //printf("Time: %f\n", currentTime - POWER_UP_START_TIME);
         if (currentTime - POWER_UP_START_TIME > 3){
-            powerUpReady = false;
             moveForce = 200;
-            activePowerUp->activatable = false;
-            prepNextPowerUp();
         }
     }
     // calculate forces
@@ -236,41 +225,20 @@ shared_ptr<Material> Ball::getSkinMaterial()
     return marbleSkins[currentSkin];
 }
 
-//TODO - Possibly Move these functions to Power up class?
 void Ball::activatePowerUp() 
 {
-    //TODO: start a timer when activating power ups
-    activePowerUp = storedPowerUp[0];
-    //cout << "Power up Type: "<< activePowerUp->powerUpType << endl;
-    cout << "Power up ready" << endl;
-    printf("%s\n", activePowerUp->powerUpType.c_str());
+    if ((float)glfwGetTime() - lastPowerupActivationTime < 1) return;
 
-    if (activePowerUp->powerUpType == "Super Jump") {
-        printf("Press 'Space' to use Super Jump\n");
+    lastPowerupActivationTime = (float)glfwGetTime();
+
+    if (powerups.size() > 0 && powerups.front() == "Super Jump") {
         jumpForce = 500;
-        powerUpReady = true;
+        powerups.pop();
     }
-    else if (activePowerUp->powerUpType == "Lightning Speed")
+    else if (powerups.size() > 0 && powerups.front() == "Lightning Speed")
     {
-        POWER_UP_START_TIME = glfwGetTime();
+        POWER_UP_START_TIME = (float)glfwGetTime();
         moveForce = 400;
-        powerUpReady = true;
-    }
-    else
-    {
-        activePowerUp->activatable = false;
-    }
-}
-
-void Ball::prepNextPowerUp()
-{
-    powerUpReady = false;
-    if (storedPowerUp.size() > 1) 
-    {
-        storedPowerUp[0] = storedPowerUp[1];
-        storedPowerUp.pop_back();
-    }
-    else {
-        hasPowerUp = false;
+        powerups.pop();
     }
 }

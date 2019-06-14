@@ -1,21 +1,8 @@
 #include "PowerUp.h"
 
-#include "../Shape.h"
-#include "../engine/ColliderSphere.h"
-#include "../engine/PhysicsObject.h"
-#include "Ball.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <memory>
-#include <iostream>
-
-using namespace std;
-using namespace glm;
-
 
 PowerUp::PowerUp(vec3 position, quat orientation, shared_ptr<Shape> model, float radius, string powerUpType) :
-    PhysicsObject(position, orientation, model, make_shared<ColliderSphere>(radius)),
+    PhysicsObject(position, orientation, model, make_shared<TriggerSphere>(radius)),
     radius(radius), length(length), powerUpType(powerUpType)
 {
 
@@ -23,19 +10,24 @@ PowerUp::PowerUp(vec3 position, quat orientation, shared_ptr<Shape> model, float
 
 void PowerUp::update()
 {
-    for (auto collision : collider->pendingCollisions)
+    clearCollisions();
+
+    if ((float)glfwGetTime() - hiddenTime >= 5)
     {
-        if (dynamic_cast<Ball *>(collision.other) != NULL)
-        {
-            //cout << "Collide with ball" << endl;
-            destroyed = true;
-            ignoreCollision = true;
-        }
+        hidden = false;
     }
-    //cout << "Destroyed: " << destroyed << endl;
+
+    orientation *= angleAxis(radians(90.0f * Time.deltaTime), vec3(0, 1, 0));
+}
+
+void PowerUp::triggerEnter(PhysicsObject *object) {
+    if (hidden) return;
+
+    auto ball = dynamic_cast<Ball *>(object);
+    if (ball != NULL) ball->collectedPowerUp(powerUpType);
+    hidden = true;
+    hiddenTime = (float)glfwGetTime();
 }
 
 void PowerUp::init(){
-    destroyed = false;
-    activatable = true;
 }

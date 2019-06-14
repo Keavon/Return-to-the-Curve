@@ -232,6 +232,9 @@
     <ClCompile Include="..\Source\engine\Trigger.cpp">
       <Filter>Source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\gameobjects\PowerUp.cpp">
+      <Filter>Source\gameobjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -463,6 +466,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\engine\Trigger.h">
       <Filter>Source\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameobjects\PowerUp.h">
+      <Filter>Source\gameobjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

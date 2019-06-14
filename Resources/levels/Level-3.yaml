@@ -51,6 +51,15 @@ enemies:
             [-40, 16, 30],
             [-40, 19, 30]
         ]
+powerups:
+    -   prefab: Lightning Speed
+        location: [0.42, -14.2, -21]
+    -   prefab: Super Jump
+        location: [-15.8, -40, -76.2]
+    -   prefab: Super Jump
+        location: [15.8, -40, -76.2]
+    -   prefab: Lightning Speed
+        location: [-80, 0, -65]
 track:
     -   prefab: Pillar Hexagon
         location: [0.0, 0.0, 0.0]

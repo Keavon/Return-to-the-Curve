@@ -13,6 +13,9 @@ marble:
     lookDirection: 0
     deathBelow: -10
 globalScale: [1, 1, 1]
+powerups:
+    -   prefab: Lightning Speed
+        location: [21.5, 1, 16]
 track:
     -   prefab: Pillar Hexagon
         location: [-40, 0, 16]
