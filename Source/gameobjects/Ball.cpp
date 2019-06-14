@@ -56,32 +56,12 @@ void Ball::update()
 
     if (frozen) return;
 
-    printf("(%f, %f, %f)\n", position.x, position.y, position.z);
-
     for (auto collision : collider->pendingCollisions)
     {
         if (dynamic_cast<Enemy *>(collision.other) != NULL)
         {
             applyImpulse(-collision.normal * 300.0f);
         }
-        //if (dynamic_cast<PowerUp *>(collision.other) != NULL)
-        //{
-        //    if (storedPowerUp.size() < 2){
-        //        storedPowerUp.push_back(dynamic_cast<PowerUp *>(collision.other) );
-        //    }
-        //    else
-        //    {
-        //        storedPowerUp.insert(storedPowerUp.end(), dynamic_cast<PowerUp *>(collision.other));
-        //    }
-        //    //cout << "Picked up power up of type: " << storedPowerUp[0]->powerUpType << endl;
-        //    if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Super Jump")
-        //        printf("Picked up power up of type: Super Jump\n");
-        //    if (dynamic_cast<PowerUp *>(collision.other)->powerUpType == "Lightning Speed")
-        //        printf("Picked up power up of type: Super Speed\n");
-        //    printf("Press 'E' to activate\n");
-        //    //cout << "Stored size: " << storedPowerUp.size() << endl;
-        //    hasPowerUp = true;
-        //}
     }
 
     PhysicsObject::update();
@@ -157,15 +137,12 @@ void Ball::update()
         if (jumpForce > 150)
         {
             soundEngine->superBounce();
-            cout << "Used Super Jump powerUp" << endl;
             jumpForce = 150;
         }
     }
     
-    //printf("Move Force: %f\n", moveForce);
     if (moveForce > 200)
     {
-        //printf("Time: %f\n", currentTime - POWER_UP_START_TIME);
         if (currentTime - POWER_UP_START_TIME > 3){
             moveForce = 200;
         }
