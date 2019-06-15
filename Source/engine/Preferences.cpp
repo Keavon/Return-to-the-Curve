@@ -3,10 +3,19 @@
 Preferences::Preferences(string prefsFile)
 {
     YAML::Node file = YAML::LoadFile(prefsFile);
-
     YAML::Node windowNode = file["window"];
-    window.resolutionX = windowNode["resolution"][0].as<int>();
-    window.resolutionY = windowNode["resolution"][1].as<int>();
+
+    // Resolution
+    if (windowNode["resolution"].IsSequence()) {
+        window.resolutionX = windowNode["resolution"][0].as<int>();
+        window.resolutionY = windowNode["resolution"][1].as<int>();
+    }
+    else if (windowNode["resolution"].as<string>() == "native") {
+        window.resolutionX = -1;
+        window.resolutionY = -1;
+    }
+
+    // Maximized and fullscreen
     window.maximized = windowNode["maximized"].as<bool>();
     window.fullscreen = windowNode["fullscreen"].as<bool>();
 

@@ -922,6 +922,10 @@ public:
 		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 			camera->freeViewing = false;
 		}
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            if (gameObjects.goal->didWin) nextLevel();
+        }
 	}
 
 	void updateAudioPosition() {
