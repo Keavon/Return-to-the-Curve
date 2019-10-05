@@ -4,15 +4,10 @@ A 3D platformer game inspired by Marble Blast Gold. Navigate a marble through a 
 
 **Created by:** Keavon Chambers, Daniel Deegan, Ellen Liu, Henry Luengas, Connor Virostek
 
-### User’s Guide
-* WASD: movement
-* Mouse: look
-* Right mouse click: hold and drag to look up/down
-* Scroll: zoom in/out
-* Enter: go to next level
-* R: reset level
-* Tab: fly mode
-* O: change ball texture
+[![Video](https://files.keavon.com/-/GreedyTragicAmethystinepython/capture.png)](https://www.youtube.com/watch?v=ChNajW78EFg)
+
+### More Details
+[Visit the Project Web Page](https://keavon.github.io/Curve/)
 
 ### List of Technologies
 * Physically-based rendering
