@@ -1,13 +1,11 @@
-# CPE 476 Project
+# Return to the Curve
 
 A 3D platformer game inspired by Marble Blast Gold. Navigate a marble through a series of enemies and obstacles to reach the goal at the end of each level in the shortest time possible!
 
-**Created by:** Keavon Chambers, Daniel Deegan, Ellen Liu, Henry Luengas, Connor Virostek
-
-[![Video](https://files.keavon.com/-/GreedyTragicAmethystinepython/capture.png)](https://www.youtube.com/watch?v=ChNajW78EFg)
+**Created by:** Keavon Chambers, Daniel Deegan, Ellen Liu, Henry Luengas, Connor Virostek for CPE 476 at Cal Poly.
 
 ### More Details
-[Visit the Project Web Page](https://keavon.github.io/Curve/)
+[Visit the Project Web Page](https://keavon.github.io/Return-to-the-Curve/)
 
 ### List of Technologies
 * Physically-based rendering
@@ -26,4 +24,4 @@ A 3D platformer game inspired by Marble Blast Gold. Navigate a marble through a 
 * Support for Windows, Mac OSX, and Linux
 
 ### Download
-[Windows](https://the-real-connor.me/files/curve/curve-windows.zip) | [macOS](https://the-real-connor.me/files/curve/curve-macosx.zip) | [Linux](https://the-real-connor.me/files/curve/curve-linux.zip)
+[Windows](https://github.com/Keavon/Return-to-the-Curve/releases/download/release/curve-windows.zip) | [macOS](https://github.com/Keavon/Return-to-the-Curve/releases/download/release/curve-macosx.zip) | [Linux](https://github.com/Keavon/Return-to-the-Curve/releases/download/release/curve-linux.zip)
